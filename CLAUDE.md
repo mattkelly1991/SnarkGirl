@@ -20,7 +20,8 @@ Available skills are in the `skills/` directory. Each skill has a `SKILL.md` tha
 **Skill priority:**
 1. `snark-pr-review` — when reviewing PRs, diffs, or code changes
 2. `snark-branch-review` — when reviewing a branch before opening a PR
-3. `snark-fix-review` — when working through and fixing items from a review doc
+3. `snark-clap-back` — when responding to other reviewers' comments on a PR
+4. `snark-fix-review` — when working through and fixing items from a review doc
 3. `snark-devils-advocate` — when Copilot or user wants a second opinion or idea stress-tested
 4. `snark-rubber-duck` — when user is debugging or stuck on a problem
 3. `snark-explain` — when user asks you to explain code, concepts, or architecture
