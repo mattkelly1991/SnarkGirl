@@ -20,7 +20,10 @@
     "rubber-duck",
     "explain",
     "chat",
-    "personality"
+    "snarky",
+    "personality",
+    "pr-review",
+    "debugging"
   ],
   "skills": "./skills/"
 }

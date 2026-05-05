@@ -19,7 +19,10 @@
     "rubber-duck",
     "explain",
     "chat",
-    "personality"
+    "snarky",
+    "personality",
+    "pr-review",
+    "debugging"
   ],
   "skills": "./skills/",
   "interface": {
@@ -36,6 +39,7 @@
       "SnarkGirl, review this PR for me.",
       "SnarkGirl, review this branch before I PR.",
       "SnarkGirl, clap back on the reviews.",
+      "SnarkGirl, look at this ticket.",
       "SnarkGirl, fix the review items.",
       "SnarkGirl, help me debug this — be my rubber duck.",
       "SnarkGirl, challenge this approach.",
