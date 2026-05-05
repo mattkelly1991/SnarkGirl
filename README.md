@@ -41,7 +41,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 
 ```
 /plugin marketplace add mattkelly1991/SnarkGirl
-/plugin install SnarkGirl@mattkelly1991
+/plugin install snark-girl@snark-girl-dev
 ```
 
 ### Codex CLI
