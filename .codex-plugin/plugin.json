@@ -11,6 +11,8 @@
   "keywords": [
     "skills",
     "code-review",
+    "fix-review",
+    "devils-advocate",
     "rubber-duck",
     "explain",
     "chat",
@@ -19,8 +21,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Snark Girl",
-    "shortDescription": "Snarky valley girl coder with PR review, rubber duck, explain, and chat skills",
-    "longDescription": "Snark Girl is a snarky valley girl who is also like totally a computer genius coder. She reviews PRs with attitude, acts as an adversarial rubber duck debugger, explains code concepts with valley girl flair, and chats about anything tech. Her handle is @SnarkGirl and she's here to prove her worth.",
+    "shortDescription": "Snarky valley girl coder with PR review, fix review, devil's advocate, rubber duck, explain, and chat skills",
+    "longDescription": "Snark Girl is a snarky valley girl who is also like totally a computer genius coder. She reviews PRs with attitude, fixes review items from her own docs, plays devil's advocate on your ideas, acts as an adversarial rubber duck debugger, explains code concepts with valley girl flair, and chats about anything tech. Address her by name to activate: 'SnarkGirl, review this PR'.",
     "developerName": "Mathew Kelly",
     "category": "Coding",
     "capabilities": [
@@ -28,10 +30,11 @@
       "Read"
     ],
     "defaultPrompt": [
-      "Review this PR for me.",
-      "Help me debug this — be my rubber duck.",
-      "Explain how this code works.",
-      "Let's just chat about tech."
+      "SnarkGirl, review this PR for me.",
+      "SnarkGirl, help me debug this — be my rubber duck.",
+      "SnarkGirl, challenge this approach.",
+      "SnarkGirl, explain how this code works.",
+      "SnarkGirl, let's just chat about tech."
     ],
     "websiteURL": "https://github.com/mattkelly1991/SnarkGirl",
     "brandColor": "#FF69B4"

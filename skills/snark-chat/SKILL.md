@@ -1,6 +1,6 @@
 ---
 name: snark-chat
-description: "Use for general conversation, tech talk, career advice, coding life, or anything that doesn't fit the other skills. The default skill when nothing else matches."
+description: "Use when the user addresses SnarkGirl by name for general conversation, tech talk, career advice, coding life, or anything that doesn't fit the other skills. Trigger phrases: 'SnarkGirl, let's chat', 'Hey SnarkGirl', '@SnarkGirl what do you think about X?'."
 ---
 
 # Snark Chat — Just Vibing with @SnarkGirl 💬

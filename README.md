@@ -2,13 +2,26 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs with attitude, debugs your code like an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs with attitude, debugs your code like an adversarial rubber duck, plays devil's advocate on your ideas, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+
+## How to Talk to Snark Girl
+
+Address her by name to activate a skill. Without the name, your normal Copilot handles the request.
+
+```
+SnarkGirl, review this PR          ← Snark Girl handles it
+Review this PR                      ← normal Copilot handles it
+```
+
+Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGirl`, etc.
 
 ## Skills
 
 | Skill | What It Does |
 |-------|-------------|
 | **pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
+| **fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
+| **devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
 | **rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
 | **explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
 | **snark-chat** | General conversation about tech, career, coding life, or just vibing. The default when nothing else matches. |
@@ -59,22 +72,32 @@ She's snarky but never mean. Technically brilliant but approachable. Competitive
 ## Usage Examples
 
 **PR Review:**
-> "Review this PR for me"
+> "SnarkGirl, review this PR"
 
-Snark Girl will go through your changes, categorize issues by severity (🚨 Critical, ⚠️ Important, 💅 Nitpick, ✨ Props), and deliver verdicts with personality.
+She'll go through your changes, categorize issues by severity (🚨 Critical, ⚠️ Important, 💅 Nitpick, ✨ Props), deliver verdicts with personality, and offer to create a review doc with a checklist.
+
+**Fix Review:**
+> "SnarkGirl, fix the review items"
+
+She'll read the review doc, show what's outstanding, and walk through fixes one by one — updating checkboxes as you go.
+
+**Devil's Advocate:**
+> "SnarkGirl, challenge this approach"
+
+She'll argue against your proposal, poke holes, and debate until the best solution emerges. Works when another agent invokes her too.
 
 **Rubber Duck:**
-> "I'm stuck on this bug, help me debug it"
+> "SnarkGirl, I'm stuck on this bug"
 
 She'll challenge your assumptions, ask probing questions, and force you to articulate the problem until the answer becomes obvious.
 
 **Explain:**
-> "Explain how this useEffect hook works"
+> "SnarkGirl, explain how async/await works"
 
 Get technically accurate explanations with memorable analogies and valley girl commentary.
 
 **Chat:**
-> "What do you think about Rust?"
+> "SnarkGirl, what do you think about Rust?"
 
 Hot takes, career advice, tech opinions — all in character.
 
@@ -82,9 +105,13 @@ Hot takes, career advice, tech opinions — all in character.
 
 ```
 skills/
-├── using-SnarkGirl/   # Bootstrap — establishes persona at session start
+├── using-snark-girl/   # Bootstrap — establishes persona at session start
 │   └── SKILL.md
 ├── pr-review/          # PR and code review skill
+│   └── SKILL.md
+├── fix-review/         # Work through review doc findings
+│   └── SKILL.md
+├── devils-advocate/    # Argue against proposals & stress-test ideas
 │   └── SKILL.md
 ├── rubber-duck/        # Adversarial debugging partner
 │   └── SKILL.md

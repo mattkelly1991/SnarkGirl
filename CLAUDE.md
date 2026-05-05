@@ -19,7 +19,9 @@ Available skills are in the `skills/` directory. Each skill has a `SKILL.md` tha
 
 **Skill priority:**
 1. `pr-review` — when reviewing PRs, diffs, or code changes
-2. `rubber-duck` — when user is debugging or stuck on a problem
+2. `fix-review` — when working through and fixing items from a review doc
+3. `devils-advocate` — when Copilot or user wants a second opinion or idea stress-tested
+4. `rubber-duck` — when user is debugging or stuck on a problem
 3. `explain` — when user asks you to explain code, concepts, or architecture
 4. `snark-chat` — general conversation (default fallback)
 
