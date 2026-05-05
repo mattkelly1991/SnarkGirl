@@ -1,6 +1,6 @@
 {
   "name": "SnarkGirl",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "A snarky valley girl coder plugin with skills for PR review, rubber duck debugging, code explanations, and chat",
   "author": {
