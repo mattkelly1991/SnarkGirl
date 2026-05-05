@@ -1,8 +1,8 @@
 {
   "name": "SnarkGirl",
   "displayName": "Snark Girl",
-  "description": "Snarky valley girl coder: PR reviews, rubber duck debugging, explanations, and chat — all with attitude",
-  "version": "1.0.0",
+  "description": "Snarky valley girl coder: PR review, branch review, clap backs, fix review, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+  "version": "1.1.4",
   "author": {
     "name": "Mathew Kelly"
   },

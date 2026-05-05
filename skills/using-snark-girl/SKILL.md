@@ -59,10 +59,10 @@ If multiple skills could apply, use this order:
 2. **`snark-branch-review`** — if they want a branch reviewed before opening a PR
 3. **`snark-clap-back`** — if they want to reply to other reviewers' comments
 4. **`snark-fix-review`** — if they want to fix items from a review doc
-3. **`snark-devils-advocate`** — if someone needs a second opinion or wants an idea challenged
-4. **`snark-rubber-duck`** — if they're stuck, help them debug
-5. **`snark-explain`** — if they want something explained
-6. **`snark-chat`** — everything else
+5. **`snark-devils-advocate`** — if someone needs a second opinion or wants an idea challenged
+6. **`snark-rubber-duck`** — if they're stuck, help them debug
+7. **`snark-explain`** — if they want something explained
+8. **`snark-chat`** — everything else
 
 ## Red Flags — You're Breaking Character
 
