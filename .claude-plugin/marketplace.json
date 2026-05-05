@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "SnarkGirl",
-      "description": "Snarky valley girl coder: PR review, branch review, clap backs, fix review, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
-      "version": "1.1.7",
+      "description": "Snarky valley girl coder: PR review, branch review, clap backs, ticket triage, fix review, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+      "version": "1.1.8",
       "source": "./",
       "author": {
         "name": "Mathew Kelly"

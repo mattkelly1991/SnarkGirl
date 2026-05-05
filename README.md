@@ -22,6 +22,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
 | **snark-branch-review** | Reviews your branch before you open a PR. Checks code quality, commit hygiene, debug leftovers, and merge readiness. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
+| **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
@@ -96,6 +97,11 @@ Pre-PR sanity check — reviews your diff against main, checks commit hygiene, h
 
 She reads other reviewers' comments (bots and humans), drafts snarky replies, previews them for you, and only posts after you approve each one.
 
+**Ticket Triage:**
+> "SnarkGirl, look at this ticket: https://github.com/org/repo/issues/123"
+
+She reads the issue, gives her hot take on priority and complexity, outlines an approach to fix it, and offers to create an approach doc.
+
 **Fix Review:**
 > "SnarkGirl, fix the review items"
 
@@ -132,6 +138,8 @@ skills/
 ├── snark-branch-review/      # Pre-PR branch review skill
 │   └── SKILL.md
 ├── snark-clap-back/          # Reply to other reviewers' comments
+│   └── SKILL.md
+├── snark-ticket/             # GitHub issue triage & approach planning
 │   └── SKILL.md
 ├── snark-fix-review/         # Work through review doc findings
 │   └── SKILL.md
