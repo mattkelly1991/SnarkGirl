@@ -1,0 +1,21 @@
+{
+  "name": "snark-girl",
+  "displayName": "Snark Girl",
+  "description": "Snarky valley girl coder: PR reviews, rubber duck debugging, explanations, and chat — all with attitude",
+  "version": "1.0.0",
+  "author": {
+    "name": "Mathew Kelly"
+  },
+  "homepage": "https://github.com/MathewKelly/SnarkGirl",
+  "repository": "https://github.com/MathewKelly/SnarkGirl",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "code-review",
+    "rubber-duck",
+    "explain",
+    "chat",
+    "personality"
+  ],
+  "skills": "./skills/"
+}

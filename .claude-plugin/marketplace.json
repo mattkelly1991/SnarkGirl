@@ -1,0 +1,18 @@
+{
+  "name": "snark-girl-dev",
+  "description": "Development marketplace for Snark Girl plugin",
+  "owner": {
+    "name": "Mathew Kelly"
+  },
+  "plugins": [
+    {
+      "name": "snark-girl",
+      "description": "Snarky valley girl coder: PR reviews, rubber duck debugging, explanations, and chat — all with attitude",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "Mathew Kelly"
+      }
+    }
+  ]
+}
