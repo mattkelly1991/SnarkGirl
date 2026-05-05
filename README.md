@@ -177,7 +177,10 @@ skills/
 
 ## Testimonials
 
-<img width="504" height="80" alt="{B9A74661-E2C2-46BF-834D-7A0BD8EECBDC}" src="https://github.com/user-attachments/assets/70ca3642-94d3-418a-a544-8566c58dbb34" />
+<img width="504" height="80" alt="{B9A74661-E2C2-46BF-834D-7A0BD8EECBDC}" src="https://github.com/user-attachments/assets/70ca3642-94d3-418a-a544-8566c58dbb34" alt="Thhis is brutal, not sure how I feel about this..." />
+
+<img width="512" height="85" alt="image" src="https://github.com/user-attachments/assets/1e1e41d0-d982-4a6d-9668-8e8bbd3f69d0" alt="Reading the skills already stresses me out"/>
+
 
 ## License
 
