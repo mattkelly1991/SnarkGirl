@@ -118,11 +118,71 @@ Get technically accurate explanations with memorable analogies and valley girl c
 
 Hot takes, career advice, tech opinions — all in character.
 
+## GitHub Action — @SnarkGirl in PRs & Issues
+
+Want to `@SnarkGirl` directly in your GitHub PR and issue comments? Add this workflow to any repo:
+
+### Setup
+
+1. **Create a GitHub PAT** with `models:read` and repo permissions (or use a fine-grained token with Pull Requests read/write + Models read)
+2. **Add it as a repo secret** named `SNARKGIRL_TOKEN`
+3. **Create `.github/workflows/snarkgirl.yml`** in your repo:
+
+```yaml
+name: SnarkGirl Mentions
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  models: read
+
+jobs:
+  snarkgirl:
+    runs-on: ubuntu-latest
+    if: github.event.comment.user.type != 'Bot'
+    steps:
+      - name: SnarkGirl Response
+        uses: mattkelly1991/SnarkGirl@main
+        with:
+          github-token: ${{ secrets.SNARKGIRL_TOKEN }}
+```
+
+### Usage
+
+Comment on any PR or issue:
+```
+@SnarkGirl look at this PR
+@SnarkGirl what do you think about the error handling here?
+@snarkgirl review
+```
+
+She'll respond with a full review (on PRs) or a snarky answer (on issues/general questions).
+
+### Options
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| `github-token` | *required* | GitHub token with Models + PR/issue access |
+| `model` | `openai/gpt-4o` | Any model available on GitHub Models |
+| `max-diff-chars` | `60000` | Max diff characters sent to the model |
+
 ## Project Structure
 
 ```
+action.yml                    # GitHub Action definition
+action/
+└── snarkgirl.sh              # Action entrypoint script
+.github/workflows/
+└── snarkgirl.yml             # Example workflow (dogfooding)
 skills/
-├── using-snark-girl/   # Bootstrap — establishes persona at session start
+├── using-snark-girl/         # Bootstrap — establishes persona at session start
 │   └── SKILL.md
 ├── snark-pr-review/          # PR and code review skill
 │   └── SKILL.md
@@ -140,7 +200,7 @@ skills/
 │   └── SKILL.md
 ├── snark-explain/            # Code & concept explanations
 │   └── SKILL.md
-└── snark-chat/         # General conversation
+└── snark-chat/               # General conversation
     └── SKILL.md
 ```
 

@@ -1,0 +1,59 @@
+name: 'SnarkGirl Mentions'
+description: 'Responds to @SnarkGirl mentions in PR and issue comments with snarky, technically precise code reviews'
+author: 'Mathew Kelly'
+
+branding:
+  icon: 'message-circle'
+  color: 'purple'
+
+inputs:
+  github-token:
+    description: 'GitHub token with PR read/write and Models API access'
+    required: true
+  model:
+    description: 'GitHub Models model to use (e.g., openai/gpt-4o, openai/gpt-4.1)'
+    required: false
+    default: 'openai/gpt-4o'
+  max-diff-chars:
+    description: 'Maximum characters of PR diff to include in context'
+    required: false
+    default: '60000'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check for @SnarkGirl mention
+      id: check
+      shell: bash
+      env:
+        EVENT_PATH: ${{ github.event_path }}
+      run: |
+        COMMENT_BODY=$(jq -r '.comment.body // empty' "$EVENT_PATH")
+        if [ -z "$COMMENT_BODY" ]; then
+          echo "No comment body found, skipping."
+          echo "should_run=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        # Case-insensitive check for snarkgirl mentions
+        if echo "$COMMENT_BODY" | grep -iqE '@?snark\s*girl'; then
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+          echo "comment_body<<SNARKGIRL_EOF" >> "$GITHUB_OUTPUT"
+          echo "$COMMENT_BODY" >> "$GITHUB_OUTPUT"
+          echo "SNARKGIRL_EOF" >> "$GITHUB_OUTPUT"
+        else
+          echo "No @SnarkGirl mention found, skipping."
+          echo "should_run=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Run SnarkGirl
+      if: steps.check.outputs.should_run == 'true'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        MODEL: ${{ inputs.model }}
+        MAX_DIFF_CHARS: ${{ inputs.max-diff-chars }}
+        EVENT_PATH: ${{ github.event_path }}
+        COMMENT_BODY: ${{ steps.check.outputs.comment_body }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: bash "$ACTION_PATH/action/snarkgirl.sh"

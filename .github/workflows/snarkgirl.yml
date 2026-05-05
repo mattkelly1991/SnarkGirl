@@ -1,0 +1,32 @@
+# Add this workflow to any repo: .github/workflows/snarkgirl.yml
+# Then mention @SnarkGirl in any PR or issue comment to trigger a response.
+
+name: SnarkGirl Mentions
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+# Only run on PR comments (issue_comment fires for both issues and PRs)
+# The action itself checks for @SnarkGirl mentions and skips if not found.
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  models: read
+
+jobs:
+  snarkgirl:
+    runs-on: ubuntu-latest
+    # Skip bot comments to prevent infinite loops
+    if: github.event.comment.user.type != 'Bot'
+    steps:
+      - name: SnarkGirl Response
+        uses: mattkelly1991/SnarkGirl@main
+        with:
+          github-token: ${{ secrets.SNARKGIRL_TOKEN }}
+          # model: 'openai/gpt-4o'        # Optional: change the model
+          # max-diff-chars: '60000'        # Optional: adjust diff size limit
