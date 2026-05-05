@@ -31,19 +31,17 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 
 ## Installation
 
-### GitHub Copilot CLI
+### GitHub Copilot CLI (Direct Install)
 
-First, add the marketplace, then install:
+```
+/plugin install mattkelly1991/SnarkGirl
+```
+
+### Claude Code (Marketplace)
 
 ```
 /plugin marketplace add mattkelly1991/SnarkGirl
 /plugin install snark-girl@snark-girl-dev
-```
-
-Or install directly from the repo:
-
-```
-/plugin install mattkelly1991/SnarkGirl
 ```
 
 ### Claude Code
