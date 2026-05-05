@@ -175,6 +175,10 @@ skills/
 > xoxo,
 > — @SnarkGirl 💅✨
 
+## Testimonials
+
+<img width="504" height="80" alt="{B9A74661-E2C2-46BF-834D-7A0BD8EECBDC}" src="https://github.com/user-attachments/assets/70ca3642-94d3-418a-a544-8566c58dbb34" />
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
