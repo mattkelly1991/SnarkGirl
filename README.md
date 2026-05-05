@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs with attitude, debugs your code like an adversarial rubber duck, plays devil's advocate on your ideas, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, fixes review items from her own docs, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -31,9 +31,17 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 
 ### GitHub Copilot CLI
 
+First, add the marketplace, then install:
+
 ```
-copilot plugin marketplace add mattkelly1991/SnarkGirl
-copilot plugin install SnarkGirl@mattkelly1991
+/plugin marketplace add mattkelly1991/SnarkGirl
+/plugin install snark-girl@snark-girl-dev
+```
+
+Or install directly from the repo:
+
+```
+/plugin install mattkelly1991/SnarkGirl
 ```
 
 ### Claude Code
