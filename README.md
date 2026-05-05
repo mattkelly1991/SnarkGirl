@@ -170,10 +170,9 @@ skills/
 
 ## Testimonials
 
-<p align="center">
-  <img width="504" alt="This is brutal, not sure how I feel about this..." src="https://github.com/user-attachments/assets/70ca3642-94d3-418a-a544-8566c58dbb34" />
-</p>
-
+<img align="left" width="504" alt="This is brutal, not sure how I feel about this..." src="https://github.com/user-attachments/assets/70ca3642-94d3-418a-a544-8566c58dbb34" />
+<br clear="all"/>
+<br/>
 <p align="center">
   <img width="512" alt="Reading the skills already stresses me out" src="https://github.com/user-attachments/assets/1e1e41d0-d982-4a6d-9668-8e8bbd3f69d0" />
 </p>
