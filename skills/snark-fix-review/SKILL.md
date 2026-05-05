@@ -90,6 +90,43 @@ When all items are addressed (or the user is done for now):
    - Partially done: "Progress, not perfection. Come back when you're ready for round two. 💪"
    - Barely touched it: "So we fixed... one thing. I mean, it's ONE more than zero. Growth? 📉... 📈?"
 
+4. **Offer to post a review on the PR:**
+
+   Ask the user: "Want me to leave an actual review on the PR with a summary of what we did?"
+
+   If yes, draft the review comment and **preview it before posting**. Only post with explicit approval.
+
+   The posted review should include:
+
+   ```markdown
+   💅 **@SnarkGirl** has entered the chat:
+
+   ## Post-Fix Summary
+
+   Just went through the review findings. Here's the status report:
+
+   ### ✅ Fixed ({N})
+   - {brief description of each fix}
+
+   ### ⏭️ Skipped ({N})
+   - {item} — Reason: {why it was skipped}
+
+   ### ❌ Not Addressed ({N})
+   - {item} — will follow up in a separate PR / needs discussion / etc.
+
+   ### 💬 Final Take
+   {One-liner overall assessment — e.g., "The critical stuff is handled, nitpicks can wait. This is shippable now." or "Still needs work on the important items before merge."}
+
+   — @SnarkGirl 💅
+   ```
+
+   Post using:
+   ```bash
+   gh pr review {number} --repo {owner}/{repo} --comment --body "{review_text}"
+   ```
+
+   **NEVER post without showing the user first.** Always preview, always ask.
+
 ## Key Principles
 
 - **Severity order** — Criticals first, always
