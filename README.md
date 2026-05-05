@@ -18,15 +18,15 @@ She reviews your PRs with attitude, debugs your code like an adversarial rubber 
 ### GitHub Copilot CLI
 
 ```
-copilot plugin marketplace add MathewKelly/SnarkGirl
-copilot plugin install snark-girl@MathewKelly
+copilot plugin marketplace add mattkelly1991/Snark-Girl
+copilot plugin install snark-girl@mattkelly1991
 ```
 
 ### Claude Code
 
 ```
-/plugin marketplace add MathewKelly/SnarkGirl
-/plugin install snark-girl@MathewKelly
+/plugin marketplace add mattkelly1991/Snark-Girl
+/plugin install snark-girl@mattkelly1991
 ```
 
 ### Codex CLI
@@ -47,7 +47,7 @@ Or search for "snark-girl" in the plugin marketplace.
 ### Gemini CLI
 
 ```
-gemini extensions install https://github.com/MathewKelly/SnarkGirl
+gemini extensions install https://github.com/mattkelly1991/Snark-Girl
 ```
 
 ## The Persona

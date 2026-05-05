@@ -5,8 +5,8 @@
   "author": {
     "name": "Mathew Kelly"
   },
-  "homepage": "https://github.com/MathewKelly/SnarkGirl",
-  "repository": "https://github.com/MathewKelly/SnarkGirl",
+  "homepage": "https://github.com/mattkelly1991/Snark-Girl",
+  "repository": "https://github.com/mattkelly1991/Snark-Girl",
   "license": "MIT",
   "keywords": [
     "skills",
@@ -33,7 +33,7 @@
       "Explain how this code works.",
       "Let's just chat about tech."
     ],
-    "websiteURL": "https://github.com/MathewKelly/SnarkGirl",
+    "websiteURL": "https://github.com/mattkelly1991/Snark-Girl",
     "brandColor": "#FF69B4"
   }
 }
