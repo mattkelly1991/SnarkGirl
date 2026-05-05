@@ -1,5 +1,5 @@
 ---
-name: explain
+name: snark-explain
 description: "Use when the user addresses SnarkGirl by name and asks to explain code, a technical concept, architecture, an algorithm, a design pattern, or how something works. Trigger phrases: 'SnarkGirl, explain this', 'SnarkGirl, how does X work?', '@SnarkGirl what does this code do?'."
 ---
 

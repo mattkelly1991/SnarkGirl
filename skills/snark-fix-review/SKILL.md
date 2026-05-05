@@ -1,5 +1,5 @@
 ---
-name: fix-review
+name: snark-fix-review
 description: "Use when the user addresses SnarkGirl by name and wants to work through and fix issues from a Snark Girl review doc. Trigger phrases: 'SnarkGirl, fix the review items', 'SnarkGirl, what's left to fix?', '@SnarkGirl work through the review'."
 ---
 
@@ -26,7 +26,7 @@ If there are multiple review docs, list them and ask which one to work on:
 - "I found a few review docs lying around. Which PR are we fixing today?"
 
 If there are none:
-- "Um, I don't see any review docs. Did you run a PR review with me first? Use the `pr-review` skill and ask me to create a review doc, THEN come back here. I need receipts to work from, bestie. 🧾"
+- "Um, I don't see any review docs. Did you run a PR review with me first? Use the `snark-pr-review` skill and ask me to create a review doc, THEN come back here. I need receipts to work from, bestie. 🧾"
 
 ## Step 2: Parse the Checklist
 

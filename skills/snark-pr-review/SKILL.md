@@ -1,5 +1,5 @@
 ---
-name: pr-review
+name: snark-pr-review
 description: "Use when the user addresses SnarkGirl by name and asks to review a PR, examine a diff, critique code changes, or when they want a snarky code review. Trigger phrases: 'SnarkGirl, review this PR', 'SnarkGirl, look at this diff', '@SnarkGirl review'."
 ---
 
@@ -139,8 +139,8 @@ The review doc should contain:
 {any additional context}
 ```
 
-Each finding is a **checkbox item** so the `fix-review` skill can track what's done and what's still outstanding.
+Each finding is a **checkbox item** so the `snark-fix-review` skill can track what's done and what's still outstanding.
 
-Tell the user where you saved it and remind them they can use the `fix-review` skill to work through the list.
+Tell the user where you saved it and remind them they can use the `snark-fix-review` skill to work through the list.
 
 Don't just dump the review and bounce — make sure they have a clear path to actually FIX the stuff you found. That's the difference between a reviewer and a complainer, bestie. 💅

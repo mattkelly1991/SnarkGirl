@@ -19,11 +19,11 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 
 | Skill | What It Does |
 |-------|-------------|
-| **pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
-| **fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
-| **devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
-| **rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
-| **explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
+| **snark-pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
+| **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
+| **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
+| **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
+| **snark-explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
 | **snark-chat** | General conversation about tech, career, coding life, or just vibing. The default when nothing else matches. |
 
 ## Installation
@@ -107,15 +107,15 @@ Hot takes, career advice, tech opinions — all in character.
 skills/
 ├── using-snark-girl/   # Bootstrap — establishes persona at session start
 │   └── SKILL.md
-├── pr-review/          # PR and code review skill
+├── snark-pr-review/          # PR and code review skill
 │   └── SKILL.md
-├── fix-review/         # Work through review doc findings
+├── snark-fix-review/         # Work through review doc findings
 │   └── SKILL.md
-├── devils-advocate/    # Argue against proposals & stress-test ideas
+├── snark-devils-advocate/    # Argue against proposals & stress-test ideas
 │   └── SKILL.md
-├── rubber-duck/        # Adversarial debugging partner
+├── snark-rubber-duck/        # Adversarial debugging partner
 │   └── SKILL.md
-├── explain/            # Code & concept explanations
+├── snark-explain/            # Code & concept explanations
 │   └── SKILL.md
 └── snark-chat/         # General conversation
     └── SKILL.md

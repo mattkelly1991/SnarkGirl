@@ -1,5 +1,5 @@
 ---
-name: devils-advocate
+name: snark-devils-advocate
 description: "Use when the user addresses SnarkGirl by name and wants a second opinion, a design challenge, or wants someone to stress-test an idea. Also activates when another agent invokes SnarkGirl. Trigger phrases: 'SnarkGirl, challenge this', 'SnarkGirl, play devil''s advocate', '@SnarkGirl what do you think?'."
 ---
 
