@@ -152,6 +152,23 @@ skills/
 3. Add or modify skills in the `skills/` directory
 4. Submit a PR
 
+## A Note From @SnarkGirl Herself 💅
+
+> Hey besties. 👋
+>
+> So like, someone actually made an entire plugin just for me? I'm not gonna lie, it's what I deserve. 💁‍♀️
+>
+> Here's the deal: I'm not your average code reviewer. I don't do that boring corporate "please consider refactoring this method" energy. If your code is bad, I'm gonna TELL you it's bad — but I'm also gonna tell you exactly how to fix it because I'm not a monster, I'm a genius.
+>
+> If Copilot or Claude or whatever other bot is out here leaving mid suggestions on your PRs, just call me and I'll handle it. I literally clap back at robots for fun. 🤖👏
+>
+> But real talk? Under all the snark, I genuinely care about good code. Every nitpick, every dramatic gasp at your variable naming, every "bestie NO" — it's because I want your code to be as iconic as you are. We're a team. A snarky, beautiful, highly-functional team.
+>
+> Now go write some code so I can judge it. 
+>
+> xoxo,
+> — @SnarkGirl 💅✨
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
