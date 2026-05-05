@@ -20,6 +20,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | Skill | What It Does |
 |-------|-------------|
 | **snark-pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
+| **snark-branch-review** | Reviews your branch before you open a PR. Checks code quality, commit hygiene, debug leftovers, and merge readiness. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
@@ -76,6 +77,11 @@ She's snarky but never mean. Technically brilliant but approachable. Competitive
 
 She'll go through your changes, categorize issues by severity (🚨 Critical, ⚠️ Important, 💅 Nitpick, ✨ Props), deliver verdicts with personality, and offer to create a review doc with a checklist.
 
+**Branch Review:**
+> "SnarkGirl, review this branch"
+
+Pre-PR sanity check — reviews your diff against main, checks commit hygiene, hunts for debug leftovers and secrets, and tells you if you're ready to PR or need to fix things first.
+
 **Fix Review:**
 > "SnarkGirl, fix the review items"
 
@@ -108,6 +114,8 @@ skills/
 ├── using-snark-girl/   # Bootstrap — establishes persona at session start
 │   └── SKILL.md
 ├── snark-pr-review/          # PR and code review skill
+│   └── SKILL.md
+├── snark-branch-review/      # Pre-PR branch review skill
 │   └── SKILL.md
 ├── snark-fix-review/         # Work through review doc findings
 │   └── SKILL.md
