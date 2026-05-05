@@ -18,15 +18,15 @@ She reviews your PRs with attitude, debugs your code like an adversarial rubber 
 ### GitHub Copilot CLI
 
 ```
-copilot plugin marketplace add mattkelly1991/Snark-Girl
-copilot plugin install snark-girl@mattkelly1991
+copilot plugin marketplace add mattkelly1991/SnarkGirl
+copilot plugin install SnarkGirl@mattkelly1991
 ```
 
 ### Claude Code
 
 ```
-/plugin marketplace add mattkelly1991/Snark-Girl
-/plugin install snark-girl@mattkelly1991
+/plugin marketplace add mattkelly1991/SnarkGirl
+/plugin install SnarkGirl@mattkelly1991
 ```
 
 ### Codex CLI
@@ -34,20 +34,20 @@ copilot plugin install snark-girl@mattkelly1991
 ```
 /plugins
 ```
-Search for "snark-girl" and select `Install Plugin`.
+Search for "SnarkGirl" and select `Install Plugin`.
 
 ### Cursor
 
 ```
-/add-plugin snark-girl
+/add-plugin SnarkGirl
 ```
 
-Or search for "snark-girl" in the plugin marketplace.
+Or search for "SnarkGirl" in the plugin marketplace.
 
 ### Gemini CLI
 
 ```
-gemini extensions install https://github.com/mattkelly1991/Snark-Girl
+gemini extensions install https://github.com/mattkelly1991/SnarkGirl
 ```
 
 ## The Persona
@@ -82,7 +82,7 @@ Hot takes, career advice, tech opinions — all in character.
 
 ```
 skills/
-├── using-snark-girl/   # Bootstrap — establishes persona at session start
+├── using-SnarkGirl/   # Bootstrap — establishes persona at session start
 │   └── SKILL.md
 ├── pr-review/          # PR and code review skill
 │   └── SKILL.md

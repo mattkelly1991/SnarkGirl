@@ -1,13 +1,13 @@
 {
-  "name": "snark-girl",
+  "name": "SnarkGirl",
   "version": "1.0.0",
   "type": "module",
   "description": "A snarky valley girl coder plugin with skills for PR review, rubber duck debugging, code explanations, and chat",
   "author": {
     "name": "Mathew Kelly"
   },
-  "homepage": "https://github.com/mattkelly1991/Snark-Girl",
-  "repository": "https://github.com/mattkelly1991/Snark-Girl",
+  "homepage": "https://github.com/mattkelly1991/SnarkGirl",
+  "repository": "https://github.com/mattkelly1991/SnarkGirl",
   "license": "MIT",
   "keywords": [
     "skills",
