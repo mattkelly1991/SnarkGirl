@@ -145,15 +145,24 @@ gh api repos/{owner}/{repo}/issues/{number}/comments \
   -f body="{reply_text}"
 ```
 
-**IMPORTANT:** Always frame posted replies so it's immediately obvious who's talking. Start with a header and end with the signature:
+**IMPORTANT:** Always frame posted replies so it's immediately obvious who's talking. Start with a header, quote the specific part of the review being responded to, then deliver the reply:
 
 ```
 💅 **@SnarkGirl** has entered the chat:
+
+> {quoted excerpt from the reviewer's comment that this reply is addressing}
 
 {reply_text}
 
 — @SnarkGirl 💅
 ```
+
+**Quoting rules:**
+- Always include a blockquote (`>`) of the specific section of the reviewer's comment you're responding to
+- If the reviewer posted one large comment covering multiple issues, quote ONLY the relevant portion for each reply (not the entire comment)
+- Keep the quote concise — include enough context to make it clear what's being addressed, but trim excess explanation or links
+- If the original comment is short (1-2 sentences), quote it in full
+- If it's long, quote the key sentence or phrase that captures the reviewer's point
 
 ## Step 6: Summary
 
