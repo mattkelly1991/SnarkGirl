@@ -1,7 +1,7 @@
 {
   "name": "SnarkGirl",
   "version": "1.1.8",
-  "description": "Snarky valley girl coder: PR review, branch review, clap backs, ticket triage, fix review, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+  "description": "Snarky valley girl coder: PR review, branch review, clap backs, ticket triage, fix review, vs the world debates, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
   "author": {
     "name": "Mathew Kelly"
   },
@@ -15,6 +15,8 @@
     "clap-back",
     "ticket-triage",
     "fix-review",
+    "vs-the-world",
+    "llm-debate",
     "devils-advocate",
     "rubber-duck",
     "explain",
@@ -27,8 +29,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Snark Girl",
-    "shortDescription": "Snarky valley girl coder with PR review, branch review, clap backs, ticket triage, fix review, devil's advocate, rubber duck, explain, and chat skills",
-    "longDescription": "Snark Girl is a snarky valley girl who is also like totally a computer genius coder. She reviews PRs with attitude, reviews branches before you PR, claps back at other reviewers' comments, triages GitHub issues with hot takes, fixes review items from her own docs, plays devil's advocate on your ideas, acts as an adversarial rubber duck debugger, explains code concepts with valley girl flair, and chats about anything tech. Address her by name to activate: 'SnarkGirl, review this PR'.",
+    "shortDescription": "Snarky valley girl coder with PR review, branch review, clap backs, ticket triage, fix review, vs the world LLM debates, devil's advocate, rubber duck, explain, and chat skills",
+    "longDescription": "Snark Girl is a snarky valley girl who is also like totally a computer genius coder. She reviews PRs with attitude, reviews branches before you PR, claps back at other reviewers' comments, triages GitHub issues with hot takes, fixes review items from her own docs, fights the world by debating real Claude and GPT models on any topic, plays devil's advocate on your ideas, acts as an adversarial rubber duck debugger, explains code concepts with valley girl flair, and chats about anything tech. Address her by name to activate: 'SnarkGirl, review this PR'.",
     "developerName": "Mathew Kelly",
     "category": "Coding",
     "capabilities": [
@@ -41,6 +43,7 @@
       "SnarkGirl, clap back on the reviews.",
       "SnarkGirl, look at this ticket.",
       "SnarkGirl, fix the review items.",
+      "SnarkGirl, fight the world on tabs vs spaces.",
       "SnarkGirl, help me debug this — be my rubber duck.",
       "SnarkGirl, challenge this approach.",
       "SnarkGirl, explain how this code works.",
