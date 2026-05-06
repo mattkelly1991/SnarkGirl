@@ -28,12 +28,37 @@ Before you even LOOK at the code, check what other reviewers have already said. 
 
 **For each comment/review, determine its status:**
 
+First, check whether the comment is **stale** — i.e., made against an older commit that has since been updated:
+
+**How to determine staleness:**
+1. **Extract the commit SHA from permalink URLs** — Bot reviewers embed blob URLs like `/blob/{sha}/path/to/file.cs#L35-L40`. That SHA is the exact code version they reviewed.
+2. **Check comment `created_at` vs commit timestamps** — List the PR commits and see if any came AFTER the review
+3. **Read commit messages** — They often explicitly describe what was fixed (e.g., "include NakamirCustomerId" directly addresses a reviewer's "NakamirCustomerId not set" bug report)
+4. **Compare the reviewer's SHA to HEAD** — `gh api repos/{owner}/{repo}/compare/{review_sha}...{head_sha}` shows what files changed since the review
+5. **Verify against current code if needed** — Read the file at HEAD to confirm the issue is gone
+
+```bash
+# List commits on the PR (check what happened after the review)
+gh api repos/{owner}/{repo}/pulls/{number}/commits
+
+# See what changed between the reviewed commit and current HEAD
+gh api repos/{owner}/{repo}/compare/{review_sha}...{head_sha} --jq '.files[].filename'
+```
+
+**Key principles:**
+- **Bot reviewers CAN hallucinate, but verify before assuming either way.** If a bot flagged something and you can't find the problem in the current code, check the commit timeline first — it's more likely it was fixed than made up, but bots do occasionally invent issues. Look at the code at the reviewer's commit SHA to confirm whether the issue ever existed.
+- **Commit messages are your best friend.** Authors often describe exactly what they fixed.
+- **Permalink SHAs tell you the reviewer's snapshot.** Extract the SHA from `/blob/{sha}/...` URLs to know exactly what code they were looking at.
+- **Resolved/outdated threads** are a strong signal the issue was already addressed.
+
+Then assign a status:
+
 | Status | Meaning |
 |--------|---------|
-| ✅ **Addressed** | The author fixed the code or committed the suggestion |
+| ✅ **Addressed** | The code was changed after the review and the issue no longer exists at HEAD (verified by comparing commits) |
 | 💬 **Responded** | The author replied but didn't change anything (discussion ongoing) |
 | 🙅 **Dismissed** | The review was dismissed or marked resolved without changes |
-| ⏳ **Outstanding** | No response — still needs attention |
+| ⏳ **Outstanding** | No commits touching the relevant file/line since the review AND the issue still exists in the current code |
 
 **For each comment/review, judge its quality:**
 

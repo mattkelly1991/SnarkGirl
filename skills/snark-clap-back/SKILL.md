@@ -41,6 +41,65 @@ Filter to comments from OTHER reviewers (not the PR author, not the user):
 - Bot reviewers: Copilot, Claude, CodeRabbit, Dependabot, etc.
 - Human reviewers: anyone who left feedback
 
+## Step 2.5: Check Staleness — Was This Already Fixed?
+
+**CRITICAL:** Review comments are tied to specific commits. A PR may have multiple rounds of review across multiple pushes. Before triaging any comment, determine whether it's still relevant to the CURRENT state of the code.
+
+### How to Check
+
+For each review comment:
+
+1. **Note when it was posted** — Check the comment's `created_at` timestamp
+2. **Extract the commit SHA from permalink URLs** — Bot reviewers like Claude embed blob URLs like `/blob/{sha}/path/to/file.cs#L35-L40`. That SHA tells you exactly which version of the code they reviewed.
+3. **Get the commit timeline** — List commits on the PR branch and check if any commits came AFTER the review comment's timestamp:
+
+```bash
+# List commits on the PR branch (includes timestamps)
+gh api repos/{owner}/{repo}/pulls/{number}/commits
+
+# Compare the reviewer's commit to current HEAD to see what changed
+gh api repos/{owner}/{repo}/compare/{comment_sha}...{head_sha} --jq '.files[].filename'
+```
+
+4. **Read commit messages** — They often explicitly describe what was fixed (e.g., "Add error handling and include NakamirCustomerId" directly addresses a reviewer's bug report)
+5. **Verify against current code** — If in doubt, read the current state of the file at HEAD:
+
+```bash
+gh api repos/{owner}/{repo}/contents/{file_path}?ref={head_branch}
+```
+
+### Staleness Verdicts
+
+| Verdict | Meaning | Action |
+|---------|---------|--------|
+| 🟢 **Already Fixed** | The code was changed after the comment and the issue no longer exists | Skip — don't reply, don't triage |
+| 🟡 **Partially Fixed** | Some aspect was addressed but not fully | Triage only the remaining part |
+| 🔴 **Still Present** | The issue still exists in the current code | Proceed to triage normally |
+| ⚪ **Can't Tell** | The file was heavily refactored or moved | Read the current code carefully to determine if the spirit of the issue still applies |
+
+### Concrete Example
+
+A real-world scenario from PR #2483:
+
+1. Claude posts review #1 at 17:01 — flags "NakamirCustomerId not set" and "XML docs restate the obvious"
+2. Author commits fix at 17:38 — commit message says "include NakamirCustomerId" and "remove some XML doc comments"
+3. Claude posts review #2 at 18:02 — flags 4 new issues against commit `13f5daead6`
+4. Author commits fix at 18:09 — "remove dead CSS classes" (fixes 1 of the 4 issues)
+
+If SnarkGirl is asked to clap back AFTER 18:09, she should:
+- **Skip** Claude review #1 entirely — both issues were fixed in the 17:38 commit
+- **Skip** issue #2 from Claude review #2 — dead CSS was removed in the 18:09 commit
+- **Triage normally** issues #1, #3, #4 from Claude review #2 — they're still present in the current code
+
+### Important Principles
+
+- **Bot reviewers CAN hallucinate, but verify before assuming.** If a bot flagged something specific (file, line, code snippet) and you can't find the issue in the current code, check the commit timeline FIRST. It's more likely it was fixed in a later commit than made up — but bots do occasionally hallucinate. The point is: **verify either way before clapping back.** Don't embarrass yourself by calling a reviewer wrong when they were right, AND don't let a hallucinated issue slide by assuming it must have been valid.
+- **Don't call a reviewer wrong just because the code looks fine now — but also don't assume they were right without checking.** Look at the code at their commit SHA. If the issue existed there, they were right and it was fixed. If it never existed even at that SHA, then yes, the bot hallucinated.
+- **Check the commit timeline.** If there are commits after the review comment, assume the author may have addressed it.
+- **Commit messages are your best friend.** Authors often describe exactly what they fixed — read them.
+- **Permalink SHAs tell you the reviewer's snapshot.** Extract the SHA from the `/blob/{sha}/...` URLs in the review comment to know exactly what code they were looking at.
+- **Resolved threads are a signal.** If GitHub shows the thread as resolved/outdated, it was likely addressed.
+
 ## Step 3: Triage — Valid or Nah?
 
 For each comment worth responding to, first determine if the reviewer's point is **valid**:
