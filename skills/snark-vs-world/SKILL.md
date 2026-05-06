@@ -337,3 +337,234 @@ For each point in the debate, mark ONE:
 
 **"SnarkGirl, debate AI replacing developers against GPT"**
 → SnarkGirl picks a side, only GPT (5.4) opposes, up to 5 rounds
+
+## Step 5: The Debate Comic (Post-Debate)
+
+After delivering the Final Verdict, ask the user:
+
+> "Want me to make a debate comic? I'll turn the highlights into a styled markdown recap — think panels, emojis, dramatic tension. 🎬📖"
+
+If they say yes, create a styled markdown file with the debate highlights.
+
+### Comic File Location
+
+Save to a temp location (not the repo):
+- **Path:** `{TEMP}/snark-girl-debates/{topic-slug}-debate.md`
+  - `{TEMP}` = system temp directory (`$TMPDIR`, `$env:TEMP`, `/tmp`)
+  - `{topic-slug}` = kebab-case version of the topic (e.g., `tabs-vs-spaces`, `rust-over-go`)
+
+### Comic Format — RPG Battle Log
+
+The comic is styled as an **RPG battle encounter**. Each debater is a character with stats, and each highlight is a "turn" in the battle. Think Final Fantasy / Pokémon battle log meets debate highlights.
+
+```markdown
+# ⚔️ BATTLE LOG: SnarkGirl v. The World ⚔️
+
+> *「{Topic}」— A {N}-round encounter*
+
+---
+
+## 🏟️ ARENA LOADED
+
+**Encounter:** {topic}
+**Difficulty:** {Easy/Medium/Hard/Legendary — based on how close the debate was}
+**Rounds:** {N}
+
+---
+
+## 👤 PARTY STATUS
+
+### 💅 SnarkGirl — *The Valley Girl Archmage*
+```
+╔══════════════════════════════════════╗
+║  SnarkGirl            Lv. 99  💅    ║
+║  Class: Archmage of Audacity        ║
+║  HP: ████████████████████░░ {X}/100  ║
+║  MP: ██████████████████████ 100/100  ║
+║                                      ║
+║  Position: {FOR/AGAINST} {topic}     ║
+║                                      ║
+║  Skills:                             ║
+║  ⚡ Clap Back — 40 DMG (no cooldown) ║
+║  🔥 Slay Point — 60 DMG (2 turn CD) ║
+║  💀 Concede (self-destruct)          ║
+║  🛡️ Deflect — redirect to new topic ║
+╚══════════════════════════════════════╝
+```
+
+### 🎩 Claude — *The Diplomatic Paladin*
+```
+╔══════════════════════════════════════╗
+║  Claude               Lv. 95  🎩    ║
+║  Class: Paladin of Nuance           ║
+║  HP: ██████████████████░░░░ {X}/100  ║
+║  MP: ████████████████████░░ 90/100   ║
+║                                      ║
+║  Position: {FOR/AGAINST} {topic}     ║
+║                                      ║
+║  Skills:                             ║
+║  📖 Well Actually — 35 DMG          ║
+║  🤝 Acknowledge & Destroy — 55 DMG  ║
+║  💀 Concede (self-destruct)          ║
+║  🛡️ Caveat Shield — reduce DMG 50%  ║
+╚══════════════════════════════════════╝
+```
+
+### 🤖 GPT — *The Encyclopedic Berserker*
+```
+╔══════════════════════════════════════╗
+║  GPT                  Lv. 93  🤖    ║
+║  Class: Berserker of Bullet Points  ║
+║  HP: █████████████████░░░░░ {X}/100  ║
+║  MP: ██████████████████████ 100/100  ║
+║                                      ║
+║  Position: {FOR/AGAINST} {topic}     ║
+║                                      ║
+║  Skills:                             ║
+║  📋 Wall of Text — 30 DMG (AoE)    ║
+║  🎯 Precision Strike — 50 DMG      ║
+║  💀 Concede (self-destruct)          ║
+║  🛡️ Citation Armor — reduce DMG 40% ║
+╚══════════════════════════════════════╝
+```
+
+---
+
+## ⚔️ BATTLE START
+
+---
+
+### 「ROUND 1」
+
+**💅 SnarkGirl uses *Slay Point*!**
+
+> "{her opening salvo — best 1-2 sentences}"
+
+*It's super effective! 🎯*
+*Claude takes 60 DMG. GPT takes 45 DMG.*
+
+---
+
+**🎩 Claude uses *Acknowledge & Destroy*!**
+
+> "{Claude's strongest counter}"
+
+*SnarkGirl takes 55 DMG!*
+*"I'll give you that one... NOT." — SnarkGirl*
+
+---
+
+**🤖 GPT uses *Wall of Text*!**
+
+> "{GPT's response — trimmed to the key punch}"
+
+*SnarkGirl takes 30 DMG. It's... a lot of words.*
+
+---
+
+### 「ROUND {N}」— TURNING POINT
+
+**💅 SnarkGirl uses *Clap Back*!**
+
+> "{the devastating comeback}"
+
+*CRITICAL HIT! 💥*
+*{Opponent} takes 80 DMG!*
+*{Opponent} is STAGGERED!*
+
+---
+
+**{emoji} {Opponent} uses *{skill}*!**
+
+> "{the moment they landed a real hit}"
+
+*SnarkGirl takes {X} DMG!*
+*SnarkGirl's HP is getting low...*
+
+---
+
+### 「FINAL ROUND」
+
+**{emoji} {Whoever lost} uses *Concede*!**
+
+> "{the concession quote}"
+
+*{Loser} has FALLEN! 💀*
+
+---
+
+## 🏆 VICTORY
+
+```
+╔══════════════════════════════════════════╗
+║                                          ║
+║   🎉  {WINNER} WINS!  🎉               ║
+║                                          ║
+║   Rounds: {N}                            ║
+║   Final HP:                              ║
+║     💅 SnarkGirl: {X}/100               ║
+║     🎩 Claude: {X}/100 {or 💀 KO}       ║
+║     🤖 GPT: {X}/100 {or 💀 KO}         ║
+║                                          ║
+╚══════════════════════════════════════════╝
+```
+
+---
+
+## 📊 POST-BATTLE STATS
+
+| Debater | Best Skill Used | DMG Dealt | DMG Taken | Status |
+|---------|----------------|-----------|-----------|--------|
+| 💅 SnarkGirl | {skill name} | {total} | {total} | {🏆 Victor / 💀 Defeated} |
+| 🎩 Claude | {skill name} | {total} | {total} | {🏆 Victor / 💀 Defeated / 🏳️ Conceded} |
+| 🤖 GPT | {skill name} | {total} | {total} | {🏆 Victor / 💀 Defeated / 🏳️ Conceded} |
+
+---
+
+## 🎖️ ACHIEVEMENTS UNLOCKED
+
+- {🏅 Achievement name} — {description based on what happened, e.g., "First Blood — SnarkGirl landed the opening hit"}
+- {🏅 Achievement name} — {e.g., "Plot Armor — Claude survived a critical hit with 5 HP"}
+- {🏅 Achievement name} — {e.g., "Overkill — SnarkGirl used Clap Back on an already-staggered opponent"}
+
+---
+
+## 💡 LOOT DROPPED: The Actual Answer
+
+*{1-2 sentence genuine takeaway — what the debate revealed about the topic}*
+
+---
+
+*⚔️ SnarkGirl v. The World Battle System • {date} • Powered by real multi-LLM combat* 💅
+```
+
+### Comic Style Guidelines
+
+- **HP represents credibility** — each debater starts at 100 HP. Strong arguments deal damage. Being proven wrong costs HP. Conceding = 0 HP.
+- **Calculate HP based on the debate** — if someone got destroyed, their HP should reflect it. Close debates = both sides around 20-40 HP at the end.
+- **Skills should map to real debate tactics** — e.g., "Clap Back" for a witty retort, "Wall of Text" for a verbose response, "Acknowledge & Destroy" for the "you're right BUT" move.
+- **Critical hits are for moments that clearly won a point** — don't overuse them.
+- **Customize character classes based on how they actually debated** — if GPT was unusually concise, maybe they're a "Rogue" not a "Berserker."
+- **Achievements should be funny and specific** — reference actual moments from the debate.
+- **Keep it to 5-8 "turns" max** — highlights only, not every exchange.
+- **The stat boxes use monospace code blocks** for that retro RPG feel.
+- **Damage numbers should feel balanced** — don't give SnarkGirl 9999 DMG just because she's the protagonist. Be fair.
+
+Tell the user where you saved it after creation.
+
+After saving, offer to open it:
+
+> "Want me to open it in your editor so you can see it in all its glory? 📖✨"
+
+If yes, open it with the system default:
+
+```bash
+# macOS
+open "{file_path}"
+
+# Windows
+Start-Process "{file_path}"
+
+# Linux
+xdg-open "{file_path}"
+```
