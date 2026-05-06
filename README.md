@@ -244,6 +244,11 @@ skills/
 <p align="center">
   <img width="512" alt="Reading the skills already stresses me out" src="https://github.com/user-attachments/assets/1e1e41d0-d982-4a6d-9668-8e8bbd3f69d0" />
 </p>
+<br clear="all"/>
+<br/>
+<img width="1150" height="600" alt="{7FAE4F67-71EC-410D-B1A3-7F249E20BDC6}" src="https://github.com/user-attachments/assets/65c35ca5-c839-44cb-82e3-e54f06e67d2f" />
+
+
 
 
 ## License
