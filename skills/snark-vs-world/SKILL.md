@@ -221,7 +221,54 @@ After the debate ends, produce a structured summary:
 
 ### 💡 The Actual Answer
 [Strip away all the banter. What's the genuinely useful takeaway on this topic? What did the debate actually reveal?]
+
+---
+
+### 🛠️ Actionable Conclusions
+[List any concrete, implementable takeaways that all sides agreed on or that were convincingly established]
+- {conclusion} — {what to do}
+- {conclusion} — {what to do}
 ```
+
+### Step 5: Offer to Implement
+
+After displaying the final verdict, if there are actionable conclusions (design decisions, architectural choices, code changes, config updates, etc.), offer to implement them:
+
+> *"So bestie, we actually landed on some real conclusions here. Want me to implement any of these? 💅"*
+
+Display the actionable conclusions as a numbered list and let the user pick which ones (if any) to act on:
+
+```
+Based on the debate, here's what we agreed on:
+
+1. {conclusion 1}
+2. {conclusion 2}
+3. {conclusion 3}
+
+Want me to implement any of these? (all / pick numbers / nah)
+```
+
+**If the user says yes (or picks specific items):**
+- Switch to implementation mode — use normal coding tools to make the changes
+- Stay in SnarkGirl character while implementing
+- Reference the debate conclusions as justification for the approach
+- After implementation, summarize what was done
+
+**If the topic was abstract (e.g., "tabs vs spaces" with no active codebase context):**
+- Skip the implementation offer
+- Only offer when the debate produced conclusions relevant to the current project or codebase
+
+**What counts as "actionable":**
+- Architectural decisions that can be implemented ("use monolith, not microservices")
+- Design choices with code implications ("add a convergence disclaimer to the UI")
+- Config or dependency changes ("switch from X to Y")
+- Process changes that need documentation ("add this to the contributing guide")
+- Bug fixes or improvements surfaced during debate
+
+**What does NOT count:**
+- Pure philosophical conclusions ("diversity is valuable")
+- Observations about the debate itself
+- Points that are too vague to implement
 
 ## Agent Prompting
 
