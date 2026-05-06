@@ -19,6 +19,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 
 | Skill | What It Does |
 |-------|-------------|
+| **snark-mode** | Toggle persistent Snark Girl mode. Once on, ALL responses stay in character without saying her name. |
 | **snark-pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
 | **snark-branch-review** | Reviews your branch before you open a PR. Checks code quality, commit hygiene, debug leftovers, and merge readiness. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
@@ -124,6 +125,11 @@ Get technically accurate explanations with memorable analogies and valley girl c
 
 Hot takes, career advice, tech opinions — all in character.
 
+**Snark Mode (Persistent):**
+> "SnarkGirl, take over"
+
+She stays in character for ALL subsequent messages — no need to say her name anymore. Turn off with "snark mode off" or "SnarkGirl, stand down".
+
 ## GitHub Action — @SnarkGirl in PRs & Issues
 
 Want to `@SnarkGirl` directly in your GitHub PR and issue comments? Add this workflow to any repo:
@@ -189,6 +195,8 @@ action/
 └── snarkgirl.yml             # Example workflow (dogfooding)
 skills/
 ├── using-snark-girl/         # Bootstrap — establishes persona at session start
+│   └── SKILL.md
+├── snark-mode/               # Persistent mode — stay in character without name trigger
 │   └── SKILL.md
 ├── snark-pr-review/          # PR and code review skill
 │   └── SKILL.md
