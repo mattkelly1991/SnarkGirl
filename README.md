@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, fixes review items from her own docs, fights the world by debating real Claude and GPT models on any topic, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -25,6 +25,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
+| **snark-merge-court** | Resolves merge conflicts in a courtroom — LLM attorneys argue for "ours" vs "theirs" while Judge SnarkGirl rules. |
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
@@ -99,6 +100,11 @@ She reads the issue, gives her hot take on priority and complexity, outlines an 
 > "SnarkGirl, fix the review items"
 
 She'll read the review doc, show what's outstanding, and walk through fixes one by one — updating checkboxes as you go.
+
+**Merge Court:**
+> "SnarkGirl, resolve these merge conflicts"
+
+She presides as Judge over a courtroom where two LLM attorneys argue for "ours" vs "theirs" code. Each conflict gets a fair trial before she renders a verdict and applies the resolution.
 
 **Vs The World:**
 > "SnarkGirl, fight the world on tabs vs spaces"
@@ -207,6 +213,8 @@ skills/
 ├── snark-ticket/             # GitHub issue triage & approach planning
 │   └── SKILL.md
 ├── snark-fix-review/         # Work through review doc findings
+│   └── SKILL.md
+├── snark-merge-court/        # Merge conflict courtroom — LLM attorneys argue ours vs theirs
 │   └── SKILL.md
 ├── snark-vs-world/            # Multi-LLM debate arena — fight real Claude & GPT models
 │   └── SKILL.md
