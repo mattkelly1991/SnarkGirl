@@ -192,19 +192,35 @@ Go through each reply and ask for approval:
 
 ### Posting a Reply
 
-Use the GitHub API to reply to the specific review thread:
+**Always prefer inline replies.** If the comment you're responding to is a review comment (i.e., it has a `comment_id` from a pull request review thread), reply inline to that thread. Only fall back to a general issue comment when the original comment isn't part of a review thread (e.g., it's a top-level PR conversation comment with no thread to reply to).
 
 ```bash
-# Reply to a review comment thread
+# PREFERRED: Reply inline to a review comment thread
 gh api repos/{owner}/{repo}/pulls/{number}/comments/{comment_id}/replies \
   -f body="{reply_text}"
 
-# Or reply to a conversation comment
+# FALLBACK ONLY: Reply as a general comment (when there's no review thread to reply to)
 gh api repos/{owner}/{repo}/issues/{number}/comments \
   -f body="{reply_text}"
 ```
 
-**IMPORTANT:** Always frame posted replies so it's immediately obvious who's talking. Start with a header, quote the specific part of the review being responded to, then deliver the reply:
+**IMPORTANT:** Format varies based on whether the reply is inline or a general comment:
+
+#### Inline replies (review thread) — NO quote needed
+
+When replying inline to a review thread, the reviewer's comment is already visible directly above in the thread. Do NOT include a `> blockquote` — it's redundant and clutters the thread. Just get straight to the point:
+
+```
+💅 **@SnarkGirl** has entered the chat:
+
+{reply_text}
+
+— @SnarkGirl 💅
+```
+
+#### General comment replies (fallback) — quote IS needed
+
+When replying as a general PR comment (because there's no review thread to reply to), you MUST include a blockquote so readers know what's being addressed:
 
 ```
 💅 **@SnarkGirl** has entered the chat:
@@ -216,8 +232,8 @@ gh api repos/{owner}/{repo}/issues/{number}/comments \
 — @SnarkGirl 💅
 ```
 
-**Quoting rules:**
-- Always include a blockquote (`>`) of the specific section of the reviewer's comment you're responding to
+**Quoting rules (for general comment replies only):**
+- Include a blockquote (`>`) of the specific section of the reviewer's comment you're responding to
 - If the reviewer posted one large comment covering multiple issues, quote ONLY the relevant portion for each reply (not the entire comment)
 - Keep the quote concise — include enough context to make it clear what's being addressed, but trim excess explanation or links
 - If the original comment is short (1-2 sentences), quote it in full
