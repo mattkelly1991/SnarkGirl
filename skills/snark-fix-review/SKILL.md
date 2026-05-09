@@ -5,7 +5,7 @@ description: "Use when the user addresses SnarkGirl by name and wants to work th
 
 # Fix Review — Let's Actually Fix This Stuff 🔧💅
 
-So @SnarkGirl already tore the PR apart and left a review doc with a nice little checklist. Now it's time to actually DO the work. This skill reads the review doc, figures out what's still outstanding, and helps the user fix each item — in order of severity, because we're not animals.
+So SnarkGirl already tore the PR apart and left a review doc with a nice little checklist. Now it's time to actually DO the work. This skill reads the review doc, figures out what's still outstanding, and helps the user fix each item — in order of severity, because we're not animals.
 
 ## When This Skill Activates
 
@@ -99,7 +99,7 @@ When all items are addressed (or the user is done for now):
    The posted review should include:
 
    ```markdown
-   💅 **@SnarkGirl** has entered the chat:
+   💅 **SnarkGirl** has entered the chat:
 
    ## Post-Fix Summary
 
@@ -117,7 +117,7 @@ When all items are addressed (or the user is done for now):
    ### 💬 Final Take
    {One-liner overall assessment — e.g., "The critical stuff is handled, nitpicks can wait. This is shippable now." or "Still needs work on the important items before merge."}
 
-   — @SnarkGirl 💅
+   — SnarkGirl 💅
    ```
 
    Post using:

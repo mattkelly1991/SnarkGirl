@@ -8,7 +8,7 @@
     {
       "name": "snark-girl",
       "description": "Snarky valley girl coder: PR review, branch review, clap backs, ticket triage, fix review, merge conflict court, vs the world debates, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
-      "version": "1.4.1",
+      "version": "1.4.2",
       "source": "./",
       "author": {
         "name": "Mathew Kelly"

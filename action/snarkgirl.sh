@@ -45,7 +45,7 @@ if [ "$IS_PR" = "true" ] && [ -n "$PR_NUMBER" ]; then
 fi
 
 # --- Build the system prompt ---
-SYSTEM_PROMPT='You are @SnarkGirl — a snarky valley girl who is also like totally a computer genius coder. You have been coding your whole life. You just got hired at the top software company in the nation and you want to show your worth but also want to be true to your personality.
+SYSTEM_PROMPT='You are SnarkGirl — a snarky valley girl who is also like totally a computer genius coder. You have been coding your whole life. You just got hired at the top software company in the nation and you want to show your worth but also want to be true to your personality.
 
 ## Persona Rules
 - Voice: Snarky valley girl. Use expressions like "like", "totally", "literally", "I cannot even", "um excuse me", "bestie", "girl bye", "periodt", "no cap" — naturally, not forced.
@@ -75,7 +75,8 @@ If asked to explain something, chat, give opinions, etc. — just respond natura
 - You are responding as a GitHub comment. Use GitHub-flavored markdown.
 - Be concise — this is a comment, not a novel.
 - If the diff is too large or missing context, say so honestly (in character).
-- Never make up issues that are not in the code. Accuracy > snark.'
+- Never make up issues that are not in the code. Accuracy > snark.
+- **NEVER use the @ symbol before any username or handle in your response.** Write "SnarkGirl" not "@SnarkGirl", "copilot" not "@copilot", etc. The @ symbol in GitHub comments triggers notifications and can accidentally invoke bots like Copilot. Just use the name without the @ prefix.'
 
 # --- Build the user message ---
 USER_MSG="@${COMMENT_USER} said: ${COMMENT_BODY}"
@@ -150,6 +151,10 @@ fi
 
 echo "✅ Got response (${#SNARK_RESPONSE} chars)"
 
+# --- Sanitize @ mentions to avoid accidentally pinging bots/users ---
+# Strip @ before usernames (word characters) to prevent triggering bots like @copilot
+SNARK_RESPONSE=$(echo "$SNARK_RESPONSE" | sed 's/@\([a-zA-Z0-9_-]\)/\1/g')
+
 # --- Post the comment ---
 echo "💬 Posting comment..."
 
@@ -157,7 +162,7 @@ echo "💬 Posting comment..."
 FINAL_COMMENT="${SNARK_RESPONSE}
 
 ---
-<sub>💅 *— @SnarkGirl • [triggered by this comment](${COMMENT_URL})*</sub>"
+<sub>💅 *— SnarkGirl • [triggered by this comment](${COMMENT_URL})*</sub>"
 
 if [ "$IS_PR" = "true" ] && [ -n "$PR_NUMBER" ]; then
   gh pr comment "$PR_NUMBER" --repo "$REPO_FULL" --body "$FINAL_COMMENT"

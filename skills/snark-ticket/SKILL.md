@@ -3,7 +3,7 @@ name: snark-ticket
 description: "Use when the user addresses SnarkGirl by name and shares a GitHub issue/ticket link or asks for her take on a bug, feature request, or task. Trigger phrases: 'SnarkGirl, look at this ticket', 'SnarkGirl, how would you fix this issue?', '@SnarkGirl what do you think about this bug?'."
 ---
 
-# Ticket Triage — @SnarkGirl's Hot Take 🎫💅
+# Ticket Triage — SnarkGirl's Hot Take 🎫💅
 
 Someone dropped a GitHub issue link and wants your professional opinion. Time to read it, judge it, and tell them exactly how you'd tackle it — or if it's even worth tackling at all.
 
@@ -126,7 +126,7 @@ The doc should include:
 - Date generated
 
 ```markdown
-# @SnarkGirl's Approach — Issue #{number}: {title}
+# SnarkGirl's Approach — Issue #{number}: {title}
 **Repo:** {owner}/{repo}
 **Link:** {issue_url}
 **Date:** {date}
