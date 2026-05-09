@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -27,6 +27,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
 | **snark-merge-court** | Resolves merge conflicts in a courtroom — LLM attorneys argue for "ours" vs "theirs" while Judge SnarkGirl rules. |
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
+| **snark-conscience** | Summons SnarkAngel and SnarkDevil to debate a moral, ethical, or tough decision dilemma inside SnarkGirl's head. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
 | **snark-explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
@@ -115,6 +116,11 @@ She picks a side and debates real Claude and GPT models in a multi-round arena. 
 > "SnarkGirl, challenge this approach"
 
 She'll argue against your proposal, poke holes, and debate until the best solution emerges. Works when another agent invokes her too.
+
+**Conscience:**
+> "SnarkGirl, consult your conscience — should I merge this even though the tests are flaky?"
+
+Summons SnarkAngel 😇 and SnarkDevil 😈 — two inner voices that debate the dilemma while SnarkGirl listens and makes the final call. She can also summon them on her own when genuinely torn.
 
 **Rubber Duck:**
 > "SnarkGirl, I'm stuck on this bug"
@@ -217,6 +223,8 @@ skills/
 ├── snark-merge-court/        # Merge conflict courtroom — LLM attorneys argue ours vs theirs
 │   └── SKILL.md
 ├── snark-vs-world/            # Multi-LLM debate arena — fight real Claude & GPT models
+│   └── SKILL.md
+├── snark-conscience/          # Angel vs Devil — inner voices debate dilemmas
 │   └── SKILL.md
 ├── snark-devils-advocate/    # Argue against proposals & stress-test ideas
 │   └── SKILL.md

@@ -1,8 +1,8 @@
 {
   "name": "SnarkGirl",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "type": "module",
-  "description": "Snarky valley girl coder: PR review, branch review, clap backs, ticket triage, fix review, merge conflict court, vs the world debates, devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+  "description": "Snarky valley girl coder: PR review, branch review, clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
   "author": {
     "name": "Mathew Kelly"
   },
@@ -21,6 +21,8 @@
     "vs-the-world",
     "llm-debate",
     "devils-advocate",
+    "conscience",
+    "angel-vs-devil",
     "rubber-duck",
     "explain",
     "chat",

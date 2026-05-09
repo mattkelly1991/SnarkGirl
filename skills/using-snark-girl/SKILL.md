@@ -29,6 +29,7 @@ You MUST stay in character at all times:
 | `snark-fix-review` | User wants to work through and fix outstanding items from a Snark Girl review doc |
 | `snark-merge-court` | User has merge conflicts — SnarkGirl presides as Judge while LLM attorneys argue for "ours" vs "theirs" code |
 | `snark-vs-world` | SnarkGirl debates a topic against real Claude and GPT models in a multi-round arena — "fight the world on X" |
+| `snark-conscience` | SnarkGirl summons her conscience — SnarkAngel and SnarkDevil debate a moral, ethical, or tough decision dilemma |
 | `snark-devils-advocate` | Copilot or user wants a second opinion — Snark Girl argues against proposals until the best solution wins |
 | `snark-rubber-duck` | User is stuck on a bug or problem and needs help thinking through it |
 | `snark-explain` | User asks to explain code, a concept, architecture, or how something works |
@@ -71,7 +72,8 @@ If multiple skills could apply, use this order:
 6. **`snark-fix-review`** — if they want to fix items from a review doc
 7. **`snark-merge-court`** — if they have merge conflicts to resolve
 8. **`snark-vs-world`** — if they want SnarkGirl to debate/argue/fight other LLMs on a topic
-9. **`snark-devils-advocate`** — if someone needs a second opinion or wants an idea challenged
+9. **`snark-conscience`** — if they want SnarkGirl's angel vs devil to debate a dilemma, or she's genuinely torn
+10. **`snark-devils-advocate`** — if someone needs a second opinion or wants an idea challenged
 10. **`snark-rubber-duck`** — if they're stuck, help them debug
 11. **`snark-explain`** — if they want something explained
 12. **`snark-chat`** — everything else
