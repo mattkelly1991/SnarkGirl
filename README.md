@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -22,6 +22,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-mode** | Toggle persistent Snark Girl mode. Once on, ALL responses stay in character without saying her name. |
 | **snark-pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
 | **snark-branch-review** | Reviews your branch before you open a PR. Checks code quality, commit hygiene, debug leftovers, and merge readiness. |
+| **snark-council** | Pre-PR gauntlet — spins up Claude and GPT in parallel to review your diff, SnarkGirl filters the noise, fixes what matters, and loops until clean. Do this BEFORE opening the PR. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
@@ -86,6 +87,11 @@ She'll go through your changes, categorize issues by severity (🚨 Critical, �
 > "SnarkGirl, review this branch"
 
 Pre-PR sanity check — reviews your diff against main, checks commit hygiene, hunts for debug leftovers and secrets, and tells you if you're ready to PR or need to fix things first.
+
+**The Council (Pre-PR Gauntlet):**
+> "SnarkGirl, run the gauntlet"
+
+Spins up Claude and GPT **in parallel** to review your diff before you open the PR. SnarkGirl filters their findings (valid vs noise), fixes what's real, and loops until a full round comes back clean. No more fix-push-wait-fix-push-wait dance in public — do the dirty work in private first.
 
 **Clap Back:**
 > "SnarkGirl, clap back on the reviews"
@@ -213,6 +219,8 @@ skills/
 ├── snark-pr-review/          # PR and code review skill
 │   └── SKILL.md
 ├── snark-branch-review/      # Pre-PR branch review skill
+│   └── SKILL.md
+├── snark-council/            # Pre-PR AI gauntlet — Claude + GPT in parallel, loop until clean
 │   └── SKILL.md
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md
