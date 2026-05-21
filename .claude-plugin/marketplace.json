@@ -7,8 +7,8 @@
   "plugins": [
     {
       "name": "snark-girl",
-      "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
-      "version": "1.6.0",
+      "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+      "version": "1.7.0",
       "source": "./",
       "author": {
         "name": "Mathew Kelly"

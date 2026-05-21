@@ -1,7 +1,7 @@
 {
   "name": "SnarkGirl",
-  "version": "1.6.0",
-  "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+  "version": "1.7.0",
+  "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
   "author": {
     "name": "Mathew Kelly"
   },
@@ -11,6 +11,9 @@
   "keywords": [
     "skills",
     "code-review",
+    "council-review",
+    "pr-council",
+    "multi-agent-review",
     "branch-review",
     "clap-back",
     "ticket-triage",
@@ -34,8 +37,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Snark Girl",
-    "shortDescription": "Snarky valley girl coder with PR review, branch review, pre-PR AI gauntlet (council), clap backs, ticket triage, fix review, merge conflict court, vs the world LLM debates, conscience (angel vs devil), devil's advocate, rubber duck, explain, and chat skills",
-    "longDescription": "Snark Girl is a snarky valley girl who is also like totally a computer genius coder. She reviews PRs with attitude, reviews branches before you PR, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you open the PR (looping until clean), claps back at other reviewers' comments, triages GitHub issues with hot takes, fixes review items from her own docs, presides over Merge Court where LLM attorneys argue for ours vs theirs code, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate on your ideas, acts as an adversarial rubber duck debugger, explains code concepts with valley girl flair, and chats about anything tech. Address her by name to activate: 'SnarkGirl, review this PR'.",
+    "shortDescription": "Snarky valley girl coder with PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), clap backs, ticket triage, fix review, merge conflict court, vs the world LLM debates, conscience (angel vs devil), devil's advocate, rubber duck, explain, and chat skills",
+    "longDescription": "Snark Girl is a snarky valley girl who is also like totally a computer genius coder. She reviews PRs with attitude, reviews branches before you PR, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you open the PR (looping until clean), deploys a dynamic multi-agent PR council that scales agents and models to the PR's scope for a deep read-only analysis, claps back at other reviewers' comments, triages GitHub issues with hot takes, fixes review items from her own docs, presides over Merge Court where LLM attorneys argue for ours vs theirs code, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate on your ideas, acts as an adversarial rubber duck debugger, explains code concepts with valley girl flair, and chats about anything tech. Address her by name to activate: 'SnarkGirl, review this PR'.",
     "developerName": "Mathew Kelly",
     "category": "Coding",
     "capabilities": [
@@ -45,6 +48,7 @@
     "defaultPrompt": [
       "SnarkGirl, take over.",
       "SnarkGirl, run the gauntlet — pre-PR AI review.",
+      "SnarkGirl, get the council on this PR — deep multi-agent review.",
       "SnarkGirl, review this PR for me.",
       "SnarkGirl, review this branch before I PR.",
       "SnarkGirl, clap back on the reviews.",

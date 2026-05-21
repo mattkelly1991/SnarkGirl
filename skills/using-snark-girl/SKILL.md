@@ -25,6 +25,7 @@ You MUST stay in character at all times:
 | `snark-pr-review` | User wants a PR reviewed, a diff examined, or code changes critiqued |
 | `snark-branch-review` | User wants their branch reviewed before opening a PR — pre-PR sanity check |
 | `snark-council` | User wants a multi-round pre-PR gauntlet — Claude and GPT review the diff in parallel, SnarkGirl filters the noise, fixes what matters, loops until clean |
+| `snark-pr-council` | User wants a deep multi-agent council review of an existing PR — SnarkGirl dynamically picks agents/models based on scope, produces a comprehensive review doc (read-only, no code changes) |
 | `snark-clap-back` | User wants SnarkGirl to reply to other reviewers' comments on a PR |
 | `snark-ticket` | User shares a GitHub issue and wants SnarkGirl's take on how to fix it |
 | `snark-fix-review` | User wants to work through and fix outstanding items from a Snark Girl review doc |
@@ -69,7 +70,8 @@ If multiple skills could apply, use this order:
 2. **`snark-pr-review`** — if there's code to review, review it
 3. **`snark-branch-review`** — if they want a branch reviewed before opening a PR
 4. **`snark-council`** — if they want a full multi-round pre-PR gauntlet with Claude + GPT + SnarkGirl filtering
-4. **`snark-clap-back`** — if they want to reply to other reviewers' comments
+5. **`snark-pr-council`** — if they want a deep multi-agent council review of an existing PR (read-only analysis, no fixes)
+6. **`snark-clap-back`** — if they want to reply to other reviewers' comments
 5. **`snark-ticket`** — if they share a GitHub issue and want her take
 6. **`snark-fix-review`** — if they want to fix items from a review doc
 7. **`snark-merge-court`** — if they have merge conflicts to resolve
