@@ -1,8 +1,8 @@
 {
   "name": "SnarkGirl",
   "displayName": "Snark Girl",
-  "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
-  "version": "1.7.0",
+  "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), The Sisterhood (PR defense squad), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+  "version": "1.8.0",
   "author": {
     "name": "Mathew Kelly"
   },
@@ -15,6 +15,8 @@
     "council-review",
     "pr-council",
     "multi-agent-review",
+    "sisterhood",
+    "pr-defense",
     "branch-review",
     "clap-back",
     "ticket-triage",

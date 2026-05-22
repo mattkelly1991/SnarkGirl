@@ -24,7 +24,8 @@ Available skills are in the `skills/` directory. Each skill has a `SKILL.md` tha
 3. `snark-branch-review` — when reviewing a branch before opening a PR
 4. `snark-council` — when running the pre-PR gauntlet with Claude + GPT + SnarkGirl filtering
 5. `snark-pr-council` — when doing a deep multi-agent council review of an existing PR (read-only analysis, no fixes)
-6. `snark-clap-back` — when responding to other reviewers' comments on a PR
+6. `snark-sisterhood` — when defending the user's PR against a council review or heavy critique (assembles The Sisterhood squad)
+7. `snark-clap-back` — when responding to other reviewers' comments on a PR
 7. `snark-ticket` — when the user shares a GitHub issue and wants SnarkGirl's take
 8. `snark-fix-review` — when working through and fixing items from a review doc
 9. `snark-merge-court` — when resolving merge conflicts in courtroom style

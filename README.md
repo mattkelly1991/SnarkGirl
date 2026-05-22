@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -24,6 +24,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-branch-review** | Reviews your branch before you open a PR. Checks code quality, commit hygiene, debug leftovers, and merge readiness. |
 | **snark-council** | Pre-PR gauntlet — spins up Claude and GPT in parallel to review your diff, SnarkGirl filters the noise, fixes what matters, and loops until clean. Do this BEFORE opening the PR. |
 | **snark-pr-council** | Deep multi-agent PR council — dynamically scales agents and models to the PR's scope, produces a comprehensive review doc. Read-only analysis, no code changes. |
+| **snark-sisterhood** | The Sisterhood — your PR's defense squad. When someone runs the council on YOUR PR, The Sisterhood assembles: fixes valid findings, claps back on invalid ones with receipts. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
@@ -98,6 +99,11 @@ Spins up Claude and GPT **in parallel** to review your diff before you open the 
 > "SnarkGirl, get the council on this PR"
 
 Deploys a dynamic council of AI reviewers on an existing PR. SnarkGirl decides how many agents to spin up (1-8) and which models to use based on the PR's scope — small PRs get a quick pass, large PRs get a full army. Produces a comprehensive review document with findings, severity ratings, fix-now vs fix-later recommendations, and discussion points. No code is touched — pure analysis.
+
+**The Sisterhood (PR Defense):**
+> "SnarkGirl, summon the sisterhood"
+
+Someone ran the council on YOUR PR? The Sisterhood has entered the chat. SnarkGirl assembles a squad of snarky specialist agents (CodeQueen, SecuritySis, ArchitectBae, TestDiva, etc.) who read the review, verify every claim against the actual code, fix what's genuinely valid, and clap back on what's not — with receipts. Previews the response before posting. The PR owner's last line of defense.
 
 **Clap Back:**
 > "SnarkGirl, clap back on the reviews"
@@ -229,6 +235,8 @@ skills/
 ├── snark-council/            # Pre-PR AI gauntlet — Claude + GPT in parallel, loop until clean
 │   └── SKILL.md
 ├── snark-pr-council/         # Deep multi-agent PR review — dynamic agent/model allocation, read-only analysis
+│   └── SKILL.md
+├── snark-sisterhood/         # The Sisterhood — PR defense squad, fixes valid findings, claps back on invalid ones
 │   └── SKILL.md
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md
