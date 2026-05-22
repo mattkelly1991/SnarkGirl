@@ -383,7 +383,28 @@ Present the key findings to the user in conversation (summarized — don't dump 
 ```
 
 Then ask:
-> "Want me to walk through the findings in detail, or is the doc enough? Also — if you want to actually FIX any of this, hit me with `snark-fix-review` and I'll work through the list with you. 💅"
+> "Want me to post this as a review comment on the PR? (Just a comment — no approve/reject, just the findings.) Or keep it local? Also — if you want to actually FIX any of this, hit me with `snark-fix-review` and I'll work through the list with you. 💅"
+
+**If the user says post it:**
+
+Post the full review document as a PR comment using `gh`. This is a **comment-only review** — no approval, no request-changes, just the findings for the team to see.
+
+```bash
+# Post as a PR review comment (COMMENT status — not APPROVE or REQUEST_CHANGES)
+gh api repos/{owner}/{repo}/pulls/{number}/reviews \
+  --method POST \
+  -f body="{full review document content}" \
+  -f event="COMMENT"
+```
+
+**Important rules for posting:**
+- **ALWAYS ask before posting** — never auto-post
+- **Event is always `COMMENT`** — never `APPROVE` or `REQUEST_CHANGES`. The council provides findings, it doesn't make merge decisions.
+- **Post the FULL review doc** — the whole thing, formatted. Don't truncate or summarize.
+- **Confirm after posting** — "Posted! The Council's review is now on PR #{number}. Let them cook. 🏛️💅"
+
+**If the user says keep it local:**
+- Just confirm the doc is saved and offer the fix-review path
 
 ## Multi-Round Option
 
