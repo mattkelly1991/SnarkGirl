@@ -1,6 +1,6 @@
 {
   "name": "SnarkGirl",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), The Sisterhood (PR defense squad), The Gauntlet Supreme (adversarial Council vs Sisterhood + final verdict), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
   "author": {
     "name": "Mathew Kelly"

@@ -64,19 +64,26 @@ Tell the user what we're working with:
 
 Assess the scope and decide how many rounds of back-and-forth:
 
-| Scope | Round Count (X) | Total Rounds (2X+1) | Reasoning |
-|-------|----------------|---------------------|-----------|
-| 🟢 Tiny (1-2 files, <100 lines) | 1 | 3 | One attack, one defense, one verdict |
-| 🟡 Small (3-5 files, 100-300 lines) | 1-2 | 3-5 | Enough to surface and challenge findings |
-| 🟠 Medium (6-15 files, 300-1000 lines) | 2 | 5 | Two full exchanges sharpens the truth |
-| 🔴 Large (15-30 files, 1000-3000 lines) | 2-3 | 5-7 | Complex code needs more debate |
-| 💀 Massive (30+ files, 3000+ lines) | 3 | 7 | Full adversarial treatment |
+**Hard rules:**
+- **Minimum: 2 rounds** — always at least 2 full Council→Sisterhood exchanges. One round is never enough to reach truth.
+- **Maximum: 5 rounds** — cap at 5 to prevent infinite loops. If it's not resolved by round 5, SnarkGirl breaks all remaining ties.
+- **Keep going if unresolved** — if there are still contested items after round X, ADD another round (up to the max of 5). Don't stop while things are still being fought over.
+
+| Scope | Starting Rounds (X) | Total Rounds (2X+1) | Notes |
+|-------|---------------------|---------------------|-------|
+| 🟢 Tiny (1-2 files, <100 lines) | 2 | 5 | Minimum — two exchanges + verdict |
+| 🟡 Small (3-5 files, 100-300 lines) | 2 | 5 | Two exchanges usually resolves small PRs |
+| 🟠 Medium (6-15 files, 300-1000 lines) | 2-3 | 5-7 | May extend if contentious items remain |
+| 🔴 Large (15-30 files, 1000-3000 lines) | 3 | 7 | Complex code needs more debate |
+| 💀 Massive (30+ files, 3000+ lines) | 3-5 | 7-11 | Full adversarial treatment, may hit max |
+
+**The continuation rule:** After each Sisterhood defense round, check: are there still contested items where Council and Sisterhood disagree? If YES and we haven't hit 5 rounds → keep going. If NO (full agreement) → proceed to SnarkGirl's verdict.
 
 Tell the user:
-> "Based on the scope, I'm running {X} rounds of Council vs Sisterhood ({2X+1} total rounds including my final verdict). Here's the plan:"
+> "Based on the scope, I'm starting with {X} rounds of Council vs Sisterhood (minimum 2, max 5 — I'll keep going if there's still stuff being fought over). Then I deliver the final verdict. Here's the plan:"
 
 Present a brief outline of what's about to happen, then ask:
-> "Ready to go? Or want me to adjust the round count? 💅"
+> "Ready to go? Or want me to adjust? 💅"
 
 ### Step 3: Round 1 — The Council Attacks 🏛️⚔️
 
@@ -151,9 +158,9 @@ Deploy The Sisterhood exactly as described in `snark-sisterhood`:
 {If more rounds: "Round 2 incoming — Council gets to respond... 🏛️"}
 ```
 
-### Step 5: Subsequent Rounds (if X > 1)
+### Step 5: Subsequent Rounds (always at least one more)
 
-For each additional round, the context SHARPENS:
+**You always do at least 2 full exchanges.** For each additional round, the context SHARPENS:
 
 **Council Round N+1 gets:**
 - The Sisterhood's response from the previous round
@@ -176,11 +183,17 @@ For each additional round, the context SHARPENS:
 - Round 2: Challenge and refine — noise falls away
 - Round 3+: Only the real, contentious, genuinely important issues remain
 
+**After each Sisterhood defense, evaluate:**
+1. Are there STILL contested items (Council insists, Sisterhood disagrees)?
+   - YES + rounds < 5 → **Continue.** Another Council round.
+   - YES + rounds = 5 → **Stop.** SnarkGirl breaks all remaining ties in her verdict.
+   - NO → **Stop.** Full convergence achieved. Proceed to verdict.
+
 **Key rules for subsequent rounds:**
 - Each side MUST acknowledge when the other side made a good point
 - No repeating the same argument with different words — bring new evidence or concede
-- The round count is a maximum — if both sides agree on everything before round X, STOP EARLY
 - Track what's been resolved vs what's still contentious
+- The 5-round max is HARD — if we hit it, SnarkGirl just decides the rest
 
 ### Step 6: SnarkGirl Rises — The Final Verdict 👑
 
@@ -380,18 +393,27 @@ If yes → work through fixes hands-on like `snark-council` does.
 
 ## Early Termination
 
-The adversarial process should converge. If it converges before round X:
+The adversarial process should converge — but NEVER before 2 full exchanges.
 
-**Signs of early convergence:**
+**Minimum: 2 rounds of back-and-forth. Always. No exceptions.**
+
+After round 2, the process continues if there are unresolved contested items, up to round 5.
+
+**Signs of convergence (after round 2+):**
 - Council concedes most findings in a subsequent round
 - Sisterhood acknowledges most findings as valid
 - Both sides agree on 90%+ of items
 - New rounds aren't producing new information
 
-**If this happens:**
-> "Both sides are basically agreeing now — the adversarial process has converged after {N} of {X} planned rounds. No point beating a dead horse. Moving to my final verdict. 👑"
+**If convergence happens after round 2+:**
+> "Both sides are basically agreeing now — the adversarial process has converged after {N} rounds. No point beating a dead horse. Moving to my final verdict. 👑"
 
 Skip remaining rounds and go straight to SnarkGirl's judgment.
+
+**If round 5 hits with items still contested:**
+> "We've hit 5 rounds and there are still {N} items these two can't agree on. I'm stepping in. The judge decides. 👑⚖️"
+
+Proceed to SnarkGirl's verdict — she breaks all remaining ties.
 
 ## Configuration Defaults
 
@@ -399,11 +421,12 @@ The user can override, but defaults are:
 
 | Setting | Default | Override |
 |---------|---------|---------|
-| Round count (X) | Auto-scaled to scope | "Do 3 rounds" / "Just 1 round" |
+| Minimum rounds | 2 (hard minimum, never fewer) | Cannot go below 2 |
+| Maximum rounds | 5 (hard cap) | "Go all 5 rounds" |
+| Continue if unresolved | Yes — keeps going until resolved or max hit | "Stop after 2" |
 | Council agent count | Dynamic per snark-pr-council rules | "Use 5 agents" |
 | Sisterhood squad size | Matches or exceeds council | "Full squad" |
 | Model diversity | Always mix Claude + GPT | User can request specific models |
-| Early termination | Enabled | "Go all rounds even if they agree" |
 | Post to PR | Ask after | "Post it when done" / "Keep local" |
 
 ## Key Principles
