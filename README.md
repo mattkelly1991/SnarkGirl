@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -26,6 +26,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-pr-council** | Deep multi-agent PR council — dynamically scales agents and models to the PR's scope, produces a comprehensive review doc. Read-only analysis, no code changes. |
 | **snark-sisterhood** | The Sisterhood — your PR's defense squad. When someone runs the council on YOUR PR, The Sisterhood assembles: fixes valid findings, claps back on invalid ones with receipts. |
 | **snark-supreme** | The Gauntlet Supreme — the ultimate adversarial review. Council attacks, Sisterhood defends for X rounds, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
+| **snark-battle-royale** | The Battle Royale — 10-20 AI contestants drop onto your diff, hunt real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
@@ -110,6 +111,11 @@ Someone ran the council on YOUR PR? The Sisterhood has entered the chat. SnarkGi
 > "SnarkGirl, run the supreme"
 
 The nuclear option. The Council attacks your code. The Sisterhood defends it. They go back and forth for X rounds — prosecution vs defense — each round sharpening the findings as noise falls away and truth emerges. Then SnarkGirl rises as the impartial judge and delivers the definitive final verdict: what actually needs fixing now, what can wait, and what was noise all along. Works on PRs (offers to post) and branches (local doc). Only for code that MATTERS.
+
+**Battle Royale (Survival Review Death Match):**
+> "SnarkGirl, battle royale"
+
+The biggest gun in the arsenal. SnarkGirl carves your diff into named zones and drops 10-20 AI contestants (tiered models — flagships to scrappers) onto the battlefield. They survive by finding REAL bugs (validated against actual code — hallucinations earn nothing), fight skirmishes over contested findings, lose rations to hunger, and die when they hit zero. The zone shrinks every few turns, forcing survivors together. Full spectator mode: kill feed, map status, and leaderboard every turn. Last contestant standing wins, and every finding in the Victory Report has been fought over and battle-tested. Works on PRs, branches, and your working state.
 
 **Clap Back:**
 > "SnarkGirl, clap back on the reviews"
@@ -245,6 +251,8 @@ skills/
 ├── snark-sisterhood/         # The Sisterhood — PR defense squad, fixes valid findings, claps back on invalid ones
 │   └── SKILL.md
 ├── snark-supreme/            # The Gauntlet Supreme — adversarial Council vs Sisterhood + SnarkGirl's final verdict
+│   └── SKILL.md
+├── snark-battle-royale/      # Battle Royale — 10-20 contestants fight to the death over real bugs, SnarkGirl as Game Master
 │   └── SKILL.md
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md

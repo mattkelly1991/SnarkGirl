@@ -1,7 +1,7 @@
 {
   "name": "SnarkGirl",
-  "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), The Sisterhood (PR defense squad), The Gauntlet Supreme (adversarial Council vs Sisterhood + final verdict), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
-  "version": "1.9.1",
+  "description": "Snarky valley girl coder: PR review, branch review, pre-PR AI gauntlet (council), deep PR council (multi-agent review), The Sisterhood (PR defense squad), The Gauntlet Supreme (adversarial Council vs Sisterhood + final verdict), Battle Royale (10-20 AI contestants fight to the death over real bugs with SnarkGirl as Game Master), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
+  "version": "1.10.0",
   "author": {
     "name": "Mathew Kelly"
   },
@@ -18,6 +18,8 @@
     "pr-defense",
     "gauntlet-supreme",
     "adversarial-review",
+    "battle-royale",
+    "survival-review",
     "branch-review",
     "clap-back",
     "ticket-triage",
