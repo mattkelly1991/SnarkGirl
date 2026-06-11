@@ -207,7 +207,16 @@ The terminal broadcast is cute, but the REAL spectator experience is the **Live 
 ### Setup (at game start, right after the roster is announced)
 
 1. **Create the arena directory:** `{TEMP}/snark-girl-arena/{match-id}/` where `{match-id}` is something like `pr-42-20260611` or `{branch}-{date}`.
-2. **Copy the template:** copy `assets/arena.html` (next to this SKILL.md) into the arena directory as `index.html`.
+2. **Get the arena template** into the arena directory as `index.html`, trying these sources IN ORDER:
+   1. **Local skill assets** — `assets/arena.html` in this skill's own directory (the directory containing this SKILL.md — for plugin installs that's inside the installed plugin location, e.g. `.../installed-plugins/.../skills/snark-battle-royale/assets/arena.html`, NOT the user's current repo). Only use it if the file actually exists there.
+   2. **GitHub (canonical fallback)** — download it directly from the plugin repo:
+      ```
+      curl -fsSL https://raw.githubusercontent.com/mattkelly1991/SnarkGirl/main/skills/snark-battle-royale/assets/arena.html -o {arena-dir}/index.html
+      ```
+      (PowerShell alternative: `Invoke-WebRequest -Uri {url} -OutFile {arena-dir}\index.html`)
+   3. **Cached copy** — if a previous match already downloaded it, reuse `{TEMP}/snark-girl-arena/arena-template.html`. (When the GitHub download succeeds, also save a copy there for future matches.)
+
+   **NEVER assume the template exists in the user's current working repo** — the battle usually runs on a completely different codebase than the SnarkGirl plugin repo. If all three sources fail (offline, no curl), fall back to terminal-only spectator mode and tell the user.
 3. **Write the initial `state.json`** (schema below) with `phase: "lobby"`, the full roster, and the zone map.
 4. **Start a static server, detached** so it survives the session:
    - `python -m http.server {port}` from the arena directory (pick a port in 8400-8499; on conflict, try the next one)
