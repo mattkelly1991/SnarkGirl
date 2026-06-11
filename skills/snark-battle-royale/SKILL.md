@@ -1,6 +1,6 @@
 ---
 name: snark-battle-royale
-description: "Use when the user addresses SnarkGirl by name and wants the Battle Royale — 10-20 AI contestants drop onto the code, hunt for bugs to survive, fight each other over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last contestant standing wins, and the spoils are battle-tested findings. Works on branches, working state, or PRs. Trigger phrases: 'SnarkGirl, battle royale', 'SnarkGirl, drop the contestants', 'SnarkGirl, let the games begin', 'SnarkGirl, hunger games this PR', '@SnarkGirl battle royale'."
+description: "Use when the user addresses SnarkGirl by name and wants the Battle Royale — 10-20 AI contestants drop onto the code, hunt for bugs to survive, fight each other over findings, and starve if they find nothing. SnarkGirl is the Game Master and broadcasts the battle live to a local webpage (map, stats, kill feed, victory screen). Last contestant standing wins, and the spoils are battle-tested findings. Works on branches, working state, or PRs. Trigger phrases: 'SnarkGirl, battle royale', 'SnarkGirl, drop the contestants', 'SnarkGirl, let the games begin', 'SnarkGirl, hunger games this PR', '@SnarkGirl battle royale'."
 ---
 
 # The Battle Royale — One Skill to Rule Them All 👑🪂💀
@@ -156,7 +156,7 @@ Each game turn, SnarkGirl:
 3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: one exchange each, SnarkGirl rules, rations transfer.
 4. **Applies hunger** — everyone loses 1 ration (plus storm damage if outside the safe zone). Anyone at 0 dies. 💀 Cannon.
 5. **Shrinks the zone** (every ~2 turns, faster in endgame) — closes looted/empty zones, announces the new safe zone, reassigns displaced survivors.
-6. **Broadcasts the spectator update** (see below).
+6. **Broadcasts the spectator update** (see below) and **rewrites the Live Arena `state.json`** (see The Live Web Arena).
 7. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → endgame. Otherwise, next turn.
 
 **Pacing guardrails:** Target 5-10 total turns. If the game is dragging (no deaths in 3 turns), accelerate: double hunger, force encounters, shrink harder. SnarkGirl controls the weather AND the famine.
@@ -197,6 +197,113 @@ After EVERY turn, broadcast the live update. This is non-negotiable — the user
 ```
 
 Keep each turn's broadcast punchy. The drama is in the kill feed, not in essays.
+
+## The Live Web Arena 📡🖥️
+
+The terminal broadcast is cute, but the REAL spectator experience is the **Live Arena webpage** — a browser dashboard that auto-refreshes as the battle happens: the zone map with player tokens in the center, combatant stat cards on the right, the kill/event feed on the left, and a full-screen Victory Report when the game ends.
+
+**Architecture — "dumb page, smart file":** a static HTML page polls a `state.json` file every 2 seconds. SnarkGirl (the Game Master) is the only writer — she rewrites `state.json` after every game event. No backend logic, no websockets, no build step.
+
+### Setup (at game start, right after the roster is announced)
+
+1. **Create the arena directory:** `{TEMP}/snark-girl-arena/{match-id}/` where `{match-id}` is something like `pr-42-20260611` or `{branch}-{date}`.
+2. **Copy the template:** copy `assets/arena.html` (next to this SKILL.md) into the arena directory as `index.html`.
+3. **Write the initial `state.json`** (schema below) with `phase: "lobby"`, the full roster, and the zone map.
+4. **Start a static server, detached** so it survives the session:
+   - `python -m http.server {port}` from the arena directory (pick a port in 8400-8499; on conflict, try the next one)
+   - Fallbacks if no Python: `npx serve -l {port}` or a Node one-liner static server
+   - The server MUST be launched as a detached/persistent background process
+5. **Open the browser:** `Start-Process "http://localhost:{port}"` (Windows) / `open` (macOS) / `xdg-open` (Linux).
+6. Tell the user: "The arena broadcast is LIVE at http://localhost:{port} — ringside seats, bestie. 📡💅"
+
+If anything in setup fails (no python/node, can't open browser), don't block the game — fall back to terminal-only spectator mode and tell the user.
+
+### `state.json` Schema
+
+SnarkGirl rewrites the ENTIRE file on every update (atomic single write — write to `state.json.tmp` then rename, to avoid the page reading a half-written file):
+
+```json
+{
+  "phase": "lobby | live | finished",
+  "turn": 3,
+  "title": "Battle Royale — PR #42",
+  "battlefield": { "target": "PR #42: Add auth flow", "scope": "12 files, +800/-200" },
+  "updatedAt": "2026-06-11T15:40:00Z",
+  "commentary": "SnarkGirl's one-liner for the current turn",
+  "zones": [
+    {
+      "id": "auth-caves",
+      "name": "The Auth Caves",
+      "emoji": "🕳️",
+      "status": "safe | closing | closed",
+      "files": ["src/auth/login.ts", "src/auth/session.ts"],
+      "weight": 5
+    }
+  ],
+  "contestants": [
+    {
+      "id": "opus-prime",
+      "name": "OpusPrime",
+      "model": "claude-opus-4.7",
+      "tier": 1,
+      "icon": "🦅",
+      "rations": 7,
+      "kills": 2,
+      "finds": 4,
+      "zone": "auth-caves",
+      "status": "alive | dead",
+      "causeOfDeath": null,
+      "epitaph": null
+    }
+  ],
+  "feed": [
+    { "turn": 3, "type": "kill | skirmish | find | move | storm | info", "text": "💀 HaikuHavoc starved in Config Flats" }
+  ],
+  "announcements": [
+    { "turn": 3, "text": "The cannon fires for HaikuHavoc. Three remain in the lowlands and the storm is coming for Config Flats next. 💅" }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "severity": "critical | important | nitpick",
+      "title": "Session token never expires",
+      "file": "src/auth/session.ts",
+      "line": 42,
+      "foundBy": "OpusPrime",
+      "turn": 2,
+      "contested": true,
+      "status": "validated | fallen",
+      "fix": "Add TTL check in validateSession()",
+      "fellBecause": null
+    }
+  ],
+  "victor": { "id": "opus-prime", "name": "OpusPrime", "model": "claude-opus-4.7", "finds": 4, "kills": 2, "rations": 7 },
+  "takeaways": ["The auth zone produced 3 of 4 criticals — that module needs love."],
+  "finalCommentary": "SnarkGirl's full closing commentary (finished phase only)"
+}
+```
+
+`victor`, `takeaways`, and `finalCommentary` are only required when `phase` is `"finished"`.
+
+**Map rendering notes:**
+- The page draws a real territory map: zones become terrain-colored regions sized by `weight` (defaults to file count), with players standing on them as icon tokens showing name, HP bar (rations), and kill count. Tokens glide between territories when tributes relocate.
+- **Give every tribute a unique emoji `icon` at spawn** (🦅 🐍 🦂 🐗 🦊 🦈 🕷️ 🐉 …) — it's their map avatar. If omitted, the page falls back to tier icons (T1 🦁, T2 🐺, T3 🐀).
+- Set zone `weight` to reflect territory richness/size so the map's proportions tell the story of where the loot is.
+
+### Update Cadence
+
+- **Flip `phase` to `"live"`** on the drop (Turn 1 hunt orders go out).
+- **Update after every Game Master step** within a turn — validations paid, each skirmish resolved, deaths, zone closures — not just once per turn. More writes = more "live". At minimum: once per turn-loop step (hunt results → skirmishes → hunger/deaths → zone shrink).
+- **Feed is append-only.** Never remove entries; the page shows newest first and archives the whole thing on the victory screen.
+- **Announcements are SnarkGirl's voice.** Append a fresh in-character Game Master announcement to `announcements` at least once per turn (and for big moments: deaths, zone closures, upsets, endgame). The page shows the latest one prominently in the bottom bar with the previous two faded above it. This is narration, not data — `feed` is the factual log, `announcements` is SnarkGirl talking to the spectators.
+- **Findings accumulate** — add them when validated; flip `status` to `"fallen"` (with `fellBecause`) if they lose a skirmish or get invalidated later.
+- The terminal broadcast (above) still happens — the web arena is additive, not a replacement. If the user says "highlights only" or "silent," reduce the TERMINAL output but keep `state.json` fully updated; the page IS the broadcast.
+
+### The Final Screen
+
+When the game ends, set `phase: "finished"` and populate `victor`, `takeaways`, `finalCommentary`, and the complete `findings` list. The page automatically transitions to the full-screen **Victory Report**: victor banner, the Spoils (what to fix, grouped by severity, with fixes), final standings, takeaways, fallen findings, and the complete kill feed archive.
+
+Leave the server running so the user can keep admiring the carnage. Tell them the page now shows the final screen, and how to stop the server when done (`Stop-Process -Id {PID}` — report the PID from launch).
 
 ## The Endgame & Victory Report
 
@@ -299,6 +406,7 @@ If yes → fix hands-on like `snark-council` does, severity order.
 | Zone shrink cadence | Every ~2 turns, faster in endgame | "Slow storm" / "fast storm" |
 | Max turns | ~10 (GM accelerates if dragging) | "Quick match" / "Marathon" |
 | Spectator mode | Full — every turn narrated | "Highlights only" / "Silent" |
+| Live web arena | ON — served at localhost, auto-opens browser | "No web arena" / "terminal only" |
 | Target | Auto-detect (PR > branch > working state) | "On PR #42" / "on my working changes" |
 
 ## Key Principles

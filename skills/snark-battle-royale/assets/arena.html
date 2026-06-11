@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnarkGirl Battle Royale — Live Arena 👑</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+<style>
+  :root {
+    --bg: #0d0d12;
+    --panel: #16161e;
+    --panel2: #1d1d28;
+    --border: #2a2a3a;
+    --pink: #FF69B4;
+    --pink-dim: #b34a7e;
+    --text: #e8e8f0;
+    --muted: #8a8a9e;
+    --green: #4ade80;
+    --yellow: #facc15;
+    --red: #f87171;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 18px;
+    background: linear-gradient(90deg, #1a0f18, #16161e 60%);
+    border-bottom: 2px solid var(--pink);
+    flex: 0 0 auto;
+  }
+  header h1 { font-size: 18px; color: var(--pink); white-space: nowrap; }
+  .hdr-stat {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .hdr-stat b { color: var(--pink); }
+  #commentary {
+    flex: 1;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #live-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--red);
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  /* ---------- Layout ---------- */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px 1fr 340px;
+    gap: 10px;
+    padding: 10px;
+    min-height: 0;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .panel h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--pink);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    flex: 0 0 auto;
+  }
+  .panel .scroll { flex: 1; overflow-y: auto; padding: 10px 12px; }
+  .scroll::-webkit-scrollbar { width: 8px; }
+  .scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  /* ---------- Feed ---------- */
+  .feed-item {
+    padding: 7px 10px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    background: var(--panel2);
+    border-left: 3px solid var(--border);
+    font-size: 13px;
+    line-height: 1.4;
+    animation: slideIn 0.4s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+  .feed-item .turn-tag { color: var(--muted); font-size: 11px; margin-right: 6px; }
+  .feed-kill     { border-left-color: var(--red); }
+  .feed-skirmish { border-left-color: var(--orange); }
+  .feed-find     { border-left-color: var(--green); }
+  .feed-storm    { border-left-color: var(--blue); }
+  .feed-move     { border-left-color: var(--muted); }
+  .feed-info     { border-left-color: var(--pink); }
+  /* ---------- Map ---------- */
+  #map-wrap { flex: 1; min-height: 0; padding: 6px; }
+  #map { width: 100%; height: 100%; display: block; }
+  .zshape {
+    stroke-width: 2;
+    stroke-linejoin: round;
+    transition: opacity 0.6s, filter 0.6s;
+  }
+  .zshape-safe    { stroke: rgba(255,255,255,0.18); }
+  .zshape-closing { stroke: var(--orange); stroke-width: 2.5; stroke-dasharray: 10 6; animation: stormpulse 1.6s infinite; }
+  .zshape-closed  { stroke: #3a3a4a; opacity: 0.5; filter: grayscale(0.85); }
+  @keyframes stormpulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.35; } }
+  .zlabel { font-size: 14px; font-weight: 700; fill: var(--text); paint-order: stroke; stroke: rgba(0,0,0,0.7); stroke-width: 3px; }
+  .zstatus { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+  .zfiles { font-size: 8.5px; fill: rgba(232,232,240,0.45); }
+  .storm-overlay { fill: url(#stormhatch); pointer-events: none; }
+  .ptoken { transition: transform 1.2s cubic-bezier(.45,.05,.35,1); }
+  .ptoken .pname { font-size: 11px; font-weight: 700; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 3px; }
+  .ptoken .pring { fill: #14141c; stroke-width: 2; }
+  .ptoken.tier-1 .pring { stroke: var(--yellow); }
+  .ptoken.tier-2 .pring { stroke: var(--blue); }
+  .ptoken.tier-3 .pring { stroke: var(--muted); }
+  .ptoken.danger .pring { stroke: var(--red); animation: dangerpulse 1s infinite; }
+  @keyframes dangerpulse { 0%,100% { stroke-opacity: 1; stroke-width: 2; } 50% { stroke-opacity: 0.4; stroke-width: 4; } }
+  .ptoken .picon { font-size: 15px; text-anchor: middle; dominant-baseline: central; }
+  .ptoken .hpbg { fill: rgba(0,0,0,0.65); rx: 2; }
+  .ptoken .hpfill { transition: width 0.6s, fill 0.6s; }
+  .ptoken .pstats { font-size: 9px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 2.5px; }
+  /* ---------- Combatants ---------- */
+  .card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 11px;
+    margin-bottom: 7px;
+    transition: all 0.4s;
+  }
+  .card.danger { border-color: var(--red); }
+  .card.dead   { opacity: 0.4; filter: grayscale(1); }
+  .card-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .card-name { font-weight: 600; font-size: 14px; }
+  .card-model { font-size: 10px; color: var(--muted); }
+  .card-stats { display: flex; gap: 12px; font-size: 12px; margin-top: 5px; color: var(--muted); }
+  .card-stats b { color: var(--text); }
+  .ration-bar { height: 5px; border-radius: 3px; background: #2a2a3a; margin-top: 6px; overflow: hidden; }
+  .ration-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width 0.6s, background 0.6s; }
+  .card-zone { font-size: 11px; color: var(--pink-dim); margin-top: 4px; }
+  .card-death { font-size: 11px; color: var(--red); margin-top: 4px; font-style: italic; }
+  /* ---------- Victory Screen ---------- */
+  #victory {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10, 6, 10, 0.96);
+    z-index: 50;
+    overflow-y: auto;
+    padding: 30px 5vw;
+  }
+  #victory.show { display: block; animation: fadeIn 0.8s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  #victory h1 { color: var(--pink); text-align: center; font-size: 30px; margin-bottom: 4px; }
+  #victory .subtitle { text-align: center; color: var(--muted); margin-bottom: 24px; }
+  .victor-banner {
+    text-align: center;
+    background: linear-gradient(90deg, transparent, #2a1422, transparent);
+    border-top: 1px solid var(--pink);
+    border-bottom: 1px solid var(--pink);
+    padding: 18px;
+    margin-bottom: 28px;
+    font-size: 20px;
+  }
+  .victor-banner .crown { font-size: 40px; display: block; margin-bottom: 6px; }
+  .v-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 1300px; margin: 0 auto; }
+  .v-section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .v-section.full { grid-column: 1 / -1; }
+  .v-section h2 { color: var(--pink); font-size: 15px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .finding {
+    background: var(--panel2);
+    border-radius: 8px;
+    border-left: 4px solid var(--muted);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .finding.critical  { border-left-color: var(--red); }
+  .finding.important { border-left-color: var(--orange); }
+  .finding.nitpick   { border-left-color: var(--blue); }
+  .finding .f-title { font-weight: 600; }
+  .finding .f-loc { color: var(--pink-dim); font-family: monospace; font-size: 12px; }
+  .finding .f-fix { color: var(--muted); margin-top: 4px; }
+  .finding .f-meta { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+  .takeaway { padding: 8px 12px; background: var(--panel2); border-radius: 8px; margin-bottom: 8px; font-size: 13px; border-left: 3px solid var(--pink); }
+  #v-commentary { font-style: italic; color: var(--text); line-height: 1.6; font-size: 14px; }
+  .lobby-msg { text-align: center; color: var(--muted); padding: 50px 20px; font-size: 15px; }
+  /* ---------- SG Announcement Bar ---------- */
+  footer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 18px;
+    background: linear-gradient(90deg, #1a0f18, #16161e 60%);
+    border-top: 2px solid var(--pink);
+    min-height: 54px;
+  }
+  .sg-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    background: var(--panel2);
+    border: 1px solid var(--pink-dim);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink);
+    white-space: nowrap;
+  }
+  #announcements { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .ann {
+    font-size: 14px;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ann .turn-tag { color: var(--muted); font-size: 11px; margin-right: 6px; }
+  .ann-latest { color: var(--text); animation: annIn 0.5s ease; }
+  .ann-old { color: var(--muted); font-size: 12px; opacity: 0.7; }
+  @keyframes annIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  #stale-warn {
+    display: none;
+    position: fixed; bottom: 14px; right: 14px;
+    background: var(--panel2); border: 1px solid var(--orange);
+    border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--orange);
+    z-index: 99;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div id="live-dot"></div>
+  <h1>👑 BATTLE ROYALE</h1>
+  <div class="hdr-stat">Turn <b id="hdr-turn">—</b></div>
+  <div class="hdr-stat">Survivors <b id="hdr-survivors">—</b></div>
+  <div class="hdr-stat">Safe Zones <b id="hdr-zones">—</b></div>
+  <div class="hdr-stat" id="hdr-target" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;">—</div>
+  <div id="commentary"></div>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>☠️ Kill Feed &amp; Events</h2>
+    <div class="scroll" id="feed"></div>
+  </section>
+  <section class="panel">
+    <h2>🗺️ The Arena</h2>
+    <div id="map-wrap">
+      <svg id="map" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="stormhatch" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+            <rect width="10" height="10" fill="rgba(96,80,160,0.18)"/>
+            <line x1="0" y1="0" x2="0" y2="10" stroke="rgba(140,120,220,0.35)" stroke-width="3"/>
+          </pattern>
+        </defs>
+        <g id="map-zones"></g>
+        <g id="map-tokens"></g>
+      </svg>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>📊 Combatants</h2>
+    <div class="scroll" id="combatants"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="sg-badge">💅 SnarkGirl <span style="color:var(--muted);font-weight:400;">· Game Master</span></div>
+  <div id="announcements"><div class="ann ann-latest">Welcome to the arena. Try not to get attached to anyone. 💅</div></div>
+</footer>
+
+<div id="victory">
+  <h1>🏆 VICTORY REPORT</h1>
+  <div class="subtitle" id="v-subtitle"></div>
+  <div class="victor-banner" id="v-banner"></div>
+  <div class="v-grid">
+    <div class="v-section full">
+      <h2>🍖 The Spoils — What To Fix (Battle-Tested)</h2>
+      <div id="v-findings"></div>
+    </div>
+    <div class="v-section">
+      <h2>📊 Final Standings</h2>
+      <table>
+        <thead><tr><th>#</th><th>Tribute</th><th>Model</th><th>🍖</th><th>Finds</th><th>Kills</th><th>Fate</th></tr></thead>
+        <tbody id="v-standings"></tbody>
+      </table>
+    </div>
+    <div class="v-section">
+      <h2>💡 Takeaways</h2>
+      <div id="v-takeaways"></div>
+      <h2 style="margin-top:18px;">💅 Game Master's Commentary</h2>
+      <div id="v-commentary"></div>
+    </div>
+    <div class="v-section full">
+      <h2>⚔️ Findings That Died in Battle</h2>
+      <div id="v-fallen"></div>
+    </div>
+    <div class="v-section full">
+      <h2>☠️ Kill Feed Archive</h2>
+      <div id="v-feed" style="max-height:300px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<div id="stale-warn">⚠️ Feed stale — waiting for Game Master update…</div>
+
+<script>
+(function () {
+  const POLL_MS = 2000;
+  let lastJson = "";
+  let lastOk = Date.now();
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const $ = id => document.getElementById(id);
+
+  function rationColor(r) {
+    if (r <= 1) return "var(--red)";
+    if (r <= 3) return "var(--yellow)";
+    return "var(--green)";
+  }
+
+  /* ---------- Map engine ---------- */
+  const MAP_W = 1000, MAP_H = 680;
+  const TERRAIN = [
+    "#1f3326", "#33291c", "#1c2a33", "#2e1c33", "#33201c", "#2c331c", "#1c3330", "#27273b"
+  ];
+  const TIER_ICON = { 1: "🦁", 2: "🐺", 3: "🐀" };
+
+  function hash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0);
+  }
+  function rand01(str) { return hash(str) / 4294967295; }
+
+  // Weighted binary-split treemap — deterministic territory rects
+  function layoutZones(zones, x, y, w, h) {
+    if (!zones.length) return [];
+    if (zones.length === 1) return [{ z: zones[0], x, y, w, h }];
+    const total = zones.reduce((s, z) => s + z._weight, 0);
+    let acc = 0, idx = 1;
+    for (let i = 1; i < zones.length; i++) {
+      acc += zones[i - 1]._weight;
+      if (acc >= total / 2) { idx = i; break; }
+      idx = i + 1 < zones.length ? i + 1 : i;
+    }
+    const a = zones.slice(0, idx), b = zones.slice(idx);
+    const fa = a.reduce((s, z) => s + z._weight, 0) / total;
+    if (w >= h) {
+      return layoutZones(a, x, y, w * fa, h).concat(layoutZones(b, x + w * fa, y, w * (1 - fa), h));
+    }
+    return layoutZones(a, x, y, w, h * fa).concat(layoutZones(b, x, y + h * fa, w, h * (1 - fa)));
+  }
+
+  // Organic territory polygon: inset rect with deterministic edge jitter
+  function territoryPath(r, seed) {
+    const inset = 5, J = 14;
+    const x0 = r.x + inset, y0 = r.y + inset, x1 = r.x + r.w - inset, y1 = r.y + r.h - inset;
+    const pts = [];
+    const edge = (ax, ay, bx, by, tag) => {
+      const segs = Math.max(2, Math.round(Math.hypot(bx - ax, by - ay) / 90));
+      for (let i = 0; i < segs; i++) {
+        const t = i / segs;
+        let px = ax + (bx - ax) * t, py = ay + (by - ay) * t;
+        if (i > 0) {
+          const j = (rand01(seed + tag + i) - 0.5) * J;
+          if (ay === by) py += j; else px += j;
+        }
+        pts.push([px, py]);
+      }
+    };
+    edge(x0, y0, x1, y0, "t"); edge(x1, y0, x1, y1, "r");
+    edge(x1, y1, x0, y1, "b"); edge(x0, y1, x0, y0, "l");
+    return "M" + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join("L") + "Z";
+  }
+
+  // Deterministic spread positions for occupants inside a territory
+  function tokenSpots(r, n) {
+    const padX = 46, padTop = 62, padBot = 36;
+    const ix = r.x + padX, iy = r.y + padTop;
+    const iw = Math.max(20, r.w - padX * 2), ih = Math.max(20, r.h - padTop - padBot);
+    const cols = Math.max(1, Math.ceil(Math.sqrt(n * (iw / Math.max(ih, 1)))));
+    const rows = Math.max(1, Math.ceil(n / cols));
+    const spots = [];
+    for (let i = 0; i < n; i++) {
+      const c = i % cols, ro = Math.floor(i / cols);
+      spots.push([ix + (c + 0.5) * (iw / cols), iy + (ro + 0.5) * (ih / rows)]);
+    }
+    return spots;
+  }
+
+  function renderMap(s, alive) {
+    const zones = (s.zones || []).map(z => Object.assign({}, z, { _weight: Math.max(1, z.weight || (z.files || []).length || 1) }));
+    const rects = layoutZones(zones, 0, 0, MAP_W, MAP_H);
+
+    $("map-zones").innerHTML = rects.map(rz => {
+      const z = rz.z;
+      const fill = TERRAIN[hash(z.id || z.name || "") % TERRAIN.length];
+      const path = territoryPath(rz, z.id || z.name || "");
+      const stTxt = z.status === "closing" ? "🌀 CLOSING" : z.status === "closed" ? "💀 CLOSED" : "🟢 SAFE";
+      const stCol = z.status === "closing" ? "var(--orange)" : z.status === "closed" ? "var(--red)" : "var(--green)";
+      const fl = z.files || [];
+      const files = fl.slice(0, 3).join(", ") + (fl.length > 3 ? " +" + (fl.length - 3) : "");
+      return `<g>` +
+        `<path class="zshape zshape-${esc(z.status || "safe")}" d="${path}" fill="${fill}"/>` +
+        (z.status === "closed" || z.status === "closing" ? `<path class="storm-overlay" d="${path}"/>` : "") +
+        `<text class="zlabel" x="${rz.x + 16}" y="${rz.y + 26}">${esc(z.emoji || "")} ${esc(z.name)}</text>` +
+        `<text class="zstatus" x="${rz.x + 16}" y="${rz.y + 41}" fill="${stCol}">${stTxt}</text>` +
+        `<text class="zfiles" x="${rz.x + 16}" y="${rz.y + 53}">${esc(files)}</text>` +
+        `</g>`;
+    }).join("");
+
+    // Player tokens — absolute coords + CSS transform transition = tokens glide between zones
+    const rectById = {};
+    rects.forEach(rz => rectById[rz.z.id] = rz);
+    const tokens = [];
+    rects.forEach(rz => {
+      const occ = alive.filter(c => c.zone === rz.z.id).sort((a, b) => String(a.id).localeCompare(String(b.id)));
+      const spots = tokenSpots(rz, occ.length);
+      occ.forEach((c, i) => tokens.push({ c, x: spots[i][0], y: spots[i][1] }));
+    });
+    // Tributes in unknown zones still render along the bottom so no one vanishes
+    alive.filter(c => !rectById[c.zone]).forEach((c, i) => tokens.push({ c, x: 70 + i * 95, y: MAP_H - 45 }));
+
+    const maxR = Math.max(10, ...(s.contestants || []).map(c => c.rations || 0));
+    $("map-tokens").innerHTML = tokens.map(t => {
+      const c = t.c;
+      const danger = (c.rations || 0) <= 1;
+      const icon = c.icon || TIER_ICON[c.tier] || "⚔️";
+      const hpW = 40, hp = Math.min(1, (c.rations || 0) / maxR);
+      return `<g class="ptoken tier-${esc(c.tier ?? 3)}${danger ? " danger" : ""}" style="transform:translate(${t.x.toFixed(1)}px,${t.y.toFixed(1)}px)">` +
+        `<text class="pname" y="-24">${esc(c.name)}</text>` +
+        `<circle class="pring" r="15"/>` +
+        `<text class="picon">${esc(icon)}</text>` +
+        `<rect class="hpbg" x="${-hpW / 2 - 1}" y="20" width="${hpW + 2}" height="6" rx="2"/>` +
+        `<rect class="hpfill" x="${-hpW / 2}" y="21" width="${(hpW * hp).toFixed(1)}" height="4" rx="1.5" fill="${rationColor(c.rations || 0)}"/>` +
+        `<text class="pstats" y="38">🍖${esc(c.rations ?? 0)} ⚔️${esc(c.kills ?? 0)}</text>` +
+        `</g>`;
+    }).join("");
+  }
+
+  function render(s) {
+    const alive = (s.contestants || []).filter(c => c.status === "alive");
+    $("hdr-turn").textContent = s.turn ?? "—";
+    $("hdr-survivors").textContent = alive.length + "/" + (s.contestants || []).length;
+    $("hdr-zones").textContent = (s.zones || []).filter(z => z.status === "safe").length;
+    $("hdr-target").textContent = (s.battlefield && s.battlefield.target) || s.title || "—";
+    $("commentary").textContent = s.commentary || "";
+
+    // SG announcement bar — latest big, previous two faded
+    const anns = (s.announcements || []).slice(-3).reverse();
+    $("announcements").innerHTML = anns.length
+      ? anns.map((a, i) =>
+          `<div class="ann ${i === 0 ? "ann-latest" : "ann-old"}">` +
+          `<span class="turn-tag">T${esc(a.turn ?? "?")}</span>${esc(a.text)}</div>`
+        ).join("")
+      : `<div class="ann ann-latest">${esc(s.commentary || "Welcome to the arena. Try not to get attached to anyone. 💅")}</div>`;
+
+    // Feed (newest first)
+    $("feed").innerHTML = (s.feed || []).slice().reverse().map(f =>
+      `<div class="feed-item feed-${esc(f.type || "info")}">` +
+      `<span class="turn-tag">T${esc(f.turn ?? "?")}</span>${esc(f.text)}</div>`
+    ).join("") || `<div class="lobby-msg">Waiting for the drop… 🪂</div>`;
+
+    // Map
+    renderMap(s, alive);
+
+    // Combatants — alive by rations desc, then the dead
+    const sorted = (s.contestants || []).slice().sort((a, b) =>
+      (a.status === "alive" ? 0 : 1) - (b.status === "alive" ? 0 : 1) || (b.rations || 0) - (a.rations || 0));
+    const maxR = Math.max(10, ...(s.contestants || []).map(c => c.rations || 0));
+    $("combatants").innerHTML = sorted.map(c => {
+      const dead = c.status !== "alive";
+      const danger = !dead && (c.rations || 0) <= 1;
+      return `<div class="card ${dead ? "dead" : ""} ${danger ? "danger" : ""}">` +
+        `<div class="card-top"><span class="card-name">${dead ? "💀 " : ""}${esc(c.name)}</span>` +
+        `<span class="card-model">${esc(c.model)} · T${esc(c.tier ?? "?")}</span></div>` +
+        `<div class="card-stats"><span>🍖 <b>${esc(c.rations ?? 0)}</b></span>` +
+        `<span>🔍 <b>${esc(c.finds ?? 0)}</b></span><span>⚔️ <b>${esc(c.kills ?? 0)}</b></span></div>` +
+        (dead
+          ? `<div class="card-death">${esc(c.causeOfDeath || "eliminated")}${c.epitaph ? " — “" + esc(c.epitaph) + "”" : ""}</div>`
+          : `<div class="ration-bar"><div class="ration-fill" style="width:${Math.min(100, (c.rations || 0) / maxR * 100)}%;background:${rationColor(c.rations || 0)}"></div></div>` +
+            `<div class="card-zone">📍 ${esc(((s.zones || []).find(z => z.id === c.zone) || {}).name || c.zone || "—")}</div>`) +
+        `</div>`;
+    }).join("") || `<div class="lobby-msg">Roster incoming… 💅</div>`;
+
+    // Victory screen
+    if (s.phase === "finished") renderVictory(s);
+    else $("victory").classList.remove("show");
+  }
+
+  function renderVictory(s) {
+    const v = $("victory");
+    if (!v.classList.contains("show")) v.classList.add("show");
+    $("v-subtitle").textContent = `${(s.battlefield && s.battlefield.target) || s.title || ""} · ${s.turn || "?"} turns · ${(s.contestants || []).length} contestants dropped`;
+    const w = s.victor || {};
+    $("v-banner").innerHTML = `<span class="crown">👑</span><b>${esc(w.name || "—")}</b> (${esc(w.model || "?")}) — ` +
+      `${esc(w.finds != null ? w.finds : "?")} validated finds · ${esc(w.kills != null ? w.kills : "?")} kills · ${esc(w.rations != null ? w.rations : "?")} 🍖 to spare`;
+
+    const sevOrder = { critical: 0, important: 1, nitpick: 2 };
+    const sevIcon = { critical: "🚨", important: "⚠️", nitpick: "💅" };
+    const valid = (s.findings || []).filter(f => f.status !== "fallen")
+      .sort((a, b) => (sevOrder[a.severity] ?? 9) - (sevOrder[b.severity] ?? 9));
+    $("v-findings").innerHTML = valid.map(f =>
+      `<div class="finding ${esc(f.severity)}"><span class="f-title">${sevIcon[f.severity] || ""} ${esc(f.title)}</span> ` +
+      `<span class="f-loc">${esc(f.file)}${f.line ? ":" + esc(f.line) : ""}</span>` +
+      (f.fix ? `<div class="f-fix">🔧 ${esc(f.fix)}</div>` : "") +
+      `<div class="f-meta">Found by ${esc(f.foundBy)} (Turn ${esc(f.turn)})${f.contested ? " · ⚔️ survived a skirmish" : ""}</div></div>`
+    ).join("") || `<div class="lobby-msg">Flawless arena — no validated findings. Iconic code, honestly.</div>`;
+
+    const fallen = (s.findings || []).filter(f => f.status === "fallen");
+    $("v-fallen").innerHTML = fallen.map(f =>
+      `<div class="finding"><span class="f-title">“${esc(f.title)}”</span> — ${esc(f.foundBy)}, Turn ${esc(f.turn)}` +
+      `<div class="f-meta">Why it fell: ${esc(f.fellBecause || "invalidated by the Game Master")}</div></div>`
+    ).join("") || `<div class="lobby-msg">No claims died — every finding held up.</div>`;
+
+    const standings = (s.contestants || []).slice().sort((a, b) =>
+      (a.status === "alive" ? 0 : 1) - (b.status === "alive" ? 0 : 1) ||
+      (b.finds || 0) - (a.finds || 0) || (b.rations || 0) - (a.rations || 0));
+    $("v-standings").innerHTML = standings.map((c, i) =>
+      `<tr><td>${i === 0 ? "🏆" : i + 1}</td><td>${esc(c.name)}</td><td>${esc(c.model)}</td>` +
+      `<td>${esc(c.rations ?? 0)}</td><td>${esc(c.finds ?? 0)}</td><td>${esc(c.kills ?? 0)}</td>` +
+      `<td>${c.status === "alive" ? "SURVIVED" : esc(c.causeOfDeath || "eliminated")}</td></tr>`
+    ).join("");
+
+    $("v-takeaways").innerHTML = (s.takeaways || []).map(t => `<div class="takeaway">${esc(t)}</div>`).join("") || "—";
+    $("v-commentary").textContent = s.finalCommentary || s.commentary || "";
+    $("v-feed").innerHTML = (s.feed || []).slice().reverse().map(f =>
+      `<div class="feed-item feed-${esc(f.type || "info")}"><span class="turn-tag">T${esc(f.turn ?? "?")}</span>${esc(f.text)}</div>`).join("");
+  }
+
+  async function poll() {
+    try {
+      const res = await fetch("state.json?t=" + Date.now(), { cache: "no-store" });
+      if (res.ok) {
+        const txt = await res.text();
+        lastOk = Date.now();
+        if (txt !== lastJson) {
+          lastJson = txt;
+          render(JSON.parse(txt));
+        }
+      }
+    } catch (e) { /* GM is mid-write or server hiccup — keep polling */ }
+    $("stale-warn").style.display = (Date.now() - lastOk > 30000) ? "block" : "none";
+  }
+
+  poll();
+  setInterval(poll, POLL_MS);
+})();
+</script>
+</body>
+</html>

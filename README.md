@@ -115,7 +115,7 @@ The nuclear option. The Council attacks your code. The Sisterhood defends it. Th
 **Battle Royale (Survival Review Death Match):**
 > "SnarkGirl, battle royale"
 
-The biggest gun in the arsenal. SnarkGirl carves your diff into named zones and drops 10-20 AI contestants (tiered models — flagships to scrappers) onto the battlefield. They survive by finding REAL bugs (validated against actual code — hallucinations earn nothing), fight skirmishes over contested findings, lose rations to hunger, and die when they hit zero. The zone shrinks every few turns, forcing survivors together. Full spectator mode: kill feed, map status, and leaderboard every turn. Last contestant standing wins, and every finding in the Victory Report has been fought over and battle-tested. Works on PRs, branches, and your working state.
+The biggest gun in the arsenal. SnarkGirl carves your diff into named zones and drops 10-20 AI contestants (tiered models — flagships to scrappers) onto the battlefield. They survive by finding REAL bugs (validated against actual code — hallucinations earn nothing), fight skirmishes over contested findings, lose rations to hunger, and die when they hit zero. The zone shrinks every few turns, forcing survivors together. Full spectator mode: kill feed, map status, and leaderboard every turn — PLUS a **live web arena** that auto-opens in your browser and updates in real time (zone map with player tokens, combatant stat cards, scrolling kill feed, and a full-screen Victory Report when it's over). Last contestant standing wins, and every finding in the Victory Report has been fought over and battle-tested. Works on PRs, branches, and your working state.
 
 **Clap Back:**
 > "SnarkGirl, clap back on the reviews"
@@ -253,7 +253,9 @@ skills/
 ├── snark-supreme/            # The Gauntlet Supreme — adversarial Council vs Sisterhood + SnarkGirl's final verdict
 │   └── SKILL.md
 ├── snark-battle-royale/      # Battle Royale — 10-20 contestants fight to the death over real bugs, SnarkGirl as Game Master
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── assets/
+│       └── arena.html        # Live web arena spectator page (map, stats, kill feed, victory screen)
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md
 ├── snark-ticket/             # GitHub issue triage & approach planning
