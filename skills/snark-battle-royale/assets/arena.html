@@ -95,6 +95,7 @@
   }
   .panel .scroll { flex: 1; overflow-y: auto; padding: 10px 12px; }
   .scroll::-webkit-scrollbar { width: 8px; }
+  .scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.25); border-radius: 4px; }
   .scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   /* ---------- Feed ---------- */
   .feed-item {
@@ -136,6 +137,8 @@
   .zstatus { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
   .zfiles { font-size: 8.5px; fill: rgba(232,232,240,0.45); }
   .storm-overlay { fill: url(#stormhatch); pointer-events: none; }
+  /* Closed terrain is dimmed/greyed — its hatch must dim with it */
+  .storm-closed { opacity: 0.45; filter: grayscale(0.85); }
   .ptoken { transition: transform 1.2s cubic-bezier(.45,.05,.35,1); }
   .ptoken .pname { font-size: 11px; font-weight: 700; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 3px; }
   .ptoken .pring { fill: #14141c; stroke-width: 2; }
@@ -146,6 +149,8 @@
   @keyframes dangerpulse { 0%,100% { stroke-opacity: 1; stroke-width: 2; } 50% { stroke-opacity: 0.4; stroke-width: 4; } }
   .ptoken .picon { font-size: 15px; text-anchor: middle; dominant-baseline: central; }
   .ptoken .hpbg { fill: rgba(0,0,0,0.65); rx: 2; }
+  /* width/fill are CSS geometry properties — animatable in all evergreen
+     engines; older ones simply snap, which is an acceptable fallback */
   .ptoken .hpfill { transition: width 0.6s, fill 0.6s; }
   .ptoken .pstats { font-size: 9px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 2.5px; }
   /* Ambient life: wandering, feasting, clashing */
@@ -296,6 +301,8 @@
   .finding .f-loc { color: var(--pink-dim); font-family: monospace; font-size: 12px; }
   .finding .f-fix { color: var(--muted); margin-top: 4px; }
   .finding .f-meta { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .f-group { color: var(--pink); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 8px; }
+  .f-group:first-child { margin-top: 0; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
   th { color: var(--muted); font-size: 11px; text-transform: uppercase; }
@@ -393,14 +400,15 @@
   <section class="panel">
     <h2>🗺️ The Arena</h2>
     <div id="map-wrap">
-      <svg id="map" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet">
+      <svg id="map" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Live battle royale arena map: territories, tribute positions, and skirmishes">
         <defs>
           <pattern id="stormhatch" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
             <rect width="10" height="10" fill="rgba(96,80,160,0.18)"/>
             <line x1="0" y1="0" x2="0" y2="10" stroke="rgba(140,120,220,0.35)" stroke-width="3"/>
           </pattern>
+          <!-- literal colour: CSS vars don't resolve in presentation attributes -->
           <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L7,3 L0,6 Z" fill="var(--pink)"/>
+            <path d="M0,0 L7,3 L0,6 Z" fill="#FF69B4"/>
           </marker>
         </defs>
         <g id="map-zones"></g>
@@ -492,6 +500,7 @@
   let lastJson = "";
   let lastOk = Date.now();
   let feedSeenN = 0, feedDividerAt = 0;  // feed watermarks for the NEW divider
+  let feedSeenSig = "";                  // signature of the last-seen entry — detects feed REPLACEMENT
   let pollInFlight = false;
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -511,6 +520,7 @@
   const TIER_ICON = { 1: "🦁", 2: "🐺", 3: "🐀" };
 
   function hash(str) {
+    str = String(str); // numeric/undefined ids must not collapse to one bucket
     let h = 2166136261;
     for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
     // FNV-1a barely diffuses a trailing index char — finish with an avalanche
@@ -538,11 +548,13 @@
     if (!zones.length) return [];
     if (zones.length === 1) return [{ z: zones[0], x, y, w, h }];
     const total = zones.reduce((s, z) => s + z._weight, 0);
-    let acc = 0, idx = 1;
+    // Pick the cut closest to the true midpoint (look-back balance) — a greedy
+    // first-crossing split can badly overshoot when one weight is large
+    let acc = 0, idx = 1, best = Infinity;
     for (let i = 1; i < zones.length; i++) {
       acc += zones[i - 1]._weight;
-      if (acc >= total / 2) { idx = i; break; }
-      idx = i + 1 < zones.length ? i + 1 : i;
+      const d = Math.abs(acc - total / 2);
+      if (d < best) { best = d; idx = i; }
     }
     const a = zones.slice(0, idx), b = zones.slice(idx);
     const fa = a.reduce((s, z) => s + z._weight, 0) / total;
@@ -588,27 +600,43 @@
   // Spots are spread by tribute index within the zone (golden-angle around the
   // zone center) so roamers don't pile on top of each other, then clamped into
   // the zone rect so tiny zones can't overflow.
+  // Usable vertical band for tokens inside a zone rect: below the label block,
+  // above the bottom edge. For short zones (h ≤ 98px) the fixed insets would
+  // collapse the band to a single line — or invert below 48px — so we fall back
+  // to a proportional band around the rect's vertical center.
+  function zoneBandY(rz) {
+    let yMin = rz.y + Math.min(70, Math.max(20, rz.h - 28));
+    let yMax = rz.y + rz.h - 28;
+    if (yMin >= yMax) {
+      const mid = rz.y + rz.h / 2, half = Math.max(4, rz.h * 0.18);
+      yMin = mid - half; yMax = mid + half;
+    }
+    return [yMin, yMax];
+  }
   function clampToZone(rz, x, y) {
-    const yMin = rz.y + Math.min(70, Math.max(20, rz.h - 28));
+    const [yMin, yMax] = zoneBandY(rz);
     return [
       Math.min(rz.x + rz.w - 24, Math.max(rz.x + 24, x)),
-      Math.min(rz.y + rz.h - 28, Math.max(yMin, y))
+      Math.min(yMax, Math.max(yMin, y))
     ];
   }
   function homeSpot(rz, c, idx, count) {
+    const [yMin, yMax] = zoneBandY(rz);
     if (idx != null && count > 1) {
       // Deterministic ring placement: golden-angle slices keep neighbors apart
-      const cx = rz.x + rz.w / 2, cy = rz.y + 70 + Math.max(0, rz.h - 110) / 2;
+      const minDim = Math.max(1, Math.min(rz.w, rz.h)); // zero-dim rects must not yield NaN
+      const cx = rz.x + rz.w / 2, cy = (yMin + yMax) / 2;
       const ang = idx * 2.39996 + rand01(rz.z.id + ":ha:" + c.id) * 0.8;
-      const rad = (0.25 + 0.65 * ((idx % 3) + 1) / 3) * Math.min(rz.w, rz.h) * 0.38;
-      return clampToZone(rz, cx + Math.cos(ang) * rad * (rz.w / Math.min(rz.w, rz.h)), cy + Math.sin(ang) * rad);
+      const rad = (0.25 + 0.65 * ((idx % 3) + 1) / 3) * minDim * 0.38;
+      return clampToZone(rz, cx + Math.cos(ang) * rad * (rz.w / minDim), cy + Math.sin(ang) * rad);
     }
     const x = rz.x + 44 + rand01(rz.z.id + ":hx:" + c.id) * Math.max(16, rz.w - 88);
-    const y = rz.y + 80 + rand01(rz.z.id + ":hy:" + c.id) * Math.max(16, rz.h - 140);
+    const y = yMin + rand01(rz.z.id + ":hy:" + c.id) * Math.max(16, yMax - yMin);
     return clampToZone(rz, x, y);
   }
 
   function renderMap(s, alive) {
+    resetMapIfNewMatch(s);
     const zones = (s.zones || []).map(z => Object.assign({}, z, { _weight: Math.max(1, z.weight || (z.files || []).length || 1) }));
     const rects = layoutZones(zones, 0, 0, MAP_W, MAP_H);
 
@@ -626,7 +654,7 @@
       const labelFit = label.length > maxCh ? label.slice(0, maxCh - 1) + "…" : label;
       return `<g>` +
         `<path class="zshape zshape-${esc(z.status || "safe")}" d="${path}" fill="${fill}"/>` +
-        (z.status === "closed" || z.status === "closing" ? `<path class="storm-overlay" d="${path}"/>` : "") +
+        (z.status === "closed" || z.status === "closing" ? `<path class="storm-overlay storm-${esc(z.status)}" d="${path}"/>` : "") +
         `<text class="zlabel" x="${rz.x + 16}" y="${rz.y + 26}"><title>${esc(label)}</title>${esc(labelFit)}</text>` +
         `<text class="zstatus" x="${rz.x + 16}" y="${rz.y + 41}" fill="${stCol}">${stTxt}</text>` +
         `<text class="zfiles" x="${rz.x + 16}" y="${rz.y + 53}">${esc(files)}</text>` +
@@ -643,9 +671,13 @@
       if (z.status === "closed" || z.status === "closing") return;
       const n = Math.max(1, Math.min(8, Math.round(rz.w * rz.h / 28000)));
       const spots = [];
+      const [fyMin, fyMax] = zoneBandY(rz);
       for (let i = 0; i < n; i++) {
-        const fx = rz.x + 24 + rand01(z.id + ":fx:" + i) * Math.max(16, rz.w - 48);
-        const fy = rz.y + 70 + rand01(z.id + ":fy:" + i) * Math.max(16, rz.h - 92);
+        // Scatter inside the zone's usable band, clamped so tiny zones can't overflow
+        let fx = rz.x + 24 + rand01(z.id + ":fx:" + i) * Math.max(16, rz.w - 48);
+        let fy = fyMin + rand01(z.id + ":fy:" + i) * Math.max(8, fyMax - fyMin);
+        fx = Math.min(rz.x + rz.w - 14, Math.max(rz.x + 14, fx));
+        fy = Math.min(rz.y + rz.h - 8, fy);
         spots.push([fx, fy]);
         foodHtml += `<text class="food" x="${fx.toFixed(1)}" y="${fy.toFixed(1)}">${FOOD[hash(z.id + ":fe:" + i) % FOOD.length]}</text>`;
       }
@@ -695,22 +727,26 @@
       groups.forEach((members, gi) => {
         let cx, cy;
         if (groups.length > 1) {
+          const [byMin, byMax] = zoneBandY(rz);
           const ang = gi * (2 * Math.PI / groups.length) + rand01(rz.z.id + ":ga") * 0.9;
           const rad = Math.min(rz.w, rz.h) * 0.24;
-          [cx, cy] = clampToZone(rz, rz.x + rz.w / 2 + Math.cos(ang) * rad * 1.4, rz.y + 70 + Math.max(0, rz.h - 110) / 2 + Math.sin(ang) * rad);
+          [cx, cy] = clampToZone(rz, rz.x + rz.w / 2 + Math.cos(ang) * rad * 1.4, (byMin + byMax) / 2 + Math.sin(ang) * rad);
         } else {
           const spots = members.map(m => homeSpot(rz, m));
           cx = spots.reduce((s, p) => s + p[0], 0) / spots.length;
           cy = spots.reduce((s, p) => s + p[1], 0) / spots.length;
         }
+        // Formation offsets are clamped so duels/melees near a zone edge stay inside
         if (members.length === 2) {
-          want.push({ c: members[0], zone: rz.z.id, x: cx - 26, y: cy, anim: "clash-l" });
-          want.push({ c: members[1], zone: rz.z.id, x: cx + 26, y: cy, anim: "clash-r" });
+          const [lx, ly] = clampToZone(rz, cx - 26, cy);
+          const [rx, ry] = clampToZone(rz, cx + 26, cy);
+          want.push({ c: members[0], zone: rz.z.id, x: lx, y: ly, anim: "clash-l" });
+          want.push({ c: members[1], zone: rz.z.id, x: rx, y: ry, anim: "clash-r" });
         } else {
           const r = 34 + members.length * 3;
           members.forEach((m, mi) => {
             const a = mi * (2 * Math.PI / members.length) - Math.PI / 2;
-            const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+            const [x, y] = clampToZone(rz, cx + Math.cos(a) * r, cy + Math.sin(a) * r);
             const lunge = `--lx:${(-Math.cos(a) * 16).toFixed(1)}px;--ly:${(-Math.sin(a) * 16).toFixed(1)}px`;
             want.push({ c: m, zone: rz.z.id, x, y, anim: "clash-m", vars: lunge });
           });
@@ -759,11 +795,14 @@
       const rz = rectById[c.zone];
       let x, y;
       if (rz) {
-        x = rz.x + 30 + rand01("cx" + c.id) * Math.max(12, rz.w - 60);
-        y = rz.y + 72 + rand01("cy" + c.id) * Math.max(12, rz.h - 96);
+        const [cyMin, cyMax] = zoneBandY(rz);
+        [x, y] = clampToZone(rz,
+          rz.x + 30 + rand01("cx" + c.id) * Math.max(12, rz.w - 60),
+          cyMin + rand01("cy" + c.id) * Math.max(12, cyMax - cyMin));
       } else {
+        // Own fallback row ABOVE the living's bottom row so the two never collide
         x = MAP_W - 70 - (lostDead * 95) % (MAP_W - 140);
-        y = MAP_H - 45 - Math.floor((lostDead * 95) / (MAP_W - 140)) * 58;
+        y = MAP_H - 100 - Math.floor((lostDead * 95) / (MAP_W - 140)) * 58;
         lostDead++;
       }
       const icon = c.icon || TIER_ICON[c.tier] || "⚔️";
@@ -786,10 +825,12 @@
   const prevSpot = {};   // tribute id -> {x, y, zone}
   let suppressTrails = false; // set during replay scrubs/jumps — no fake arrows
 
-  function tokenInner(t, maxR) {
+  function tokenInner(t) {
+    // STRUCTURAL markup only — dynamic bits (hp width/colour, stats text) are
+    // patched in place by reconcileTokens so a ration tick doesn't rebuild the
+    // node and snap the wander/feast animation back to frame 0.
     const c = t.c;
     const icon = c.icon || TIER_ICON[c.tier] || "⚔️";
-    const hpW = 40, hp = Math.min(1, (c.rations || 0) / maxR);
     // Fighters get phase-locked to the shared combat clock in reconcileTokens;
     // roamers get a personal phase so they don't march in step
     const fighting = (t.anim || "").startsWith("clash");
@@ -798,11 +839,12 @@
       `<text class="pname" y="-24">${esc(c.name)}</text>` +
       `<circle class="pring" r="15"/>` +
       `<text class="picon">${esc(icon)}</text>` +
-      `<rect class="hpbg" x="${-hpW / 2 - 1}" y="20" width="${hpW + 2}" height="6" rx="2"/>` +
-      `<rect class="hpfill" x="${-hpW / 2}" y="21" width="${(hpW * hp).toFixed(1)}" height="4" rx="1.5" fill="${rationColor(c.rations || 0)}"/>` +
-      `<text class="pstats" y="38">🍖${esc(c.rations ?? 0)} ⚔️${esc(c.kills ?? 0)}</text>` +
+      `<rect class="hpbg" x="${-HP_W / 2 - 1}" y="20" width="${HP_W + 2}" height="6" rx="2"/>` +
+      `<rect class="hpfill" x="${-HP_W / 2}" y="21" width="0" height="4" rx="1.5"/>` +
+      `<text class="pstats" y="38"></text>` +
       `</g>`;
   }
+  const HP_W = 40;
 
   // All combat animations (clash + boom) run on one global 1.3s clock. Nodes
   // are created at different times (booms rebuild every render, fighters only
@@ -826,12 +868,13 @@
       const danger = (t.c.rations || 0) <= 1;
       el.setAttribute("class", `ptoken tier-${t.c.tier ?? 3}${danger ? " danger" : ""}`);
       const p = prevSpot[id];
-      if (!isNew && p && p.zone !== t.zone) {
-        if (!suppressTrails) drawTrail(p, t);
-        layer.appendChild(el); // re-append so movers paint above settled neighbors
-      }
+      const moved = !isNew && p && (p.x !== t.x || p.y !== t.y);
+      if (moved && p.zone !== t.zone && !suppressTrails) drawTrail(p, t);
+      // Re-append ANY mover (not just zone-changers) so painter order stays
+      // current in the endgame when everyone shares one zone
+      if (moved) layer.appendChild(el);
       el.style.transform = `translate(${t.x.toFixed(1)}px,${t.y.toFixed(1)}px)`;
-      const inner = tokenInner(t, maxR);
+      const inner = tokenInner(t);
       if (el._inner !== inner) {
         el.innerHTML = inner; el._inner = inner;
         // Fresh .pbody node = fresh animation — align it to the combat clock
@@ -839,6 +882,12 @@
           el.querySelector(".pbody").style.animationDelay = clashPhase();
         }
       }
+      // Patch dynamic stats in place (no innerHTML rebuild, no animation snap)
+      const hp = Math.max(0, Math.min(1, (t.c.rations || 0) / maxR));
+      const fillEl = el.querySelector(".hpfill");
+      fillEl.setAttribute("width", (HP_W * hp).toFixed(1));
+      fillEl.setAttribute("fill", rationColor(t.c.rations || 0));
+      el.querySelector(".pstats").textContent = `🍖${t.c.rations ?? 0} ⚔️${t.c.kills ?? 0}`;
       prevSpot[id] = { x: t.x, y: t.y, zone: t.zone };
     });
     Object.keys(tokenEls).forEach(id => {
@@ -857,10 +906,29 @@
     $("map-trails").appendChild(path);
     setTimeout(() => path.remove(), 4600);
   }
+  // Wipe in-flight arrows immediately — used on replay scrubs/jumps and match
+  // switches, where lingering trails would show stale (or future) moves
+  function clearTrails() { $("map-trails").innerHTML = ""; }
+
+  // A different match (new title/target) on the same open page must not inherit
+  // the previous match's token DOM, prevSpot anchors, or trail arrows — that
+  // would draw bogus "turn 1 arrows" from the old battle's positions.
+  let matchKey = null;
+  function resetMapIfNewMatch(s) {
+    const key = `${s.title || ""}|${(s.battlefield && s.battlefield.target) || ""}`;
+    if (matchKey === key) return;
+    matchKey = key;
+    Object.keys(tokenEls).forEach(id => { tokenEls[id].remove(); delete tokenEls[id]; delete prevSpot[id]; });
+    clearTrails();
+    doneDismissed = false; // a fresh match gets a fresh battle-done modal
+  }
 
   /* ---------- Sound effects (Web Audio synth — no files needed) ---------- */
   let audioCtx = null, soundOn = true, lastFeedN = -1, lastFeedTail = "";
+  const sfxTimers = new Set(); // queued cue timeouts — cancelled on mute
   function actx() {
+    // A closed context is useless forever — drop it and build a fresh one
+    if (audioCtx && audioCtx.state === "closed") audioCtx = null;
     if (!audioCtx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
@@ -961,7 +1029,13 @@
       cues.forEach(t => byType[t].push(t));
       cues = ["kill", "storm", "skirmish", "find"].flatMap(t => byType[t].slice(0, 2)).slice(0, 6);
     }
-    cues.forEach((t, i) => setTimeout(() => { try { SFX[t](); } catch (e) {} }, i * 400));
+    cues.forEach((t, i) => {
+      const id = setTimeout(() => {
+        sfxTimers.delete(id);
+        if (soundOn) { try { SFX[t](); } catch (e) {} }
+      }, i * 400);
+      sfxTimers.add(id);
+    });
   }
 
   function render(s) {
@@ -993,13 +1067,19 @@
       `<div class="feed-item feed-${esc(f.type || "info")}">` +
       `<span class="turn-tag">T${esc(f.turn ?? "?")}</span>${esc(f.text)}</div>`;
     // Divider marks the start of the latest batch; it stays put until the
-    // NEXT batch arrives so the spectator can always see what's fresh
-    if (feed.length > feedSeenN) {
+    // NEXT batch arrives so the spectator can always see what's fresh.
+    // A changed entry at the old watermark means the feed was REPLACED (new
+    // match reusing the page) — even at the same or greater length — so resync.
+    const sigAtSeen = feedSeenN > 0 && feed[feedSeenN - 1] ? JSON.stringify(feed[feedSeenN - 1]) : "";
+    if (feedSeenN > 0 && sigAtSeen !== feedSeenSig) {
+      feedDividerAt = 0; feedSeenN = feed.length;
+    } else if (feed.length > feedSeenN) {
       feedDividerAt = feedSeenN;
       feedSeenN = feed.length;
     } else if (feed.length < feedSeenN) {
-      feedDividerAt = 0; feedSeenN = feed.length;  // new match / scrub-back
+      feedDividerAt = 0; feedSeenN = feed.length;  // scrub-back
     }
+    feedSeenSig = feedSeenN > 0 && feed[feedSeenN - 1] ? JSON.stringify(feed[feedSeenN - 1]) : "";
     const newCount = feedDividerAt > 0 ? feed.length - feedDividerAt : 0;
     const rev = feed.slice().reverse();
     const feedHtml = (newCount > 0 && newCount < feed.length
@@ -1008,20 +1088,30 @@
         rev.slice(newCount).map(feedItem).join("")
       : rev.map(feedItem).join("")) || `<div class="lobby-msg">Waiting for the drop… 🪂</div>`;
     if ($("feed")._html !== feedHtml) {
-      const sc = $("feed").scrollTop;
-      $("feed").innerHTML = feedHtml;
-      $("feed")._html = feedHtml;
-      $("feed").scrollTop = sc;
+      const el = $("feed");
+      const sc = el.scrollTop, oldH = el.scrollHeight;
+      el.innerHTML = feedHtml;
+      el._html = feedHtml;
+      // Newest-first feed: new items PREPEND. At the top, stay at the top to
+      // show them; mid-scroll, offset by the height delta so the entry being
+      // read doesn't jump.
+      el.scrollTop = sc <= 4 ? 0 : sc + (el.scrollHeight - oldH);
     }
 
     // Map
     renderMap(s, alive);
 
-    // Combatants — alive by rations desc, then the dead. Diff-guarded so the
+    // Combatants — alive by rations desc (finds, then id break ties so the
+    // order can't jitter between renders), then the dead. Diff-guarded so the
     // sidebar scroll position isn't reset by identical rebuilds
     const sorted = (s.contestants || []).slice().sort((a, b) =>
-      (a.status === "alive" ? 0 : 1) - (b.status === "alive" ? 0 : 1) || (b.rations || 0) - (a.rations || 0));
-    const maxRAll = Math.max(10, ...(s.contestants || []).map(c => c.rations || 0));
+      (a.status === "alive" ? 0 : 1) - (b.status === "alive" ? 0 : 1) ||
+      (b.rations || 0) - (a.rations || 0) ||
+      (b.finds || 0) - (a.finds || 0) ||
+      String(a.id).localeCompare(String(b.id)));
+    // Ration bars scale against the richest LIVING tribute — rich corpses
+    // shouldn't shrink the survivors' bars
+    const maxRAll = Math.max(10, ...alive.map(c => c.rations || 0));
     const combHtml = sorted.map(c => {
       const dead = c.status !== "alive";
       const danger = !dead && (c.rations || 0) <= 1;
@@ -1053,12 +1143,15 @@
       finishedState = s;
       $("results-btn").style.display = "inline-block";
       const w = s.victor || {};
+      // Mercy-rule endings can leave several tributes standing — say so
       $("bd-sub").textContent = w.name
-        ? `The cannons have gone quiet. ${w.name} stands alone. 👑`
-        : "The cannons have gone quiet. One tribute remains.";
+        ? (alive.length > 1
+            ? `The arena is looted bare. ${w.name} is crowned richest survivor — ${alive.length} still stand. 👑`
+            : `The cannons have gone quiet. ${w.name} stands alone. 👑`)
+        : "The cannons have gone quiet.";
       if (!doneSeen) {
         doneSeen = true;
-        if (!$("victory").classList.contains("show")) {
+        if (!doneDismissed && !$("victory").classList.contains("show")) {
           $("battle-done").classList.add("show");
           $("bd-view").focus();
         }
@@ -1070,11 +1163,16 @@
       doneSeen = false;
       $("battle-done").classList.remove("show");
       $("results-btn").style.display = "none";
-      $("victory").classList.remove("show");
+      // In replay mode a scrub-back must NOT slam an open report shut —
+      // the viewer opened it; only their close button takes it away
+      if (!replayMode) $("victory").classList.remove("show");
     }
   }
 
   let finishedState = null, doneSeen = false;
+  let doneDismissed = false;  // viewer already dismissed battle-done — don't re-show on replay scrubs
+  let replayMode = false;
+  let victoryOpener = null;   // element to restore focus to when the report closes
   // Keep Tab inside open modals (accessibility — aria-modal promises this)
   function trapFocus(modal) {
     modal.addEventListener("keydown", e => {
@@ -1088,19 +1186,42 @@
   }
   trapFocus($("battle-done"));
   trapFocus($("victory"));
+  // Opening the report moves focus INSIDE the dialog (so the trap is live and
+  // keyboard users land in it); closing restores focus to a sensible opener.
+  function openVictory(opener) {
+    if (!finishedState) return;
+    victoryOpener = opener;
+    renderVictory(finishedState);
+    $("v-close").focus();
+  }
   $("bd-view").onclick = () => {
+    doneDismissed = true;
     $("battle-done").classList.remove("show");
-    if (finishedState) renderVictory(finishedState);
+    openVictory($("results-btn"));
   };
-  $("bd-stay").onclick = () => $("battle-done").classList.remove("show");
+  $("bd-stay").onclick = () => {
+    doneDismissed = true;
+    $("battle-done").classList.remove("show");
+    $("results-btn").focus();
+  };
   $("results-btn").onclick = () => {
     $("battle-done").classList.remove("show");
-    if (finishedState) renderVictory(finishedState);
+    openVictory($("results-btn"));
   };
-  $("v-close").onclick = () => $("victory").classList.remove("show");
+  $("v-close").onclick = () => {
+    $("victory").classList.remove("show");
+    const back = victoryOpener && document.contains(victoryOpener) && victoryOpener.offsetParent !== null
+      ? victoryOpener : document.body;
+    back.focus();
+  };
 
   function renderVictory(s) {
     const v = $("victory");
+    // Diff-guard: a finished-phase poll with identical data must not wipe the
+    // open report's DOM (and the reader's scroll position) for nothing
+    const key = JSON.stringify([s.updatedAt, s.turn, (s.feed || []).length, (s.findings || []).length, s.takeaways, s.finalCommentary, s.victor]);
+    if (v.classList.contains("show") && v._key === key) return;
+    v._key = key;
     if (!v.classList.contains("show")) v.classList.add("show");
     $("v-subtitle").textContent = `${(s.battlefield && s.battlefield.target) || s.title || ""} · ${s.turn || "?"} turns · ${(s.contestants || []).length} contestants dropped`;
     const w = s.victor || {};
@@ -1109,14 +1230,21 @@
 
     const sevOrder = { critical: 0, important: 1, nitpick: 2 };
     const sevIcon = { critical: "🚨", important: "⚠️", nitpick: "💅" };
+    const sevName = { critical: "🚨 Critical", important: "⚠️ Important", nitpick: "💅 Nitpicks" };
     const valid = (s.findings || []).filter(f => f.status !== "fallen")
       .sort((a, b) => (sevOrder[a.severity] ?? 9) - (sevOrder[b.severity] ?? 9));
-    $("v-findings").innerHTML = valid.map(f =>
-      `<div class="finding ${esc(f.severity)}"><span class="f-title">${sevIcon[f.severity] || ""} ${esc(f.title)}</span> ` +
-      `<span class="f-loc">${esc(f.file)}${f.line ? ":" + esc(f.line) : ""}</span>` +
-      (f.fix ? `<div class="f-fix">🔧 ${esc(f.fix)}</div>` : "") +
-      `<div class="f-meta">Found by ${esc(f.foundBy)} (Turn ${esc(f.turn)})${f.contested ? " · ⚔️ survived a skirmish" : ""}</div></div>`
-    ).join("") || `<div class="lobby-msg">Flawless arena — no validated findings. Iconic code, honestly.</div>`;
+    // Grouped by severity with headers, as the Spoils spec promises
+    let lastSev = null;
+    $("v-findings").innerHTML = valid.map(f => {
+      const head = f.severity !== lastSev
+        ? `<div class="f-group">${sevName[f.severity] || esc(f.severity || "Other")}</div>` : "";
+      lastSev = f.severity;
+      return head +
+        `<div class="finding ${esc(f.severity)}"><span class="f-title">${sevIcon[f.severity] || ""} ${esc(f.title)}</span> ` +
+        `<span class="f-loc">${esc(f.file)}${f.line ? ":" + esc(f.line) : ""}</span>` +
+        (f.fix ? `<div class="f-fix">🔧 ${esc(f.fix)}</div>` : "") +
+        `<div class="f-meta">Found by ${esc(f.foundBy)} (Turn ${esc(f.turn)})${f.contested ? " · ⚔️ survived a skirmish" : ""}</div></div>`;
+    }).join("") || `<div class="lobby-msg">Flawless arena — no validated findings. Iconic code, honestly.</div>`;
 
     const fallen = (s.findings || []).filter(f => f.status === "fallen");
     $("v-fallen").innerHTML = fallen.map(f =>
@@ -1124,7 +1252,11 @@
       `<div class="f-meta">Why it fell: ${esc(f.fellBecause || "invalidated by the Game Master")}</div></div>`
     ).join("") || `<div class="lobby-msg">No claims died — every finding held up.</div>`;
 
+    // The declared victor ALWAYS tops the table — finds/rations sorts must
+    // never hand the trophy row to someone else
+    const vid = s.victor && s.victor.id;
     const standings = (s.contestants || []).slice().sort((a, b) =>
+      (a.id === vid ? 0 : 1) - (b.id === vid ? 0 : 1) ||
       (a.status === "alive" ? 0 : 1) - (b.status === "alive" ? 0 : 1) ||
       (b.finds || 0) - (a.finds || 0) || (b.rations || 0) - (a.rations || 0));
     $("v-standings").innerHTML = standings.map((c, i) =>
@@ -1142,24 +1274,32 @@
   async function poll() {
     if (pollInFlight) return;   // slow responses must not overlap/reorder
     pollInFlight = true;
+    // A hung fetch must not wedge polling forever (or starve the stale warning)
+    const ctl = new AbortController();
+    const kill = setTimeout(() => ctl.abort(), 8000);
     try {
-      const res = await fetch("state.json?t=" + Date.now(), { cache: "no-store" });
+      const res = await fetch("state.json?t=" + Date.now(), { cache: "no-store", signal: ctl.signal });
       if (res.ok) {
         const txt = await res.text();
         if (txt !== lastJson) {
           // Parse BEFORE committing — a torn/partial write shouldn't poison
-          // the cache and freeze the page on the bad snapshot
+          // the cache and freeze the page on the bad snapshot. Commit only
+          // AFTER render proves the snapshot — a render throw must not cache
+          // a state the page never showed.
           const s = JSON.parse(txt);
+          render(s);
           lastJson = txt;
           lastOk = Date.now();
-          render(s);
         } else {
           lastOk = Date.now();
         }
       }
     } catch (e) { /* GM is mid-write or server hiccup — keep polling */ }
-    pollInFlight = false;
-    $("stale-warn").style.display = (Date.now() - lastOk > 30000) ? "block" : "none";
+    finally {
+      clearTimeout(kill);
+      pollInFlight = false;
+      $("stale-warn").style.display = (Date.now() - lastOk > 30000) ? "block" : "none";
+    }
   }
 
   /* ---------- Replay mode — embedded history, no polling ---------- */
@@ -1168,17 +1308,27 @@
   // the GM wrote few snapshots. Victory only fires on the very last step.
   function buildReplaySteps(frames) {
     const steps = [];
-    let seen = 0;
+    let seen = 0, prev = null;
     frames.forEach(f => {
       const feed = f.feed || [];
       if (feed.length > seen) {
         for (let k = seen + 1; k <= feed.length; k++) {
-          steps.push(Object.assign({}, f, { feed: feed.slice(0, k) }));
+          // Intermediate sub-steps keep the PREVIOUS board so the map can't
+          // reveal deaths/moves before their feed entry lands; only the final
+          // sub-step shows this frame's true board.
+          const base = (k < feed.length && prev) ? prev : f;
+          steps.push(Object.assign({}, base, { feed: feed.slice(0, k) }));
         }
-        seen = feed.length;
+      } else if (!steps.length) {
+        steps.push(f); // a feed-less opening frame still gets one step
       } else {
-        steps.push(f);
+        // No new feed events — merge the board into the last step instead of
+        // charging a full dwell per silent snapshot (pacing inflation), which
+        // also collapses repeated terminal snapshots into one
+        steps[steps.length - 1] = Object.assign({}, f, { feed: steps[steps.length - 1].feed });
       }
+      seen = feed.length; // resync even if a torn frame's feed shrank
+      prev = f;
     });
     return steps.map((s, idx) =>
       (idx < steps.length - 1 && s.phase === "finished")
@@ -1187,6 +1337,9 @@
   }
 
   function initReplay(frames) {
+    if (initReplay._done) return; // idempotent — double init must not stack key handlers
+    initReplay._done = true;
+    replayMode = true;
     const dot = $("live-dot");
     dot.classList.add("replay-dot");
     $("replay-bar").style.display = "flex";
@@ -1201,6 +1354,7 @@
       // Scrubs and multi-step jumps suppress trails — arrows are for real
       // moves between consecutive steps, not teleports across the timeline
       suppressTrails = jump || Math.abs(target - i) > 1;
+      if (suppressTrails) clearTrails(); // a jump also wipes in-flight arrows from other timeline points
       i = target;
       scrub.value = i;
       const f = steps[i];
@@ -1231,9 +1385,9 @@
     scrub.oninput = () => { pause(); show(Number(scrub.value), true); };
     $("rb-speed").onchange = () => { if (playing) startTimer(); };
     document.addEventListener("keydown", e => {
-      // Don't hijack keys aimed at form controls (speed select, scrubber…)
+      // Don't hijack keys aimed at form controls or editable surfaces
       const tag = (e.target && e.target.tagName) || "";
-      if (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag)) return;
+      if (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag) || (e.target && e.target.isContentEditable)) return;
       if (e.key === " ") { e.preventDefault(); playBtn.onclick(); }
       else if (e.key === "ArrowLeft") { e.preventDefault(); $("rb-prev").onclick(); }
       else if (e.key === "ArrowRight") { e.preventDefault(); $("rb-next").onclick(); }
@@ -1249,14 +1403,24 @@
     soundOn = !soundOn;
     sndBtn.textContent = soundOn ? "🔊" : "🔇";
     sndBtn.title = soundOn ? "Sound on — click to mute" : "Muted — click for sound";
-    if (soundOn) actx();
+    if (soundOn) unlockAudio();
+    else { sfxTimers.forEach(clearTimeout); sfxTimers.clear(); } // mute kills queued cues too
   };
-  const unlockAudio = () => { if (soundOn) actx(); };
+  // Unlock must call resume() INSIDE the gesture handler — strict autoplay
+  // policies only honor resume() while the user activation is still live
+  const unlockAudio = () => {
+    if (!soundOn) return;
+    const c = actx();
+    if (c && c.state !== "running") c.resume().catch(() => {});
+  };
   document.addEventListener("pointerdown", unlockAudio, { once: true });
   document.addEventListener("keydown", unlockAudio, { once: true });
 
-  const REPLAY = Array.isArray(window.REPLAY_DATA) && window.REPLAY_DATA.length ? window.REPLAY_DATA : null;
-  if (REPLAY) {
+  // Tolerate junk in embedded data — only object frames are playable
+  const REPLAY = Array.isArray(window.REPLAY_DATA)
+    ? window.REPLAY_DATA.filter(f => f && typeof f === "object" && !Array.isArray(f))
+    : [];
+  if (REPLAY.length) {
     initReplay(REPLAY);
   } else {
     poll();

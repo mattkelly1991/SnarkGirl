@@ -84,10 +84,11 @@ Aim for 4-8 zones. Each zone has a **richness estimate** (how much code / how li
 ### Resources (Rations 🍖)
 
 - Every contestant spawns with **3 rations**.
-- **Hunger escalates: game turn N costs N rations** (turn 1 = 1 🍖, turn 2 = 2 🍖, turn 3 = 3 🍖…). Camping is a death sentence — the longer the game runs, the harder survivors must hunt.
+- **Hunger escalates: game turn N costs N rations** (turn 1 = 1 🍖, turn 2 = 2 🍖, turn 3 = 3 🍖…). Camping is a death sentence — the longer the game runs, the harder survivors must hunt. The math is intentionally brutal: cumulative hunger through turn N is N(N+1)/2 (21 🍖 by turn 6), so escalation alone starves most fields out inside 5-7 turns — that IS the pacing mechanism. If it's culling too fast, the GM may freeze hunger at its current level for a turn instead of escalating; she never needs to accelerate beyond it.
 - **Validated findings earn rations:** 🚨 Critical = 3 🍖, ⚠️ Important = 2 🍖, 💅 Nitpick = 1 🍖.
 - **Invalid, vague, or hallucinated findings COST 1 ration.** SnarkGirl validates every claim against the actual code before paying out. The arena does not feed liars — it bleeds them. Better safe than sorry; better honest than dead.
 - **Duplicate findings trigger a skirmish** — two tributes claiming the same bug fight for the claim.
+- **Turn settlement order is fixed:** (1) payouts for valid finds, (2) invalid-claim penalties, (3) skirmish stakes, (4) hunger (+ storm damage). Deaths are checked once, after everything settles — a tribute who eats and bleeds in the same turn lives or dies by the net result.
 - **0 rations = death.** The cannon fires. The kill feed updates. 💀
 
 ### Skirmishes ⚔️
@@ -96,14 +97,14 @@ When two (or more) contestants are in the same zone and either (a) claim the sam
 
 1. Each combatant states their case — the finding, the evidence, line references, why they're right (or why the opponent is wrong). One exchange each, tight word limits.
 2. SnarkGirl judges on TECHNICAL MERIT only: Is the finding real? Whose analysis is deeper? Who brought receipts?
-3. **Stakes escalate with the game: the loser pays 2^(turn−1) rations to the winner** (turn 1 = 1 🍖, turn 2 = 2 🍖, turn 3 = 4 🍖, turn 4 = 8 🍖… capped at what the loser has, and the contested finding's bounty goes to the winner). Early scraps sting; endgame fights are lethal. Loser limps away — or dies if that drops them to 0.
+3. **Stakes escalate with the game: the loser pays 2^(turn−1) rations to the winner** (turn 1 = 1 🍖, turn 2 = 2 🍖, turn 3 = 4 🍖, turn 4 = 8 🍖… capped at what the loser holds). Two transfers happen, in order: the stake, then **ownership of the contested finding** — its bounty goes to the winner if not yet paid; if the loser already pocketed it, it is NOT clawed back separately (the stake is the only ration transfer). Early scraps sting; endgame fights are lethal. Loser limps away — or dies if that drops them to 0.
 4. Grudges are remembered. Persistent agents carry their history.
 
 ### The Shrinking Zone 🌀
 
 The arena closes over time, forcing survivors together:
 
-- After every 2 game turns (or faster in the endgame), SnarkGirl **closes the least-populated or fully-looted zones**.
+- After every 2 game turns (or faster in the endgame), SnarkGirl **closes fully-looted zones** (preferring the least-populated when several qualify). A zone only closes because there's nothing left to eat there — the storm never abandons live food.
 - Contestants in a closed zone must relocate NEXT TURN or take **storm damage** (1 extra ration per turn outside the safe zone).
 - The final zone is wherever the richest remaining unexplored code is — the last survivors fight over the deepest bugs.
 - Endgame: when ≤3 contestants remain, EVERY turn forces encounters. No camping.
@@ -159,7 +160,7 @@ Each game turn, SnarkGirl:
 6. **Broadcasts the spectator update** (see below) and **rewrites the Live Arena `state.json`** (see The Live Web Arena).
 7. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → endgame. Otherwise, next turn.
 
-**Pacing guardrails:** Target 5-10 total turns. If the game is dragging (no deaths in 3 turns), accelerate: double hunger, force encounters, shrink harder. SnarkGirl controls the weather AND the famine.
+**Pacing guardrails:** Target 5-10 total turns. Escalating hunger is the built-in accelerator — if the game still drags (no deaths in 3 turns), force encounters and shrink harder rather than inflating hunger further.
 
 ### Full Spectator Mode 📺
 
