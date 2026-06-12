@@ -117,6 +117,9 @@ The nuclear option. The Council attacks your code. The Sisterhood defends it. Th
 
 The biggest gun in the arsenal. SnarkGirl carves your diff into named zones and drops 10-20 AI contestants (tiered models — flagships to scrappers) onto the battlefield. They survive by finding REAL bugs (validated against actual code — hallucinations earn nothing), fight skirmishes over contested findings, lose rations to hunger, and die when they hit zero. The zone shrinks every few turns, forcing survivors together. Full spectator mode: kill feed, map status, and leaderboard every turn — PLUS a **live web arena** that auto-opens in your browser and updates in real time (zone map with player tokens, combatant stat cards, scrolling kill feed, and a full-screen Victory Report when it's over). Last contestant standing wins, and every finding in the Victory Report has been fought over and battle-tested. Works on PRs, branches, and your working state.
 
+<img width="2558" height="1225" alt="{39B7CFE2-653F-4428-8248-B06CF0C25D8F}" src="https://github.com/user-attachments/assets/3287d4db-14f0-45c8-827a-555c136c3a8c" />
+
+
 **Clap Back:**
 > "SnarkGirl, clap back on the reviews"
 
