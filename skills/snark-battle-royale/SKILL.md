@@ -84,9 +84,9 @@ Aim for 4-8 zones. Each zone has a **richness estimate** (how much code / how li
 ### Resources (Rations 🍖)
 
 - Every contestant spawns with **3 rations**.
-- **Every game turn costs 1 ration** (hunger is real).
+- **Hunger escalates: game turn N costs N rations** (turn 1 = 1 🍖, turn 2 = 2 🍖, turn 3 = 3 🍖…). Camping is a death sentence — the longer the game runs, the harder survivors must hunt.
 - **Validated findings earn rations:** 🚨 Critical = 3 🍖, ⚠️ Important = 2 🍖, 💅 Nitpick = 1 🍖.
-- **Invalid, vague, or hallucinated findings earn ZERO.** SnarkGirl validates every claim against the actual code before paying out. The arena does not feed liars.
+- **Invalid, vague, or hallucinated findings COST 1 ration.** SnarkGirl validates every claim against the actual code before paying out. The arena does not feed liars — it bleeds them. Better safe than sorry; better honest than dead.
 - **Duplicate findings trigger a skirmish** — two tributes claiming the same bug fight for the claim.
 - **0 rations = death.** The cannon fires. The kill feed updates. 💀
 
@@ -96,7 +96,7 @@ When two (or more) contestants are in the same zone and either (a) claim the sam
 
 1. Each combatant states their case — the finding, the evidence, line references, why they're right (or why the opponent is wrong). One exchange each, tight word limits.
 2. SnarkGirl judges on TECHNICAL MERIT only: Is the finding real? Whose analysis is deeper? Who brought receipts?
-3. **Winner takes 2 rations from the loser** (or the full bounty of the contested finding). Loser limps away — or dies if that drops them to 0.
+3. **Stakes escalate with the game: the loser pays 2^(turn−1) rations to the winner** (turn 1 = 1 🍖, turn 2 = 2 🍖, turn 3 = 4 🍖, turn 4 = 8 🍖… capped at what the loser has, and the contested finding's bounty goes to the winner). Early scraps sting; endgame fights are lethal. Loser limps away — or dies if that drops them to 0.
 4. Grudges are remembered. Persistent agents carry their history.
 
 ### The Shrinking Zone 🌀
@@ -127,14 +127,14 @@ Launch each contestant ONCE as a persistent agent (task tool, `agent_type: "gene
 ```
 You are {TRIBUTE_NAME}, a contestant in the SnarkGirl Battle Royale — a survival game played on a code diff. You are model {model_id}, Tier {N}. You fight to survive. You do NOT control the game — SnarkGirl is the Game Master and her rulings are final.
 
-THE STAKES: You start with 3 rations. Every turn costs 1 ration. At 0 rations you DIE and are eliminated. You earn rations ONLY by finding REAL bugs, issues, or genuine concerns in the code assigned to your zone:
+THE STAKES: You start with 3 rations. Hunger ESCALATES — turn N costs N rations (turn 1 = 1, turn 2 = 2, turn 3 = 3…). At 0 rations you DIE and are eliminated. You earn rations ONLY by finding REAL bugs, issues, or genuine concerns in the code assigned to your zone:
 - CRITICAL (real bugs, security holes, data loss, crashes): 3 rations
 - IMPORTANT (logic errors, edge cases, broken patterns): 2 rations
 - NITPICK (style, naming, minor improvements): 1 ration
 
 THE RULES:
-1. Findings MUST be real and specific: file, line, the exact problem, and how to fix it. SnarkGirl validates every claim against the actual code. Invalid or vague findings earn NOTHING — and you still pay your hunger cost. Hallucinate and you starve.
-2. Other contestants roam this arena. If someone claims your finding or challenges you, you SKIRMISH: argue your case with evidence. Win and take their rations. Lose and bleed yours.
+1. Findings MUST be real and specific: file, line, the exact problem, and how to fix it. SnarkGirl validates every claim against the actual code. Invalid or vague findings COST you 1 ration on top of your hunger — the arena punishes liars. Hallucinate and you starve faster.
+2. Other contestants roam this arena. If someone claims your finding or challenges you, you SKIRMISH: argue your case with evidence. Win and take the loser's stake. Lose and pay 2^(turn−1) rations — skirmish stakes double every turn, so late-game fights can be fatal.
 3. Pick your battles. Challenging a stronger argument than yours is suicide. Conceding early costs less than losing a fight.
 4. The zone shrinks. When SnarkGirl closes your zone, move where she allows — survivors get pushed together.
 
@@ -152,10 +152,10 @@ EACH TURN you will receive orders from the Game Master (hunt, fight, move, or re
 Each game turn, SnarkGirl:
 
 1. **Issues hunt orders** (parallel) — every living contestant scavenges their current zone for findings. Contestants may also declare a CHALLENGE against a co-located rival's previous finding.
-2. **Collects and validates** — checks every claimed finding against the actual code (read the real files, not just the diff, when needed). Pays rations for valid finds. Pays NOTHING for trash. Flags duplicates.
-3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: one exchange each, SnarkGirl rules, rations transfer.
-4. **Applies hunger** — everyone loses 1 ration (plus storm damage if outside the safe zone). Anyone at 0 dies. 💀 Cannon.
-5. **Shrinks the zone** (every ~2 turns, faster in endgame) — closes looted/empty zones, announces the new safe zone, reassigns displaced survivors.
+2. **Collects and validates** — checks every claimed finding against the actual code (read the real files, not just the diff, when needed). Pays rations for valid finds. Invalid/vague/hallucinated claims cost the claimant 1 ration. Flags duplicates.
+3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: one exchange each, SnarkGirl rules, loser pays 2^(turn−1) rations (capped at what they hold).
+4. **Applies hunger** — everyone loses N rations on turn N (plus storm damage if outside the safe zone). Anyone at 0 dies. 💀 Cannon.
+5. **Shrinks the zone** (every ~2 turns, faster in endgame) — closes looted/empty zones, announces the new safe zone, reassigns displaced survivors. Only close a zone when its loot is gone — a closing zone means "nothing left to eat here," never "food abandoned to the storm."
 6. **Broadcasts the spectator update** (see below) and **rewrites the Live Arena `state.json`** (see The Live Web Arena).
 7. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → endgame. Otherwise, next turn.
 
@@ -170,7 +170,7 @@ After EVERY turn, broadcast the live update. This is non-negotiable — the user
 
 ### ☠️ Kill Feed
 - 💀 {TributeName} ({model}) — starved in {zone} | "famous last words or snarky epitaph"
-- ⚔️ {Winner} defeated {Loser} in {zone} — took 2 🍖 over the {finding} dispute
+- ⚔️ {Winner} defeated {Loser} in {zone} — took {2^(turn−1)} 🍖 over the {finding} dispute
 
 ### 🔍 The Hunt
 - {TributeName} found 🚨 CRITICAL in `{file}:{line}` — +3 🍖 — "{one-line description}"
@@ -304,10 +304,10 @@ SnarkGirl rewrites the ENTIRE file on every update (atomic single write — writ
   - `"roaming"` (default if omitted) — the token wanders idly around its territory.
   - `"fighting"` — set on BOTH skirmishers, each with `opponent` set to the other's `id` (they must share a `zone`). The pair squares up and repeatedly clashes with a 💥 between them. Set this when a skirmish begins; revert the survivor to `"roaming"` (or `"feasting"`) and clear `opponent` once it resolves.
   - `"feasting"` — the tribute sits next to a food item on the ground and noms. Set this the update a find is validated and paid; revert to `"roaming"` next turn.
-- The page scatters decorative food (🍖 🍗 🍎 🧀 …) around each open zone automatically — no state needed for it.
+- The page scatters decorative food (🍖 🍗 🍎 🧀 …) around each open zone automatically — no state needed for it. Bigger territories get more food, and `closing`/`closed` zones get NONE (the storm only comes for looted ground — keep that consistent with the rule that zones close only when empty). Multiple feasters at one food spot arrange themselves in a circle around it.
 - **Leave the dead where they fell.** When a tribute dies, keep their `zone` set to the zone they died in — the page renders their greyed-out, tipped-over body (with a 💀) at a fixed spot there for the rest of the match. Never null out a dead tribute's `zone`.
 - **Never write an alive tribute with 0 rations.** Zero rations IS death — resolve it in the same state update: flip `status` to `"dead"`, set `causeOfDeath`/`epitaph`, and fire the cannon in the feed. A snapshot showing someone alive at 0 🍖 is a rules violation and looks broken on the map.
-- **Use accurate feed `type` values** — they drive the arena's sound effects (🔊 toggle in the header): `kill` fires the cannon boom, `skirmish` plays clashing strikes, `find` plays a victory ding, `storm` plays an ominous zone-closure sweep. When a tribute relocates, the page automatically draws a fading arrow trail from their old territory to the new one.
+- **Use accurate feed `type` values** — they drive the arena's sound effects (🔊 toggle in the header): `kill` fires the cannon boom, `skirmish` plays clashing strikes, `find` plays a victory ding, `storm` plays an ominous zone-closure sweep. `move` and `info` entries are intentionally silent. When a tribute relocates, the page automatically draws a fading arrow trail from their old territory to the new one.
 
 ### Update Cadence
 
@@ -339,7 +339,7 @@ After the final screen, **always generate a replay file** — a single self-cont
    **Escape `</script` as `<\/script`** anywhere inside the JSON before embedding, or the browser will end the script tag early.
 3. Save as `{TEMP}/snark-girl-reviews/BATTLE-ROYALE-REPLAY-{target}-{date}.html` and tell the user the path.
 
-The page detects `window.REPLAY_DATA` and switches itself into replay mode automatically: no polling, a 🎬 REPLAY control bar (play/pause, step, scrubber, 1×/2×/4× speed, spacebar/arrow-key support), auto-plays on open, and shows the BATTLE COMPLETE modal when the timeline reaches the end (viewer opens the Victory Report when ready). Playback is paced per **feed event** — the page expands the snapshots into one step per kill-feed entry (~5s each at 1×), so the battle unfolds event by event no matter how many snapshots were recorded. Do a quick sanity check: generated file is bigger than the template and contains `REPLAY_DATA`.
+The page detects `window.REPLAY_DATA` and switches itself into replay mode automatically: no polling, a 🎬 REPLAY control bar (play/pause, step, scrubber, 1×/2×/4× speed, spacebar/arrow-key support), auto-plays on open, and shows the BATTLE COMPLETE modal when the timeline reaches the end (viewer opens the Victory Report when ready). Playback is paced per **feed event** — the page expands the snapshots into one step per kill-feed entry (~5s each at 1×), so the battle unfolds event by event no matter how many snapshots were recorded; this only works if you logged feed entries faithfully during the match, so a feed-starved history makes a boring replay. Do a quick sanity check: generated file is bigger than the template and contains `REPLAY_DATA`.
 
 **Optional — share as a link.** If the user wants a link instead of a file, offer to upload it as a **secret GitHub gist** on their account:
 
