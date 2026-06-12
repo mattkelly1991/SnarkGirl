@@ -123,7 +123,7 @@
     stroke-linejoin: round;
     transition: opacity 0.6s, filter 0.6s;
   }
-  .zshape-safe    { stroke: rgba(255,255,255,0.18); }
+  .zshape-safe    { stroke: rgba(0,0,0,0.55); }
   .zshape-closing { stroke: var(--orange); stroke-width: 2.5; stroke-dasharray: 10 6; animation: stormpulse 1.6s infinite; }
   .zshape-closed  { stroke: #3a3a4a; opacity: 0.5; filter: grayscale(0.85); }
   @keyframes stormpulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.35; } }
@@ -143,6 +143,83 @@
   .ptoken .hpbg { fill: rgba(0,0,0,0.65); rx: 2; }
   .ptoken .hpfill { transition: width 0.6s, fill 0.6s; }
   .ptoken .pstats { font-size: 9px; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 2.5px; }
+  /* Ambient life: wandering, feasting, clashing */
+  .food { font-size: 12px; text-anchor: middle; opacity: 0.9; }
+  .pbody { transform-box: fill-box; transform-origin: center; }
+  .wander-0 { animation: wander0 8s ease-in-out infinite; }
+  .wander-1 { animation: wander1 9s ease-in-out infinite; }
+  .wander-2 { animation: wander2 7s ease-in-out infinite; }
+  @keyframes wander0 { 0%,100%{transform:translate(0,0)} 25%{transform:translate(12px,-8px)} 50%{transform:translate(-5px,10px)} 75%{transform:translate(-13px,-5px)} }
+  @keyframes wander1 { 0%,100%{transform:translate(0,0)} 30%{transform:translate(-11px,7px)} 60%{transform:translate(9px,11px)} 80%{transform:translate(6px,-9px)} }
+  @keyframes wander2 { 0%,100%{transform:translate(0,0)} 20%{transform:translate(8px,9px)} 55%{transform:translate(-10px,-10px)} 85%{transform:translate(11px,3px)} }
+  .clash-l { animation: clashL 1.3s ease-in infinite; }
+  .clash-r { animation: clashR 1.3s ease-in infinite; }
+  @keyframes clashL { 0%,100%{transform:translate(0,0) rotate(0deg)} 30%{transform:translate(17px,-2px) rotate(10deg)} 42%{transform:translate(12px,1px) rotate(-5deg)} 60%{transform:translate(0,0) rotate(0deg)} }
+  @keyframes clashR { 0%,100%{transform:translate(0,0) rotate(0deg)} 30%{transform:translate(-17px,-2px) rotate(-10deg)} 42%{transform:translate(-12px,1px) rotate(5deg)} 60%{transform:translate(0,0) rotate(0deg)} }
+  .feasting { animation: nom 1.1s ease-in-out infinite; }
+  @keyframes nom { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
+  .boom { font-size: 18px; text-anchor: middle; dominant-baseline: central; animation: boomflash 1.3s infinite; }
+  @keyframes boomflash { 0%,20%,65%,100%{opacity:0} 32%,48%{opacity:1} }
+  /* Fallen tributes stay where they fell */
+  .corpse .cicon { font-size: 19px; text-anchor: middle; dominant-baseline: central; transform: rotate(100deg); transform-box: fill-box; transform-origin: center; filter: grayscale(1) brightness(1.4); opacity: 0.95; }
+  .corpse .cground { fill: rgba(0,0,0,0.5); stroke: rgba(255,255,255,0.35); stroke-width: 1.2; }
+  .corpse .cname { font-size: 11px; font-weight: 700; fill: #d8d8e2; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 3px; }
+  /* Travel trails — dashed arrow from where they came from */
+  .trail {
+    fill: none; stroke: var(--pink); stroke-width: 2;
+    stroke-dasharray: 7 5; opacity: 0.85;
+    animation: trailfade 4.5s ease-in forwards;
+    pointer-events: none;
+  }
+  @keyframes trailfade { 0% { opacity: 0.85; } 60% { opacity: 0.55; } 100% { opacity: 0; } }
+  /* Sound toggle */
+  #snd {
+    background: var(--panel2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 14px; padding: 2px 9px; cursor: pointer; margin-left: 10px;
+  }
+  #snd:hover { border-color: var(--pink); }
+  #results-btn {
+    display: none;
+    background: var(--panel2); color: var(--pink);
+    border: 1px solid var(--pink-dim); border-radius: 6px;
+    font-size: 12px; font-weight: 700; padding: 3px 10px; cursor: pointer; margin-left: 10px;
+  }
+  #results-btn:hover { border-color: var(--pink); background: #2a1422; }
+  /* ---------- Battle-complete modal ---------- */
+  #battle-done {
+    display: none;
+    position: fixed; inset: 0; z-index: 55;
+    background: rgba(8, 5, 9, 0.55);
+    align-items: center; justify-content: center;
+  }
+  #battle-done.show { display: flex; animation: fadeIn 0.5s; }
+  .bd-card {
+    background: var(--panel); border: 1px solid var(--pink-dim); border-radius: 14px;
+    padding: 28px 36px; text-align: center;
+    box-shadow: 0 0 50px rgba(255, 105, 180, 0.25);
+    display: flex; flex-direction: column; gap: 12px; max-width: 420px;
+  }
+  .bd-title { color: var(--pink); font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+  .bd-sub { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+  #bd-view {
+    background: var(--pink); color: #14060e; border: none; border-radius: 8px;
+    font-size: 15px; font-weight: 800; padding: 11px 18px; cursor: pointer;
+  }
+  #bd-view:hover { filter: brightness(1.12); }
+  #bd-stay {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 12px; padding: 8px 14px; cursor: pointer;
+  }
+  #bd-stay:hover { color: var(--text); border-color: var(--pink-dim); }
+  #v-close {
+    position: sticky; top: 0; float: left;
+    background: var(--panel2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; padding: 7px 14px; cursor: pointer;
+  }
+  #v-close:hover { border-color: var(--pink); color: var(--pink); }
   /* ---------- Combatants ---------- */
   .card {
     background: var(--panel2);
@@ -255,6 +332,30 @@
     border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--orange);
     z-index: 99;
   }
+  /* ---------- Replay mode ---------- */
+  #live-dot.replay-dot { background: var(--blue); animation: none; }
+  #replay-bar {
+    display: none;
+    position: relative; z-index: 60; /* paints above the victory overlay so you can scrub back */
+    align-items: center; gap: 10px;
+    padding: 7px 18px;
+    background: #10101a;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+  }
+  #replay-bar .rb-tag { color: var(--pink); font-weight: 700; letter-spacing: 1px; }
+  #replay-bar button {
+    background: var(--panel2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 3px 10px; font-size: 13px; cursor: pointer;
+  }
+  #replay-bar button:hover { border-color: var(--pink); }
+  #rb-scrub { flex: 1; accent-color: var(--pink); cursor: pointer; }
+  #rb-label { color: var(--muted); white-space: nowrap; min-width: 120px; text-align: right; }
+  #rb-speed {
+    background: var(--panel2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -266,6 +367,8 @@
   <div class="hdr-stat">Safe Zones <b id="hdr-zones">—</b></div>
   <div class="hdr-stat" id="hdr-target" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;">—</div>
   <div id="commentary"></div>
+  <button id="results-btn" title="Open the victory report">👑 Results</button>
+  <button id="snd" title="Toggle sound effects">🔊</button>
 </header>
 
 <main>
@@ -282,8 +385,15 @@
             <rect width="10" height="10" fill="rgba(96,80,160,0.18)"/>
             <line x1="0" y1="0" x2="0" y2="10" stroke="rgba(140,120,220,0.35)" stroke-width="3"/>
           </pattern>
+          <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="var(--pink)"/>
+          </marker>
         </defs>
         <g id="map-zones"></g>
+        <g id="map-food"></g>
+        <g id="map-trails"></g>
+        <g id="map-corpses"></g>
+        <g id="map-fx"></g>
         <g id="map-tokens"></g>
       </svg>
     </div>
@@ -299,7 +409,17 @@
   <div id="announcements"><div class="ann ann-latest">Welcome to the arena. Try not to get attached to anyone. 💅</div></div>
 </footer>
 
+<div id="battle-done">
+  <div class="bd-card">
+    <div class="bd-title">🏁 BATTLE COMPLETE</div>
+    <div class="bd-sub" id="bd-sub">The cannons have gone quiet. One tribute remains.</div>
+    <button id="bd-view">👑 View Victory Report</button>
+    <button id="bd-stay">🗺️ Keep exploring the arena</button>
+  </div>
+</div>
+
 <div id="victory">
+  <button id="v-close">← Back to the arena</button>
   <h1>🏆 VICTORY REPORT</h1>
   <div class="subtitle" id="v-subtitle"></div>
   <div class="victor-banner" id="v-banner"></div>
@@ -334,6 +454,23 @@
 
 <div id="stale-warn">⚠️ Feed stale — waiting for Game Master update…</div>
 
+<div id="replay-bar">
+  <span class="rb-tag">🎬 REPLAY</span>
+  <button id="rb-prev" title="Previous step">⏮</button>
+  <button id="rb-play" title="Play / pause">▶</button>
+  <button id="rb-next" title="Next step">⏭</button>
+  <input type="range" id="rb-scrub" min="0" max="0" value="0">
+  <span id="rb-label">—</span>
+  <select id="rb-speed">
+    <option value="1" selected>1×</option>
+    <option value="2">2×</option>
+    <option value="4">4×</option>
+  </select>
+</div>
+
+<!-- REPLAY_DATA_SLOT — when generating a shareable replay, SnarkGirl replaces this
+     comment line with: <script>window.REPLAY_DATA = [ ...state snapshots... ];</script> -->
+
 <script>
 (function () {
   const POLL_MS = 2000;
@@ -363,7 +500,15 @@
   }
   function rand01(str) { return hash(str) / 4294967295; }
 
-  // Weighted binary-split treemap — deterministic territory rects
+  // Weighted binary-split treemap — deterministic territory rects.
+  // Split lines snap to a shared GRID so neighboring zones meet on the exact
+  // same coordinates — the map renders as ONE landmass divided by borders.
+  const GRID = 40, JIT = 14;
+  function snapSplit(pos, lo, hi) {
+    const s = Math.round(pos / GRID) * GRID;
+    const c = Math.min(Math.max(s, lo + GRID), hi - GRID);
+    return (c > lo && c < hi) ? c : (lo + hi) / 2;
+  }
   function layoutZones(zones, x, y, w, h) {
     if (!zones.length) return [];
     if (zones.length === 1) return [{ z: zones[0], x, y, w, h }];
@@ -377,46 +522,48 @@
     const a = zones.slice(0, idx), b = zones.slice(idx);
     const fa = a.reduce((s, z) => s + z._weight, 0) / total;
     if (w >= h) {
-      return layoutZones(a, x, y, w * fa, h).concat(layoutZones(b, x + w * fa, y, w * (1 - fa), h));
+      const cut = snapSplit(x + w * fa, x, x + w);
+      return layoutZones(a, x, y, cut - x, h).concat(layoutZones(b, cut, y, x + w - cut, h));
     }
-    return layoutZones(a, x, y, w, h * fa).concat(layoutZones(b, x, y + h * fa, w, h * (1 - fa)));
+    const cut = snapSplit(y + h * fa, y, y + h);
+    return layoutZones(a, x, y, w, cut - y).concat(layoutZones(b, x, cut, w, y + h - cut));
   }
 
-  // Organic territory polygon: inset rect with deterministic edge jitter
-  function territoryPath(r, seed) {
-    const inset = 5, J = 14;
-    const x0 = r.x + inset, y0 = r.y + inset, x1 = r.x + r.w - inset, y1 = r.y + r.h - inset;
+  // Displace a grid point by a jitter derived from its ABSOLUTE map position,
+  // so every zone touching that point draws it in the identical spot — shared
+  // borders tile perfectly with no gaps. Points on the outer map edge are
+  // pinned so the battlefield keeps a clean rectangular frame.
+  function displace(px, py) {
+    let jx = (rand01("jx" + px + "," + py) - 0.5) * JIT;
+    let jy = (rand01("jy" + px + "," + py) - 0.5) * JIT;
+    if (px <= 0 || px >= MAP_W) jx = 0;
+    if (py <= 0 || py >= MAP_H) jy = 0;
+    return [px + jx, py + jy];
+  }
+
+  // Organic territory polygon: walk the rect perimeter sampling shared grid points
+  function territoryPath(r) {
+    const x0 = Math.round(r.x), y0 = Math.round(r.y);
+    const x1 = Math.round(r.x + r.w), y1 = Math.round(r.y + r.h);
     const pts = [];
-    const edge = (ax, ay, bx, by, tag) => {
-      const segs = Math.max(2, Math.round(Math.hypot(bx - ax, by - ay) / 90));
-      for (let i = 0; i < segs; i++) {
-        const t = i / segs;
-        let px = ax + (bx - ax) * t, py = ay + (by - ay) * t;
-        if (i > 0) {
-          const j = (rand01(seed + tag + i) - 0.5) * J;
-          if (ay === by) py += j; else px += j;
-        }
-        pts.push([px, py]);
+    const walk = (ax, ay, bx, by) => {
+      const n = Math.max(1, Math.round(Math.hypot(bx - ax, by - ay) / GRID));
+      for (let i = 0; i < n; i++) {
+        const t = i / n;
+        pts.push(displace(Math.round(ax + (bx - ax) * t), Math.round(ay + (by - ay) * t)));
       }
     };
-    edge(x0, y0, x1, y0, "t"); edge(x1, y0, x1, y1, "r");
-    edge(x1, y1, x0, y1, "b"); edge(x0, y1, x0, y0, "l");
+    walk(x0, y0, x1, y0); walk(x1, y0, x1, y1);
+    walk(x1, y1, x0, y1); walk(x0, y1, x0, y0);
     return "M" + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join("L") + "Z";
   }
 
-  // Deterministic spread positions for occupants inside a territory
-  function tokenSpots(r, n) {
-    const padX = 46, padTop = 62, padBot = 36;
-    const ix = r.x + padX, iy = r.y + padTop;
-    const iw = Math.max(20, r.w - padX * 2), ih = Math.max(20, r.h - padTop - padBot);
-    const cols = Math.max(1, Math.ceil(Math.sqrt(n * (iw / Math.max(ih, 1)))));
-    const rows = Math.max(1, Math.ceil(n / cols));
-    const spots = [];
-    for (let i = 0; i < n; i++) {
-      const c = i % cols, ro = Math.floor(i / cols);
-      spots.push([ix + (c + 0.5) * (iw / cols), iy + (ro + 0.5) * (ih / rows)]);
-    }
-    return spots;
+  // Stable "home spot" per tribute per zone — hashed from zone+id, so a tribute
+  // stays exactly where they are across renders unless they change zones
+  function homeSpot(rz, c) {
+    const x = rz.x + 44 + rand01(rz.z.id + "hx" + c.id) * Math.max(16, rz.w - 88);
+    const y = rz.y + 80 + rand01(rz.z.id + "hy" + c.id) * Math.max(16, rz.h - 140);
+    return [x, y];
   }
 
   function renderMap(s, alive) {
@@ -426,7 +573,7 @@
     $("map-zones").innerHTML = rects.map(rz => {
       const z = rz.z;
       const fill = TERRAIN[hash(z.id || z.name || "") % TERRAIN.length];
-      const path = territoryPath(rz, z.id || z.name || "");
+      const path = territoryPath(rz);
       const stTxt = z.status === "closing" ? "🌀 CLOSING" : z.status === "closed" ? "💀 CLOSED" : "🟢 SAFE";
       const stCol = z.status === "closing" ? "var(--orange)" : z.status === "closed" ? "var(--red)" : "var(--green)";
       const fl = z.files || [];
@@ -440,33 +587,228 @@
         `</g>`;
     }).join("");
 
-    // Player tokens — absolute coords + CSS transform transition = tokens glide between zones
+    // Ground snacks — deterministic per zone, skipped in closed zones
+    const FOOD = ["🍖", "🍗", "🍎", "🧀", "🥩", "🍞"];
+    const foodByZone = {};
+    let foodHtml = "";
+    rects.forEach(rz => {
+      const z = rz.z;
+      if (z.status === "closed") return;
+      const n = Math.max(1, Math.min(4, Math.round(rz.w * rz.h / 45000)));
+      const spots = [];
+      for (let i = 0; i < n; i++) {
+        const fx = rz.x + 24 + rand01(z.id + "fx" + i) * Math.max(10, rz.w - 48);
+        const fy = rz.y + 70 + rand01(z.id + "fy" + i) * Math.max(10, rz.h - 92);
+        spots.push([fx, fy]);
+        foodHtml += `<text class="food" x="${fx.toFixed(1)}" y="${fy.toFixed(1)}">${FOOD[hash(z.id + "fe" + i) % FOOD.length]}</text>`;
+      }
+      foodByZone[z.id] = spots;
+    });
+    $("map-food").innerHTML = foodHtml;
+
+    // Player tokens — reconciled DOM elements keyed by tribute id, so position
+    // changes glide via CSS transition instead of teleporting on each frame.
+    // Outer g = position; inner g = activity animation (wander/clash/feast).
     const rectById = {};
     rects.forEach(rz => rectById[rz.z.id] = rz);
-    const tokens = [];
+    const want = [], booms = [];
     rects.forEach(rz => {
       const occ = alive.filter(c => c.zone === rz.z.id).sort((a, b) => String(a.id).localeCompare(String(b.id)));
-      const spots = tokenSpots(rz, occ.length);
-      occ.forEach((c, i) => tokens.push({ c, x: spots[i][0], y: spots[i][1] }));
+      const placed = new Set();
+      occ.forEach(c => {
+        if (placed.has(c.id)) return;
+        // Skirmish pair: meet between their home spots and knock into each other
+        const opp = (c.action === "fighting" && c.opponent != null)
+          ? occ.find(o => o.id === c.opponent && !placed.has(o.id)) : null;
+        if (opp) {
+          const a = homeSpot(rz, c), b = homeSpot(rz, opp);
+          const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+          want.push({ c, zone: rz.z.id, x: mx - 26, y: my, anim: "clash-l" });
+          want.push({ c: opp, zone: rz.z.id, x: mx + 26, y: my, anim: "clash-r" });
+          booms.push([mx, my]);
+          placed.add(c.id); placed.add(opp.id);
+          return;
+        }
+        let [x, y] = homeSpot(rz, c);
+        let anim = "wander-" + (hash(String(c.id)) % 3);
+        if (c.action === "feasting") {
+          const fs = foodByZone[rz.z.id] || [];
+          if (fs.length) {
+            const f = fs[hash(String(c.id)) % fs.length];
+            x = f[0] - 21; y = f[1] - 5;
+          }
+          anim = "feasting";
+        }
+        want.push({ c, zone: rz.z.id, x, y, anim });
+        placed.add(c.id);
+      });
     });
     // Tributes in unknown zones still render along the bottom so no one vanishes
-    alive.filter(c => !rectById[c.zone]).forEach((c, i) => tokens.push({ c, x: 70 + i * 95, y: MAP_H - 45 }));
+    alive.filter(c => !rectById[c.zone]).forEach((c, i) =>
+      want.push({ c, zone: "?", x: 70 + i * 95, y: MAP_H - 45, anim: "wander-" + (hash(String(c.id)) % 3) }));
 
     const maxR = Math.max(10, ...(s.contestants || []).map(c => c.rations || 0));
-    $("map-tokens").innerHTML = tokens.map(t => {
-      const c = t.c;
-      const danger = (c.rations || 0) <= 1;
+    // The fallen lie where they died — stable hashed spot in their death zone,
+    // greyed and tipped over, in their own layer beneath the living
+    $("map-corpses").innerHTML = (s.contestants || []).filter(c => c.status !== "alive" && rectById[c.zone]).map(c => {
+      const rz = rectById[c.zone];
+      const x = rz.x + 30 + rand01("cx" + c.id) * Math.max(12, rz.w - 60);
+      const y = rz.y + 72 + rand01("cy" + c.id) * Math.max(12, rz.h - 96);
       const icon = c.icon || TIER_ICON[c.tier] || "⚔️";
-      const hpW = 40, hp = Math.min(1, (c.rations || 0) / maxR);
-      return `<g class="ptoken tier-${esc(c.tier ?? 3)}${danger ? " danger" : ""}" style="transform:translate(${t.x.toFixed(1)}px,${t.y.toFixed(1)}px)">` +
-        `<text class="pname" y="-24">${esc(c.name)}</text>` +
-        `<circle class="pring" r="15"/>` +
-        `<text class="picon">${esc(icon)}</text>` +
-        `<rect class="hpbg" x="${-hpW / 2 - 1}" y="20" width="${hpW + 2}" height="6" rx="2"/>` +
-        `<rect class="hpfill" x="${-hpW / 2}" y="21" width="${(hpW * hp).toFixed(1)}" height="4" rx="1.5" fill="${rationColor(c.rations || 0)}"/>` +
-        `<text class="pstats" y="38">🍖${esc(c.rations ?? 0)} ⚔️${esc(c.kills ?? 0)}</text>` +
+      return `<g class="corpse" style="transform:translate(${x.toFixed(1)}px,${y.toFixed(1)}px)">` +
+        `<ellipse class="cground" rx="23" ry="10" cy="4"/>` +
+        `<text class="cname" y="-20">💀 ${esc(c.name)}</text>` +
+        `<text class="cicon">${esc(icon)}</text>` +
         `</g>`;
     }).join("");
+
+    $("map-fx").innerHTML = booms.map(b =>
+      `<text class="boom" x="${b[0].toFixed(1)}" y="${(b[1] - 6).toFixed(1)}">💥</text>`
+    ).join("");
+
+    reconcileTokens(want, maxR);
+  }
+
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const tokenEls = {};   // tribute id -> <g> element
+  const prevSpot = {};   // tribute id -> {x, y, zone}
+
+  function tokenInner(t, maxR) {
+    const c = t.c;
+    const icon = c.icon || TIER_ICON[c.tier] || "⚔️";
+    const hpW = 40, hp = Math.min(1, (c.rations || 0) / maxR);
+    const delay = `animation-delay:-${(rand01("d" + c.id) * 7).toFixed(1)}s`;
+    return `<g class="pbody ${t.anim || ""}" style="${delay}">` +
+      `<text class="pname" y="-24">${esc(c.name)}</text>` +
+      `<circle class="pring" r="15"/>` +
+      `<text class="picon">${esc(icon)}</text>` +
+      `<rect class="hpbg" x="${-hpW / 2 - 1}" y="20" width="${hpW + 2}" height="6" rx="2"/>` +
+      `<rect class="hpfill" x="${-hpW / 2}" y="21" width="${(hpW * hp).toFixed(1)}" height="4" rx="1.5" fill="${rationColor(c.rations || 0)}"/>` +
+      `<text class="pstats" y="38">🍖${esc(c.rations ?? 0)} ⚔️${esc(c.kills ?? 0)}</text>` +
+      `</g>`;
+  }
+
+  function reconcileTokens(want, maxR) {
+    const layer = $("map-tokens");
+    const seen = new Set();
+    want.forEach(t => {
+      const id = String(t.c.id);
+      seen.add(id);
+      let el = tokenEls[id];
+      const isNew = !el;
+      if (isNew) {
+        el = document.createElementNS(SVG_NS, "g");
+        tokenEls[id] = el;
+        layer.appendChild(el);
+      }
+      const danger = (t.c.rations || 0) <= 1;
+      el.setAttribute("class", `ptoken tier-${t.c.tier ?? 3}${danger ? " danger" : ""}`);
+      const p = prevSpot[id];
+      if (!isNew && p && p.zone !== t.zone) drawTrail(p, t);
+      el.style.transform = `translate(${t.x.toFixed(1)}px,${t.y.toFixed(1)}px)`;
+      const inner = tokenInner(t, maxR);
+      if (el._inner !== inner) { el.innerHTML = inner; el._inner = inner; }
+      prevSpot[id] = { x: t.x, y: t.y, zone: t.zone };
+    });
+    Object.keys(tokenEls).forEach(id => {
+      if (!seen.has(id)) { tokenEls[id].remove(); delete tokenEls[id]; delete prevSpot[id]; }
+    });
+  }
+
+  // Dashed fading arrow from the old spot to the new one — easy to track moves
+  function drawTrail(from, to) {
+    const path = document.createElementNS(SVG_NS, "path");
+    const mx = (from.x + to.x) / 2 + (from.y - to.y) * 0.18;
+    const my = (from.y + to.y) / 2 + (to.x - from.x) * 0.18;
+    path.setAttribute("d", `M${from.x.toFixed(1)},${from.y.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${to.x.toFixed(1)},${to.y.toFixed(1)}`);
+    path.setAttribute("class", "trail");
+    path.setAttribute("marker-end", "url(#arrowhead)");
+    $("map-trails").appendChild(path);
+    setTimeout(() => path.remove(), 4600);
+  }
+
+  /* ---------- Sound effects (Web Audio synth — no files needed) ---------- */
+  let audioCtx = null, soundOn = true, lastFeedN = -1;
+  function actx() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+  function noiseBuf(c, secs) {
+    const b = c.createBuffer(1, Math.floor(c.sampleRate * secs), c.sampleRate);
+    const d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  }
+  function sfxCannon() {           // deep boom for a fallen tribute
+    const c = actx(); if (!c || c.state !== "running") return;
+    const t = c.currentTime;
+    const src = c.createBufferSource(); src.buffer = noiseBuf(c, 1);
+    const f = c.createBiquadFilter(); f.type = "lowpass";
+    f.frequency.setValueAtTime(220, t); f.frequency.exponentialRampToValueAtTime(40, t + 0.9);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.8, t); g.gain.exponentialRampToValueAtTime(0.001, t + 1);
+    src.connect(f); f.connect(g); g.connect(c.destination);
+    src.start(t); src.stop(t + 1);
+  }
+  function sfxClash() {            // two quick metallic strikes
+    const c = actx(); if (!c || c.state !== "running") return;
+    const t = c.currentTime;
+    for (let i = 0; i < 2; i++) {
+      const st = t + i * 0.16;
+      const src = c.createBufferSource(); src.buffer = noiseBuf(c, 0.12);
+      const f = c.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 2800;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.3, st); g.gain.exponentialRampToValueAtTime(0.001, st + 0.12);
+      src.connect(f); f.connect(g); g.connect(c.destination);
+      src.start(st); src.stop(st + 0.13);
+      const o = c.createOscillator(); o.type = "square"; o.frequency.setValueAtTime(2200 + i * 600, st);
+      const g2 = c.createGain();
+      g2.gain.setValueAtTime(0.05, st); g2.gain.exponentialRampToValueAtTime(0.001, st + 0.1);
+      o.connect(g2); g2.connect(c.destination);
+      o.start(st); o.stop(st + 0.11);
+    }
+  }
+  function sfxFind() {             // bright two-note ding for a find
+    const c = actx(); if (!c || c.state !== "running") return;
+    const t = c.currentTime;
+    [880, 1318.5].forEach((fq, i) => {
+      const st = t + i * 0.13;
+      const o = c.createOscillator(); o.type = "sine"; o.frequency.value = fq;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, st);
+      g.gain.exponentialRampToValueAtTime(0.2, st + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, st + 0.35);
+      o.connect(g); g.connect(c.destination);
+      o.start(st); o.stop(st + 0.4);
+    });
+  }
+  function sfxStorm() {            // low ominous sweep when a zone closes
+    const c = actx(); if (!c || c.state !== "running") return;
+    const t = c.currentTime;
+    const o = c.createOscillator(); o.type = "sawtooth";
+    o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(28, t + 1.1);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.15, t); g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + 1.25);
+  }
+  const SFX = { kill: sfxCannon, skirmish: sfxClash, find: sfxFind, storm: sfxStorm };
+  function maybePlaySounds(s) {
+    const feed = s.feed || [];
+    // First render or scrub-back: just sync the counter, no sounds
+    if (lastFeedN < 0 || feed.length < lastFeedN) { lastFeedN = feed.length; return; }
+    const fresh = feed.slice(lastFeedN);
+    lastFeedN = feed.length;
+    if (!soundOn || !fresh.length) return;
+    fresh.slice(-3).forEach((f, i) => {
+      const fn = SFX[f.type];
+      if (fn) setTimeout(() => { try { fn(); } catch (e) {} }, i * 350);
+    });
   }
 
   function render(s) {
@@ -514,10 +856,42 @@
         `</div>`;
     }).join("") || `<div class="lobby-msg">Roster incoming… 💅</div>`;
 
-    // Victory screen
-    if (s.phase === "finished") renderVictory(s);
-    else $("victory").classList.remove("show");
+    // Sound effects for fresh feed events (clashes, cannons, dings, storms)
+    maybePlaySounds(s);
+
+    // Battle over → offer the victory report instead of forcing it, so spectators
+    // can keep poking around the map, feed, and replay first
+    if (s.phase === "finished") {
+      finishedState = s;
+      $("results-btn").style.display = "inline-block";
+      if (!doneSeen) {
+        doneSeen = true;
+        const w = s.victor || {};
+        $("bd-sub").textContent = w.name
+          ? `The cannons have gone quiet. ${w.name} stands alone. 👑`
+          : "The cannons have gone quiet. One tribute remains.";
+        if (!$("victory").classList.contains("show")) $("battle-done").classList.add("show");
+      }
+    } else {
+      finishedState = null;
+      doneSeen = false;
+      $("battle-done").classList.remove("show");
+      $("results-btn").style.display = "none";
+      $("victory").classList.remove("show");
+    }
   }
+
+  let finishedState = null, doneSeen = false;
+  $("bd-view").onclick = () => {
+    $("battle-done").classList.remove("show");
+    if (finishedState) renderVictory(finishedState);
+  };
+  $("bd-stay").onclick = () => $("battle-done").classList.remove("show");
+  $("results-btn").onclick = () => {
+    $("battle-done").classList.remove("show");
+    if (finishedState) renderVictory(finishedState);
+  };
+  $("v-close").onclick = () => $("victory").classList.remove("show");
 
   function renderVictory(s) {
     const v = $("victory");
@@ -574,8 +948,96 @@
     $("stale-warn").style.display = (Date.now() - lastOk > 30000) ? "block" : "none";
   }
 
-  poll();
-  setInterval(poll, POLL_MS);
+  /* ---------- Replay mode — embedded history, no polling ---------- */
+  // Expand history snapshots into one playback step per feed event, so the
+  // kill feed reveals one entry at a time — a watchable broadcast even when
+  // the GM wrote few snapshots. Victory only fires on the very last step.
+  function buildReplaySteps(frames) {
+    const steps = [];
+    let seen = 0;
+    frames.forEach(f => {
+      const feed = f.feed || [];
+      if (feed.length > seen) {
+        for (let k = seen + 1; k <= feed.length; k++) {
+          steps.push(Object.assign({}, f, { feed: feed.slice(0, k) }));
+        }
+        seen = feed.length;
+      } else {
+        steps.push(f);
+      }
+    });
+    return steps.map((s, idx) =>
+      (idx < steps.length - 1 && s.phase === "finished")
+        ? Object.assign({}, s, { phase: "live" })
+        : s);
+  }
+
+  function initReplay(frames) {
+    const dot = $("live-dot");
+    dot.classList.add("replay-dot");
+    $("replay-bar").style.display = "flex";
+    const steps = buildReplaySteps(frames);
+    const scrub = $("rb-scrub"), label = $("rb-label"), playBtn = $("rb-play");
+    scrub.max = steps.length - 1;
+    let i = 0, playing = false, timer = null;
+    const STEP_MS = 5000;
+
+    function show(n) {
+      i = Math.max(0, Math.min(steps.length - 1, n));
+      scrub.value = i;
+      const f = steps[i];
+      label.textContent = `Step ${i + 1}/${steps.length} · Turn ${f.turn ?? "?"}`;
+      render(f);
+    }
+    function tick() {
+      if (i >= steps.length - 1) { pause(); return; }
+      show(i + 1);
+    }
+    function play() {
+      if (i >= steps.length - 1) i = -1; // replay from the top
+      playing = true; playBtn.textContent = "⏸";
+      clearInterval(timer);
+      timer = setInterval(tick, STEP_MS / Number($("rb-speed").value));
+      tick();
+    }
+    function pause() {
+      playing = false; playBtn.textContent = "▶";
+      clearInterval(timer);
+    }
+    playBtn.onclick = () => playing ? pause() : play();
+    $("rb-prev").onclick = () => { pause(); show(i - 1); };
+    $("rb-next").onclick = () => { pause(); show(i + 1); };
+    scrub.oninput = () => { pause(); show(Number(scrub.value)); };
+    $("rb-speed").onchange = () => { if (playing) play(); };
+    document.addEventListener("keydown", e => {
+      if (e.key === " ") { e.preventDefault(); playBtn.onclick(); }
+      else if (e.key === "ArrowLeft") $("rb-prev").onclick();
+      else if (e.key === "ArrowRight") $("rb-next").onclick();
+    });
+
+    show(0);
+    play();
+  }
+
+  // Sound toggle + lazy audio unlock (browsers require a user gesture)
+  const sndBtn = $("snd");
+  sndBtn.onclick = () => {
+    soundOn = !soundOn;
+    sndBtn.textContent = soundOn ? "🔊" : "🔇";
+    sndBtn.title = soundOn ? "Sound on — click to mute" : "Muted — click for sound";
+    if (soundOn) actx();
+  };
+  const unlockAudio = () => { if (soundOn) actx(); };
+  document.addEventListener("pointerdown", unlockAudio, { once: true });
+  document.addEventListener("keydown", unlockAudio, { once: true });
+
+  const REPLAY = Array.isArray(window.REPLAY_DATA) && window.REPLAY_DATA.length ? window.REPLAY_DATA : null;
+  if (REPLAY) {
+    initReplay(REPLAY);
+  } else {
+    poll();
+    setInterval(poll, POLL_MS);
+  }
 })();
 </script>
 </body>

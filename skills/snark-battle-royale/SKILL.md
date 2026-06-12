@@ -260,6 +260,8 @@ SnarkGirl rewrites the ENTIRE file on every update (atomic single write — writ
       "kills": 2,
       "finds": 4,
       "zone": "auth-caves",
+      "action": "roaming | fighting | feasting",
+      "opponent": null,
       "status": "alive | dead",
       "causeOfDeath": null,
       "epitaph": null
@@ -298,6 +300,14 @@ SnarkGirl rewrites the ENTIRE file on every update (atomic single write — writ
 - The page draws a real territory map: zones become terrain-colored regions sized by `weight` (defaults to file count), with players standing on them as icon tokens showing name, HP bar (rations), and kill count. Tokens glide between territories when tributes relocate.
 - **Give every tribute a unique emoji `icon` at spawn** (🦅 🐍 🦂 🐗 🦊 🦈 🕷️ 🐉 …) — it's their map avatar. If omitted, the page falls back to tier icons (T1 🦁, T2 🐺, T3 🐀).
 - Set zone `weight` to reflect territory richness/size so the map's proportions tell the story of where the loot is.
+- **The map is alive — set each tribute's `action` every update** so the tokens act it out:
+  - `"roaming"` (default if omitted) — the token wanders idly around its territory.
+  - `"fighting"` — set on BOTH skirmishers, each with `opponent` set to the other's `id` (they must share a `zone`). The pair squares up and repeatedly clashes with a 💥 between them. Set this when a skirmish begins; revert the survivor to `"roaming"` (or `"feasting"`) and clear `opponent` once it resolves.
+  - `"feasting"` — the tribute sits next to a food item on the ground and noms. Set this the update a find is validated and paid; revert to `"roaming"` next turn.
+- The page scatters decorative food (🍖 🍗 🍎 🧀 …) around each open zone automatically — no state needed for it.
+- **Leave the dead where they fell.** When a tribute dies, keep their `zone` set to the zone they died in — the page renders their greyed-out, tipped-over body (with a 💀) at a fixed spot there for the rest of the match. Never null out a dead tribute's `zone`.
+- **Never write an alive tribute with 0 rations.** Zero rations IS death — resolve it in the same state update: flip `status` to `"dead"`, set `causeOfDeath`/`epitaph`, and fire the cannon in the feed. A snapshot showing someone alive at 0 🍖 is a rules violation and looks broken on the map.
+- **Use accurate feed `type` values** — they drive the arena's sound effects (🔊 toggle in the header): `kill` fires the cannon boom, `skirmish` plays clashing strikes, `find` plays a victory ding, `storm` plays an ominous zone-closure sweep. When a tribute relocates, the page automatically draws a fading arrow trail from their old territory to the new one.
 
 ### Update Cadence
 
@@ -306,13 +316,38 @@ SnarkGirl rewrites the ENTIRE file on every update (atomic single write — writ
 - **Feed is append-only.** Never remove entries; the page shows newest first and archives the whole thing on the victory screen.
 - **Announcements are SnarkGirl's voice.** Append a fresh in-character Game Master announcement to `announcements` at least once per turn (and for big moments: deaths, zone closures, upsets, endgame). The page shows the latest one prominently in the bottom bar with the previous two faded above it. This is narration, not data — `feed` is the factual log, `announcements` is SnarkGirl talking to the spectators.
 - **Findings accumulate** — add them when validated; flip `status` to `"fallen"` (with `fellBecause`) if they lose a skirmish or get invalidated later.
+- **Record history for the replay.** Every time you write `state.json`, ALSO append the same snapshot as one line to `{arena-dir}/history.jsonl` (one JSON object per line, append-only). This costs nothing during the match and powers the shareable replay at the end. Don't skip it.
 - The terminal broadcast (above) still happens — the web arena is additive, not a replacement. If the user says "highlights only" or "silent," reduce the TERMINAL output but keep `state.json` fully updated; the page IS the broadcast.
 
 ### The Final Screen
 
-When the game ends, set `phase: "finished"` and populate `victor`, `takeaways`, `finalCommentary`, and the complete `findings` list. The page automatically transitions to the full-screen **Victory Report**: victor banner, the Spoils (what to fix, grouped by severity, with fixes), final standings, takeaways, fallen findings, and the complete kill feed archive.
+When the game ends, set `phase: "finished"` and populate `victor`, `takeaways`, `finalCommentary`, and the complete `findings` list. The page shows a centered **BATTLE COMPLETE** modal so the spectator chooses when to proceed — they can keep exploring the map, feed, and corpses first, then open the full-screen **Victory Report** via the modal button or the 👑 Results button in the header (it also has a "Back to the arena" button). The report shows: victor banner, the Spoils (what to fix, grouped by severity, with fixes), final standings, takeaways, fallen findings, and the complete kill feed archive.
 
 Leave the server running so the user can keep admiring the carnage. Tell them the page now shows the final screen, and how to stop the server when done (`Stop-Process -Id {PID}` — report the PID from launch).
+
+### The Shareable Replay 🎬
+
+After the final screen, **always generate a replay file** — a single self-contained HTML anyone can open (double-click, no server, no Copilot, no SnarkGirl) to watch the whole battle play back: drops, wandering, skirmish clashes, deaths, the storm, and the victory screen at the end.
+
+**How to build it:**
+
+1. Read all snapshots from `{arena-dir}/history.jsonl` (one JSON object per line) into a JSON array. If any line fails to parse (a torn write), skip that line.
+2. Take the arena template (same sourcing chain as setup: local skill assets → GitHub → cache) and replace the `<!-- REPLAY_DATA_SLOT … -->` comment with:
+   ```html
+   <script>window.REPLAY_DATA = [ ...the snapshot array... ];</script>
+   ```
+   **Escape `</script` as `<\/script`** anywhere inside the JSON before embedding, or the browser will end the script tag early.
+3. Save as `{TEMP}/snark-girl-reviews/BATTLE-ROYALE-REPLAY-{target}-{date}.html` and tell the user the path.
+
+The page detects `window.REPLAY_DATA` and switches itself into replay mode automatically: no polling, a 🎬 REPLAY control bar (play/pause, step, scrubber, 1×/2×/4× speed, spacebar/arrow-key support), auto-plays on open, and shows the BATTLE COMPLETE modal when the timeline reaches the end (viewer opens the Victory Report when ready). Playback is paced per **feed event** — the page expands the snapshots into one step per kill-feed entry (~5s each at 1×), so the battle unfolds event by event no matter how many snapshots were recorded. Do a quick sanity check: generated file is bigger than the template and contains `REPLAY_DATA`.
+
+**Optional — share as a link.** If the user wants a link instead of a file, offer to upload it as a **secret GitHub gist** on their account:
+
+```
+gh gist create "{replay-path}" --desc "SnarkGirl Battle Royale replay — {target}"
+```
+
+Then give them a view link: `https://htmlpreview.github.io/?{raw-gist-url-of-the-html-file}` (get the raw URL from `gh gist view {id} --files` / the gist API). Warn the user before uploading: the replay contains code snippets from the findings, and secret gists are unlisted-but-accessible-by-URL — ask for explicit confirmation first. Never upload without being asked.
 
 ## The Endgame & Victory Report
 
