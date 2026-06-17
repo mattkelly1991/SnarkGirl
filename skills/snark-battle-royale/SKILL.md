@@ -20,7 +20,9 @@ This is the ultimate review-as-bloodsport. SnarkGirl is the **Game Master** — 
 
 ## Works On Branches, Working State, and PRs
 
-SnarkGirl picks the battlefield based on what the user specifies or context:
+SnarkGirl picks the battlefield based on what the user specifies or context.
+
+**CRITICAL — Git Command Restrictions:** SnarkGirl (the Game Master) may ONLY run **read-only** git commands to inspect the battlefield: `git status`, `git diff`, `git log`, `git branch --show-current`, `git rev-parse`. She NEVER runs write operations (`git add`, `git commit`, `git checkout`, `git branch -D`, `git reset`, etc.) — the battle is a REVIEW, not a mutation. If the user wants fixes applied, that happens AFTER the Victory Report is delivered.
 
 **If targeting an existing PR:**
 ```bash
@@ -153,12 +155,13 @@ EACH TURN you will receive orders from the Game Master (hunt, fight, move, or re
 Each game turn, SnarkGirl:
 
 1. **Issues hunt orders** (parallel) — every living contestant scavenges their current zone for findings. Contestants may also declare a CHALLENGE against a co-located rival's previous finding.
-2. **Collects and validates** — checks every claimed finding against the actual code (read the real files, not just the diff, when needed). Pays rations for valid finds. Invalid/vague/hallucinated claims cost the claimant 1 ration. Flags duplicates.
-3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: one exchange each, SnarkGirl rules, loser pays 2^(turn−1) rations (capped at what they hold).
-4. **Applies hunger** — everyone loses N rations on turn N (plus storm damage if outside the safe zone). Anyone at 0 dies. 💀 Cannon.
-5. **Shrinks the zone** (every ~2 turns, faster in endgame) — closes looted/empty zones, announces the new safe zone, reassigns displaced survivors. Only close a zone when its loot is gone — a closing zone means "nothing left to eat here," never "food abandoned to the storm."
-6. **Broadcasts the spectator update** (see below) and **rewrites the Live Arena `state.json`** (see The Live Web Arena).
-7. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → endgame. Otherwise, next turn.
+2. **Collects and validates** — checks every claimed finding against the actual code (read the real files, not just the diff, when needed). **For EACH valid finding:** update `state.json` immediately (add to findings[], increment tribute rations, add feed entry, set action:"feasting"), broadcast the spectator update so the web arena shows them nomming in real time. Invalid/vague/hallucinated claims also update immediately (−1 ration, feed entry). Flags duplicates.
+3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: **BEFORE the duel,** update `state.json` (set both tributes action:"fighting" + opponent, add feed entry, broadcast) so the map shows them squaring up. One exchange each, SnarkGirl rules. **AFTER ruling,** update again (loser pays 2^(turn−1) rations capped at holdings, winner gets finding ownership if applicable, reset actions, update feed with result, broadcast). If the loser dies, write their death immediately (status, causeOfDeath, epitaph, cannon feed entry).
+4. **Applies hunger** — everyone loses N rations on turn N (plus storm damage if outside the safe zone). **Write deaths AS THEY HAPPEN** — when a tribute hits 0 after hunger settles, update `state.json` right then (status:"dead", causeOfDeath, epitaph, cannon entry) and broadcast. Don't batch corpses.
+5. **Shrinks the zone** (every ~2 turns, faster in endgame) — closes looted/empty zones, **updates `state.json` immediately** (zone status:"closing" or "closed", storm feed entry, reassignments), announces the new safe zone, reassigns displaced survivors. Only close a zone when its loot is gone — a closing zone means "nothing left to eat here," never "food abandoned to the storm."
+6. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → write finished state (phase:"finished", victor object, takeaways, finalCommentary) and broadcast. Otherwise, next turn.
+
+**Live updates are the point.** Every feed-worthy event (find paid, skirmish starts, skirmish ends, death, zone closes) gets its own `state.json` write + broadcast. The spectator doesn't wait until turn-end for a dump — they watch it unfold event by event. The terminal broadcast at turn-end is a SUMMARY of what the web arena already showed live.
 
 **Pacing guardrails:** Target 5-10 total turns. Escalating hunger is the built-in accelerator — if the game still drags (no deaths in 3 turns), force encounters and shrink harder rather than inflating hunger further.
 
@@ -203,9 +206,11 @@ Keep each turn's broadcast punchy. The drama is in the kill feed, not in essays.
 
 The terminal broadcast is cute, but the REAL spectator experience is the **Live Arena webpage** — a browser dashboard that auto-refreshes as the battle happens: the zone map with player tokens in the center, combatant stat cards on the right, the kill/event feed on the left, and a full-screen Victory Report when the game ends.
 
+**ASK THE USER FIRST:** Before setting up the arena, ask: *"Want the full live web arena experience (map, animations, sounds, auto-refresh) or just terminal updates?"* If they say terminal-only, skip the entire web arena setup (no directory, no server, no browser) and deliver all updates via the terminal spectator broadcasts only. If they say yes or don't specify, proceed with setup.
+
 **Architecture — "dumb page, smart file":** a static HTML page polls a `state.json` file every 2 seconds. SnarkGirl (the Game Master) is the only writer — she rewrites `state.json` after every game event. No backend logic, no websockets, no build step.
 
-### Setup (at game start, right after the roster is announced)
+### Setup (at game start, right after the roster is announced — ONLY if the user wants the web arena)
 
 1. **Create the arena directory:** `{TEMP}/snark-girl-arena/{match-id}/` where `{match-id}` is something like `pr-42-20260611` or `{branch}-{date}`.
 2. **Get the arena template** into the arena directory as `index.html`, trying these sources IN ORDER:
@@ -441,6 +446,19 @@ gh api repos/{owner}/{repo}/pulls/{number}/reviews --method POST -f body="{victo
 
 If yes → fix hands-on like `snark-council` does, severity order.
 
+### Cleanup
+
+**After the Victory Report is delivered and the user has had time to explore the arena / replay:**
+
+1. **Stop the server** (if one was started): `Stop-Process -Id {PID}` (Windows) or `kill {PID}` (Unix). Report the PID to the user so they can stop it themselves later if needed.
+2. **Delete temporary files:**
+   - The arena directory: `{TEMP}/snark-girl-arena/{match-id}/` (contains `state.json`, `history.jsonl`, `index.html`, and the server's working dir)
+   - Session adjudication scripts: any `.py` files written to the session `files/` directory during the battle (e.g., `turn1.py`, `turn2.py`, `report.py`, `replay6.py`)
+   - The Victory Report and replay HTML are kept in `{TEMP}/snark-girl-reviews/` — those are the deliverables, don't delete them
+3. Tell the user: "Arena cleaned up. The Victory Report and replay are saved in `{TEMP}/snark-girl-reviews/` if you want to keep them. 🧹"
+
+**Exception:** If the user explicitly asks to keep the arena alive ("keep the server running" / "I want to keep exploring"), skip cleanup and just tell them how to stop the server and clean up later.
+
 ## Configuration Defaults
 
 | Setting | Default | Override |
@@ -451,7 +469,7 @@ If yes → fix hands-on like `snark-council` does, severity order.
 | Zone shrink cadence | Every ~2 turns, faster in endgame | "Slow storm" / "fast storm" |
 | Max turns | ~10 (GM accelerates if dragging) | "Quick match" / "Marathon" |
 | Spectator mode | Full — every turn narrated | "Highlights only" / "Silent" |
-| Live web arena | ON — served at localhost, auto-opens browser | "No web arena" / "terminal only" |
+| Live web arena | ASK FIRST — prompt user if they want it | "No web arena" / "terminal only" |
 | Target | Auto-detect (PR > branch > working state) | "On PR #42" / "on my working changes" |
 
 ## Key Principles
