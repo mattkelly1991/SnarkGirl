@@ -2,7 +2,7 @@
   "name": "SnarkGirl",
   "displayName": "Snark Girl",
   "description": "Snarky valley girl coder: PR review, branch review, PR reality check (real size & risk breakdown), pre-PR AI gauntlet (council), deep PR council (multi-agent review), The Sisterhood (PR defense squad), The Gauntlet Supreme (adversarial Council vs Sisterhood + final verdict), Battle Royale (10-20 AI contestants fight to the death over real bugs with SnarkGirl as Game Master and a live web arena spectator view), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "author": {
     "name": "Mathew Kelly"
   },

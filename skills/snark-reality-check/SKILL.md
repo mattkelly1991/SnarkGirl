@@ -114,6 +114,31 @@ git diff --diff-algorithm=histogram $BASE...HEAD -- path/to/File.cs
 
 The *genuine* behavioral change is only the lines that truly differ (a changed `catch`, a swapped endpoint, a new condition) — often a tiny fraction of the reported deletions. Quote the real delta, not git's inflated one.
 
+### The cross-method line-smear trap (the one that fooled us)
+
+This is the most dangerous trap in the whole skill, because the red/green lines are 100% real and the story they tell is a **lie**. `git diff` is **line-based, not symbol-aware** — it finds the cheapest set of line edits to turn the old file into the new one, with zero concept of where a method begins or ends.
+
+When a PR **adds a new method that is structurally similar to an existing one** (same guard clause, same client call, same `catch` shape — extremely common with `FooAsync` / `FooFastAsync` siblings, overloads, or copy-adapted handlers), the diff algorithm will often align the **old method's body** against the **new method's body** because that's the cheapest match. It then renders the differences (a swapped endpoint, a renamed param, a different log string) **as if they happened inside the untouched method**, while the genuinely-new method gets "paid for" by a green `+` block attributed to some unrelated region. The net line counts are correct; the per-method attribution is fiction.
+
+**This actually happened.** On a real PR the skill confidently flagged `SearchClient.QueryAsync`'s `catch` as "the only behavioral change — flipped from rethrow to swallow-and-return-empty." A sister reviewer extracted `QueryAsync` from both refs and found it **byte-for-byte identical**. The "change" was the diff smearing lines from a brand-new `QueryFastAsync` sibling onto the old method, plus a `try/catch(rethrow)` no-op wrapper removed from a *different* method. Net behavioral change to existing code: **zero.** We narrated a mirage.
+
+**The rule — verify the symbol, not the smear:**
+
+> **Never describe a behavioral change to a named method/function based on diff line-attribution alone.** Before asserting "method M changed," extract M's full body from both the base and head refs and compare *that*. If M is identical across refs, M did NOT change — no matter where the diff drew the red and green lines.
+
+```bash
+# Diff against the real merge base, not whatever's checked out:
+BASE=$(git merge-base origin/dev HEAD)
+
+# For ANY "method M changed behaviorally" claim, pull M from both refs and compare directly.
+# (csharp shown; use the language's brace/indent rules. A tree-sitter/Roslyn symbol range is ideal.)
+git show $BASE:path/to/File.cs   > /tmp/base.cs
+git show HEAD:path/to/File.cs    > /tmp/head.cs
+# then extract M's body from each by brace-balancing from its signature and diff the two bodies.
+```
+
+Smell test that *forces* the per-symbol extraction: the file adds a method whose name is a variant of an existing one (`X` + `XFast`, `X` + `XAsync`, an overload), **or** a hunk visually spans a method boundary, **or** two methods in the file share a near-identical skeleton. Any of those = git's attribution is untrustworthy; extract and compare the actual symbols before you write a single word about behavior. Prefer `git diff --function-context` (or a symbol-aware diff) when generating the narrative so the prose is built from method-scoped deltas, not raw line runs.
+
 ### Spot comment/doc inflation
 
 Doc comments are pure green-flag content that the badge counts as "code." When a file's added lines are heavy on comments, call it out so it doesn't inflate the real size:
@@ -145,7 +170,7 @@ grep -i "linguist-generated" .gitattributes 2>/dev/null
 
 Size and risk are different animals. A massive additive PR can be low-risk; a tiny edit can be terrifying. Assess risk with real questions:
 
-- **Does it change existing behavior, or only add?** Purely additive code can't break what already ships. Edits to existing logic can.
+- **Does it change existing behavior, or only add?** Purely additive code can't break what already ships. Edits to existing logic can. **But confirm the edit is real before you call it one** — a `modified` file often only adds new methods or sheds a no-op `try/catch(rethrow)` wrapper, and git may smear a new method's lines onto an old one (see the cross-method line-smear trap). For every named method you're about to flag, extract it from both refs and verify it actually differs.
 - **Blast radius.** Are the modified files widely imported? Check it — don't guess:
   ```bash
   # How many places import the thing being changed?
@@ -356,9 +381,9 @@ A posted comment people actually read is short up top with detail tucked away. A
 | File | Δ | Verdict |
 |------|------|---------|
 | `SomeService` | +26 / −0 | 🟢 pure addition |
-| `SearchClient.cs` | +30 / −10 | 🟡 the only real change |
+| `OrderProcessor.cs` | +18 / −12 | 🟡 changed: retry branch |
 
-{one paragraph on the single genuine behavioral change}
+{one paragraph on the single genuine behavioral change — and only after you've extracted that method from both refs and confirmed it actually differs. If every "modified" method turns out identical across refs (pure additions + dead-code cleanup), say so plainly: "no existing method changed behavior." Don't manufacture a ✏️ change to have something to point at.}
 
 </details>
 ```
@@ -534,4 +559,5 @@ If the user says no, that's fine — leave it in chat and move on. Don't be weir
 - **Size ≠ risk. Repeat it until it sticks.** The most dangerous PR in the queue is usually small. Decouple the two ratings every single time.
 - **Net-new is safer than edited.** Code that touches nothing existing can't break what already ships. Weight it accordingly.
 - **Point the reviewer at the 5%.** The deliverable isn't a number — it's "read THESE lines, skip the rest." That's what saves people's time and catches the bugs.
+- **Verify before you assert.** Confidence is a *precondition* you earn by checking, not a tone you adopt up front. Never narrate a per-method behavioral change off raw diff hunks — extract the symbol from both refs and confirm it differs first. A wrong "this is the change to review" is worse than no pointer at all: it sends eyes to untouched code and launders a fabricated claim in a confident voice. If you can't prove a change, don't headline it.
 - **Stay accurate, stay snarky.** The persona is the wrapper; the measurements underneath are dead serious and correct.
