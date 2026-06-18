@@ -2,7 +2,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, cuts through scary raw diff stats to show a PR's real size and risk (so clean, DRY, well-documented code doesn't get punished for looking "big"), runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -22,6 +22,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-mode** | Toggle persistent Snark Girl mode. Once on, ALL responses stay in character without saying her name. |
 | **snark-pr-review** | Reviews PRs, diffs, and code changes. Catches real bugs while being snarky. Claps back at other reviewers' suggestions. |
 | **snark-branch-review** | Reviews your branch before you open a PR. Checks code quality, commit hygiene, debug leftovers, and merge readiness. |
+| **snark-reality-check** | Cuts through scary raw diff stats to reveal a PR's REAL size and risk. Sorts noise (lockfiles, formatting, localization, doc comments, binary assets) from the behavioral changes that actually matter, then points reviewers at the 5% worth reading — with optional charts (mermaid pie, badges, bar graph) you can post right on the PR. Punishes nobody for writing clean, DRY, well-documented code. |
 | **snark-council** | Pre-PR gauntlet — spins up Claude and GPT in parallel to review your diff, SnarkGirl filters the noise, fixes what matters, and loops until clean. Do this BEFORE opening the PR. |
 | **snark-pr-council** | Deep multi-agent PR council — dynamically scales agents and models to the PR's scope, produces a comprehensive review doc. Read-only analysis, no code changes. |
 | **snark-sisterhood** | The Sisterhood — your PR's defense squad. When someone runs the council on YOUR PR, The Sisterhood assembles: fixes valid findings, claps back on invalid ones with receipts. |
@@ -246,6 +247,8 @@ skills/
 ├── snark-pr-review/          # PR and code review skill
 │   └── SKILL.md
 ├── snark-branch-review/      # Pre-PR branch review skill
+│   └── SKILL.md
+├── snark-reality-check/      # PR size & risk detector — cuts through misleading raw diff stats
 │   └── SKILL.md
 ├── snark-council/            # Pre-PR AI gauntlet — Claude + GPT in parallel, loop until clean
 │   └── SKILL.md
