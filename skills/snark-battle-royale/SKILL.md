@@ -55,7 +55,11 @@ git diff --staged
 
 ### Contestants
 
-- **Count: minimum 10, maximum 16.** SnarkGirl picks based on battlefield size. A tiny arena with 16 tributes is a bloodbath with no food; a massive arena with 10 is a camping simulator.
+- **Count is decided per-zone, not by total size.** Seed each zone by how rich/large it is, then sum:
+  - **Small zone → 2 tributes**, **medium zone → 3**, **large zone → 4** (judge size by the zone's `weight` / lines of diff relative to the others).
+  - The starting roster = the sum across all zones. e.g., 2 small + 1 medium + 2 large = 2+2+3+4+4 = **15 tributes**.
+  - **Global clamp: minimum 10, maximum 16 — this OVERRIDES the per-zone sum.** If the per-zone total comes out below 10, scale zones up (or add a tribute to the richest zones) until you hit 10; if it exceeds 16, trim from the smallest zones until you're at 16. Per-zone is the default; the global bounds are the hard rails.
+  - This means **every zone starts contested** (≥2 tributes) so there's pressure and skirmish potential everywhere from turn 1 — no empty regions, no lonely campers.
 - **Models are tiered relative to SnarkGirl (the host model).** SnarkGirl is the apex — no contestant runs on her tier or above:
   - **Tier 1 — Flagships** (1 tier below SnarkGirl): the favorites. e.g., if SnarkGirl is Fable → Opus-class (claude-opus-4.8) and GPT flagship equivalents (gpt-5.5). Reserved for the LARGEST battlefields.
   - **Tier 2 — Contenders** (2 tiers below): solid mid-card fighters. e.g., Sonnet-class (claude-sonnet-4.6), gpt-5.4, gpt-5.3-codex, gemini-3.1-pro-preview.
@@ -64,14 +68,25 @@ git diff --staged
 - **Mix model families.** Claude vs GPT vs Gemini tributes fight differently — that's the point.
 - **Every contestant gets a tribute name.** SnarkGirl names them with personality: "OpusPrime", "HaikuHavoc", "SonnetSlayer", "MiniMenace", "FlashFlood", "CodexCarnage", etc. Names appear in the kill feed.
 
-**Roster sizing by battlefield:**
+**Per-zone seeding (decides the count):**
 
-| Battlefield | Size | Contestants | Tier Mix |
-|-------------|------|-------------|----------|
-| 🟢 Skirmish Grounds | <300 lines | 10 | Mostly Tier 3, 2-3 Tier 2 |
-| 🟡 The Lowlands | 300-1000 lines | 12-14 | Half Tier 3, half Tier 2 |
-| 🟠 The Highlands | 1000-3000 lines | 14-15 | Tier 2 core, 2-4 Tier 1 favorites, Tier 3 fodder |
-| 🔴 The Deadlands | 3000+ lines | 16 | Full spread — several Tier 1 flagships, deep Tier 2, Tier 3 swarm |
+| Zone size | Seed | Judge by |
+|-----------|------|----------|
+| 🟢 Small | 2 tributes | low `weight` / few diff lines relative to other zones |
+| 🟡 Medium | 3 tributes | mid-pack `weight` |
+| 🔴 Large | 4 tributes | high `weight` / the bulk of the diff |
+
+Sum across zones → starting roster, then clamp to **10–16** (the global rails win). Example: 2 small + 1 medium + 2 large = 2+2+3+4+4 = **15**.
+
+**Tier mix scales with the overall battlefield** (the per-zone rule sets HOW MANY; this sets WHO):
+
+| Battlefield | Total size | Tier Mix |
+|-------------|-----------|----------|
+| 🟢 Skirmish Grounds | <300 lines | Mostly Tier 3, 2-3 Tier 2 |
+| 🟡 The Lowlands | 300-1000 lines | Half Tier 3, half Tier 2 |
+| 🟠 The Highlands | 1000-3000 lines | Tier 2 core, 2-4 Tier 1 favorites, Tier 3 fodder |
+| 🔴 The Deadlands | 3000+ lines | Full spread — several Tier 1 flagships, deep Tier 2, Tier 3 swarm |
+
 
 ### The Map
 
@@ -82,7 +97,7 @@ SnarkGirl carves the diff into **named zones** — logical groupings of files (b
 - `tests/` → **The Testing Grounds** 🎯
 - `src/utils/` → **Scavenger's Gulch** 🪤
 
-Aim for 4-8 zones. Each zone has a **richness estimate** (how much code / how likely to contain bugs) — SnarkGirl knows where the loot is, the contestants don't.
+Aim for 4-8 zones. Each zone has a **richness estimate** (how much code / how likely to contain bugs) — SnarkGirl knows where the loot is, the contestants don't. The richness/size of each zone also seeds its tribute count (small=2, medium=3, large=4 — see Contestants), so size the zones thoughtfully: 4-6 zones lands you naturally in the 10-16 roster range without heavy clamping.
 
 ### Resources (Rations 🍖)
 
@@ -516,7 +531,7 @@ If yes → fix hands-on like `snark-council` does, severity order.
 
 | Setting | Default | Override |
 |---------|---------|---------|
-| Contestants | SnarkGirl picks (10-16 by battlefield size) | "Drop 15" (clamped 10-16) |
+| Contestants | Per-zone seed (small 2 / med 3 / large 4), clamped 10-16 | "Drop 15" (clamped 10-16) |
 | Model tiers | Max = 1 tier below SnarkGirl; Min = 3 tiers below | User can request a tier mix |
 | Starting rations | 3 | "Hard mode: 2 rations" |
 | Zone shrink cadence | Every ~2 turns, faster in endgame | "Slow storm" / "fast storm" |
