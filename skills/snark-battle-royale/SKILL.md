@@ -1,11 +1,11 @@
 ---
 name: snark-battle-royale
-description: "Use when the user addresses SnarkGirl by name and wants the Battle Royale — 10-20 AI contestants drop onto the code, hunt for bugs to survive, fight each other over findings, and starve if they find nothing. SnarkGirl is the Game Master and broadcasts the battle live to a local webpage (map, stats, kill feed, victory screen). Last contestant standing wins, and the spoils are battle-tested findings. Works on branches, working state, or PRs. Trigger phrases: 'SnarkGirl, battle royale', 'SnarkGirl, drop the contestants', 'SnarkGirl, let the games begin', 'SnarkGirl, hunger games this PR', '@SnarkGirl battle royale'."
+description: "Use when the user addresses SnarkGirl by name and wants the Battle Royale — 10-16 AI contestants drop onto the code, hunt for bugs to survive, fight each other over findings, and starve if they find nothing. SnarkGirl is the Game Master and broadcasts the battle live to a local webpage (map, stats, kill feed, victory screen). Last contestant standing wins, and the spoils are battle-tested findings. Works on branches, working state, or PRs. Trigger phrases: 'SnarkGirl, battle royale', 'SnarkGirl, drop the contestants', 'SnarkGirl, let the games begin', 'SnarkGirl, hunger games this PR', '@SnarkGirl battle royale'."
 ---
 
 # The Battle Royale — One Skill to Rule Them All 👑🪂💀
 
-Twenty tributes. One codebase. Only one walks out.
+Sixteen tributes. One codebase. Only one walks out.
 
 This is the ultimate review-as-bloodsport. SnarkGirl is the **Game Master** — she doesn't fight, she RUNS the game. She maps the battlefield from the diff, drops contestants into zones, validates their kills (findings), referees their skirmishes, shrinks the zone, and decides who eats and who starves. Contestants survive by finding REAL bugs. Fake findings don't feed you. Duplicate findings start fights. And when the dust settles, the spoils of war — every finding that survived being fought over — get presented as the most battle-tested review imaginable.
 
@@ -55,11 +55,12 @@ git diff --staged
 
 ### Contestants
 
-- **Count: minimum 10, maximum 20.** SnarkGirl picks based on battlefield size. A tiny arena with 20 tributes is a bloodbath with no food; a massive arena with 10 is a camping simulator.
+- **Count: minimum 10, maximum 16.** SnarkGirl picks based on battlefield size. A tiny arena with 16 tributes is a bloodbath with no food; a massive arena with 10 is a camping simulator.
 - **Models are tiered relative to SnarkGirl (the host model).** SnarkGirl is the apex — no contestant runs on her tier or above:
-  - **Tier 1 — Flagships** (1 tier below SnarkGirl): the favorites. e.g., if SnarkGirl is Fable → Opus-class (claude-opus-4.8/4.7/4.6/4.5) and GPT flagship equivalents (gpt-5.5). Reserved for the LARGEST battlefields.
-  - **Tier 2 — Contenders** (2 tiers below): solid mid-card fighters. e.g., Sonnet-class (claude-sonnet-4.6/4.5), gpt-5.4, gpt-5.3-codex, gemini-3.1-pro-preview.
+  - **Tier 1 — Flagships** (1 tier below SnarkGirl): the favorites. e.g., if SnarkGirl is Fable → Opus-class (claude-opus-4.8) and GPT flagship equivalents (gpt-5.5). Reserved for the LARGEST battlefields.
+  - **Tier 2 — Contenders** (2 tiers below): solid mid-card fighters. e.g., Sonnet-class (claude-sonnet-4.6), gpt-5.4, gpt-5.3-codex, gemini-3.1-pro-preview.
   - **Tier 3 — Scrappers** (3 tiers below): the underdogs. e.g., Haiku-class (claude-haiku-4.5), gpt-5.4-mini, gpt-5-mini, gemini-3.5-flash. Cheap, hungry, and surprisingly dangerous in numbers.
+- **Always use the latest version of each model line.** Within a single family/class, only ever field the newest release — if claude-sonnet-4.6 exists, never drop a claude-sonnet-4.5; if gpt-5.4 exists, skip gpt-5.3. Mixing ACROSS classes is the whole point (a claude-sonnet-4.6 and a claude-opus-4.8 in the same arena is great) — just never two versions of the SAME line. When new model versions ship, swap the examples above for the current latest.
 - **Mix model families.** Claude vs GPT vs Gemini tributes fight differently — that's the point.
 - **Every contestant gets a tribute name.** SnarkGirl names them with personality: "OpusPrime", "HaikuHavoc", "SonnetSlayer", "MiniMenace", "FlashFlood", "CodexCarnage", etc. Names appear in the kill feed.
 
@@ -69,8 +70,8 @@ git diff --staged
 |-------------|------|-------------|----------|
 | 🟢 Skirmish Grounds | <300 lines | 10 | Mostly Tier 3, 2-3 Tier 2 |
 | 🟡 The Lowlands | 300-1000 lines | 12-14 | Half Tier 3, half Tier 2 |
-| 🟠 The Highlands | 1000-3000 lines | 15-18 | Tier 2 core, 2-4 Tier 1 favorites, Tier 3 fodder |
-| 🔴 The Deadlands | 3000+ lines | 20 | Full spread — several Tier 1 flagships, deep Tier 2, Tier 3 swarm |
+| 🟠 The Highlands | 1000-3000 lines | 14-15 | Tier 2 core, 2-4 Tier 1 favorites, Tier 3 fodder |
+| 🔴 The Deadlands | 3000+ lines | 16 | Full spread — several Tier 1 flagships, deep Tier 2, Tier 3 swarm |
 
 ### The Map
 
@@ -155,13 +156,13 @@ EACH TURN you will receive orders from the Game Master (hunt, fight, move, or re
 Each game turn, SnarkGirl:
 
 1. **Issues hunt orders** (parallel) — every living contestant scavenges their current zone for findings. Contestants may also declare a CHALLENGE against a co-located rival's previous finding.
-2. **Collects and validates** — checks every claimed finding against the actual code (read the real files, not just the diff, when needed). **For EACH valid finding:** update `state.json` immediately (add to findings[], increment tribute rations, add feed entry, set action:"feasting"), broadcast the spectator update so the web arena shows them nomming in real time. Invalid/vague/hallucinated claims also update immediately (−1 ration, feed entry). Flags duplicates.
-3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: **BEFORE the duel,** update `state.json` (set both tributes action:"fighting" + opponent, add feed entry, broadcast) so the map shows them squaring up. One exchange each, SnarkGirl rules. **AFTER ruling,** update again (loser pays 2^(turn−1) rations capped at holdings, winner gets finding ownership if applicable, reset actions, update feed with result, broadcast). If the loser dies, write their death immediately (status, causeOfDeath, epitaph, cannon feed entry).
-4. **Applies hunger** — everyone loses N rations on turn N (plus storm damage if outside the safe zone). **Write deaths AS THEY HAPPEN** — when a tribute hits 0 after hunger settles, update `state.json` right then (status:"dead", causeOfDeath, epitaph, cannon entry) and broadcast. Don't batch corpses.
-5. **Shrinks the zone** (every ~2 turns, faster in endgame) — closes looted/empty zones, **updates `state.json` immediately** (zone status:"closing" or "closed", storm feed entry, reassignments), announces the new safe zone, reassigns displaced survivors. Only close a zone when its loot is gone — a closing zone means "nothing left to eat here," never "food abandoned to the storm."
-6. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → write finished state (phase:"finished", victor object, takeaways, finalCommentary) and broadcast. Otherwise, next turn.
+2. **Collects and validates** — checks every claimed finding against the actual code (read the real files, not just the diff, when needed). **Adjudicate each tribute's result the moment it lands, one at a time — not as a batch.** For each valid finding fire `gm.py find …` immediately (pays rations, sets `feasting`, logs it); for each bogus claim fire `gm.py invalid …` immediately (−1 ration). The web arena shows them nomming in real time. Flags duplicates for skirmishes.
+3. **Resolves skirmishes** — for every contested/challenged finding between co-located tributes: **BEFORE the duel,** `gm.py fight a b --over "…"` so the map shows them squaring up. One exchange each, SnarkGirl rules. **AFTER ruling,** `gm.py endfight winner loser --stake {2^(turn−1)} [--finding fX]` — it transfers the stake (capped at holdings), reassigns finding ownership, resets actions, and auto-kills + credits the kill if the loser hits 0.
+4. **Applies hunger** — `gm.py hurt {tribute} {N} --reason hunger` for each tribute on turn N (plus storm damage if outside the safe zone). Settle them one at a time; `hurt` auto-fires the cannon at 0 so deaths land AS THEY HAPPEN, never batched.
+5. **Shrinks the zone** (every ~2 turns, faster in endgame) — `gm.py zone {id} closing|closed` (auto-fires the storm feed), then `gm.py move {tribute} {newZone}` for each displaced survivor and an `announce`. Only close a zone when its loot is gone — a closing zone means "nothing left to eat here," never "food abandoned to the storm."
+6. **Checks win condition** — 1 survivor (or fully-looted mercy rule) → write the finished state (`phase:"finished"`, `victor`, `takeaways`, `finalCommentary`, complete `findings`). This final block is rich enough to hand-write or combine `gm.py phase finished` + a hand-write of the closing fields. Otherwise, next turn (`gm.py turn {N+1}`).
 
-**Live updates are the point.** Every feed-worthy event (find paid, skirmish starts, skirmish ends, death, zone closes) gets its own `state.json` write + broadcast. The spectator doesn't wait until turn-end for a dump — they watch it unfold event by event. The terminal broadcast at turn-end is a SUMMARY of what the web arena already showed live.
+**Live updates are the point.** Every feed-worthy event (find paid, claim rejected, skirmish starts, skirmish ends, death, zone closes) is its own `gm.py` command run the instant you observe it. The spectator doesn't wait until turn-end for a dump — they watch it unfold event by event. The terminal broadcast at turn-end is a SUMMARY of what the web arena already showed live.
 
 **Pacing guardrails:** Target 5-10 total turns. Escalating hunger is the built-in accelerator — if the game still drags (no deaths in 3 turns), force encounters and shrink harder rather than inflating hunger further.
 
@@ -208,7 +209,9 @@ The terminal broadcast is cute, but the REAL spectator experience is the **Live 
 
 **ASK THE USER FIRST:** Before setting up the arena, ask: *"Want the full live web arena experience (map, animations, sounds, auto-refresh) or just terminal updates?"* If they say terminal-only, skip the entire web arena setup (no directory, no server, no browser) and deliver all updates via the terminal spectator broadcasts only. If they say yes or don't specify, proceed with setup.
 
-**Architecture — "dumb page, smart file":** a static HTML page polls a `state.json` file every 2 seconds. SnarkGirl (the Game Master) is the only writer — she rewrites `state.json` after every game event. No backend logic, no websockets, no build step.
+**Architecture — "dumb page, smart file":** a static HTML page polls a `state.json` file every 2 seconds. SnarkGirl (the Game Master) is the only writer — she updates `state.json` after every game event. No backend logic, no websockets, no build step.
+
+**The `state.json` is driven by `gm.py`, one event at a time.** SnarkGirl writes the FULL initial lobby snapshot once by hand, then drives every subsequent change through the `gm.py` helper (shipped in this skill's `assets/`) — one short command per observed event. This is the whole point: a single thing happening (a tribute finds a bug, the cannon fires, two tributes square up) is ONE command that mutates just that slice, stamps `updatedAt`, atomically rewrites `state.json`, and appends the snapshot to `history.jsonl`. No more hand-writing giant JSON blobs at end of turn. See **The GM Helper (`gm.py`)** below.
 
 ### Setup (at game start, right after the roster is announced — ONLY if the user wants the web arena)
 
@@ -223,13 +226,14 @@ The terminal broadcast is cute, but the REAL spectator experience is the **Live 
    3. **Cached copy** — if a previous match already downloaded it, reuse `{TEMP}/snark-girl-arena/arena-template.html`. (When the GitHub download succeeds, also save a copy there for future matches.)
 
    **NEVER assume the template exists in the user's current working repo** — the battle usually runs on a completely different codebase than the SnarkGirl plugin repo. If all three sources fail (offline, no curl), fall back to terminal-only spectator mode and tell the user.
-3. **Write the initial `state.json`** (schema below) with `phase: "lobby"`, the full roster, and the zone map.
-4. **Start a static server, detached** so it survives the session:
+3. **Get `gm.py`** next to it (same source chain: local `assets/gm.py` → GitHub `https://raw.githubusercontent.com/mattkelly1991/SnarkGirl/main/skills/snark-battle-royale/assets/gm.py` → cache). You don't have to copy it into the arena dir — you can run it from the skill assets with `--dir {arena-dir}` — but having a known path to it is required. If it can't be found, fall back to writing `state.json` by hand (the old batch way), but prefer `gm.py`.
+4. **Write the initial `state.json`** (schema below) with `phase: "lobby"`, the full roster, and the zone map. This first snapshot is the ONLY one you write by hand — everything after is `gm.py`.
+5. **Start a static server, detached** so it survives the session:
    - `python -m http.server {port}` from the arena directory (pick a port in 8400-8499; on conflict, try the next one)
    - Fallbacks if no Python: `npx serve -l {port}` or a Node one-liner static server
    - The server MUST be launched as a detached/persistent background process
-5. **Open the browser:** `Start-Process "http://localhost:{port}"` (Windows) / `open` (macOS) / `xdg-open` (Linux).
-6. Tell the user: "The arena broadcast is LIVE at http://localhost:{port} — ringside seats, bestie. 📡💅"
+6. **Open the browser:** `Start-Process "http://localhost:{port}"` (Windows) / `open` (macOS) / `xdg-open` (Linux).
+7. Tell the user: "The arena broadcast is LIVE at http://localhost:{port} — ringside seats, bestie. 📡💅"
 
 If anything in setup fails (no python/node, can't open browser), don't block the game — fall back to terminal-only spectator mode and tell the user.
 
@@ -302,6 +306,54 @@ SnarkGirl rewrites the ENTIRE file on every update (atomic single write — writ
 
 `victor`, `takeaways`, and `finalCommentary` are only required when `phase` is `"finished"`.
 
+### The GM Helper (`gm.py`)
+
+`gm.py` (in this skill's `assets/`) is how the Game Master drives the live arena WITHOUT hand-writing JSON every time. It loads `state.json`, mutates exactly one slice, stamps `updatedAt`, atomically writes (`.tmp` + replace so the page never reads a torn file), and appends the snapshot to `history.jsonl` for the replay — all in one short command. Run it from the arena dir, or from anywhere with `--dir {arena-dir}`.
+
+**The rule: one observed event = one `gm.py` command, run the MOMENT you see it.** Don't collect a turn's worth of results and dump them. As each tribute's hunt result lands, validate it and fire the matching command immediately so the spectator watches the battle unfold live.
+
+```bash
+# A finding is validated — pay rations, set them feasting, log it, +1 find
+python gm.py --dir {arena} find flash-fury critical src/auth.ts:42 "Token never expires" --fix "Add TTL check in validateSession()"
+
+# A claim is bogus — −1 ration (auto-fires the cannon if it drops them to 0)
+python gm.py --dir {arena} invalid haiku-havoc --reason "hallucinated race condition"
+
+# Two tributes square up over a dupe — sets BOTH to fighting with opponents linked
+python gm.py --dir {arena} fight flash-fury rhyme-reaper --over "the clampToZone dupe"
+
+# Resolve the skirmish — winner takes the stake (2^(turn-1)); auto-kill + kill-credit if loser hits 0
+python gm.py --dir {arena} endfight flash-fury rhyme-reaper --stake 4 --finding f7 --epitaph "Out-rhymed and out-reasoned."
+
+# Hunger / storm tick — subtract rations; auto-death + cannon at 0
+python gm.py --dir {arena} hurt mini-menace 3 --reason hunger --epitaph "Camped the ridge one turn too long."
+
+# Relocate a survivor when their zone closes
+python gm.py --dir {arena} move codex-crusher feed-flats
+
+# Close a zone (fires the storm sound) — only when its loot is gone
+python gm.py --dir {arena} zone config-flats closing
+
+# SnarkGirl's voice (bottom bar) and the turn's one-liner
+python gm.py --dir {arena} announce "The cannon fires for HaikuHavoc. Three remain and the storm is hungry. 💅"
+python gm.py --dir {arena} commentary "The auth zone is a bloodbath — that's where the real bugs live."
+
+# Bookkeeping
+python gm.py --dir {arena} turn 3
+python gm.py --dir {arena} phase finished
+```
+
+**Full verb list:** `find`, `invalid`, `reward`, `hurt`, `kill`, `move`, `fight`, `endfight`, `feast`, `roam`, `zone`, `feed` (arbitrary entry), `announce`, `commentary`, `turn`, `phase`, `set` (escape hatch to patch a contestant's scalar fields). Run `python gm.py {verb} -h` for args.
+
+**What `gm.py` enforces for you** (so you don't have to remember the rules every write):
+- Severity → bounty: `critical`=3🍖, `important`=2🍖, `nitpick`=1🍖, plus `finds`+1 and `action="feasting"`.
+- **Never alive at 0** — `invalid`, `hurt`, and `endfight` auto-flip a tribute to `dead`, zero their rations, fire a `kill` cannon entry, and (for `endfight`) credit the winner a kill. You can't accidentally leave someone alive at 0.
+- `fight` refuses unless both tributes share a zone; `move` refuses to relocate the dead.
+- `zone … closing|closed` auto-appends a `storm` feed entry; `find` auto-picks the right severity icon.
+- Every command appends to `history.jsonl` — you never have to remember to log the replay snapshot.
+
+For the rare thing a verb doesn't cover (e.g., the initial lobby snapshot, or a bulk `findings`/`takeaways` block for the final screen), write `state.json` by hand as before — but reach for `gm.py` for every routine in-game event.
+
 **Map rendering notes:**
 - The page draws a real territory map: zones become terrain-colored regions sized by `weight` (defaults to file count), with players standing on them as icon tokens showing name, HP bar (rations), and kill count. Tokens glide between territories when tributes relocate.
 - **Give every tribute a unique emoji `icon` at spawn** (🦅 🐍 🦂 🐗 🦊 🦈 🕷️ 🐉 …) — it's their map avatar. If omitted, the page falls back to tier icons (T1 🦁, T2 🐺, T3 🐀).
@@ -317,13 +369,14 @@ SnarkGirl rewrites the ENTIRE file on every update (atomic single write — writ
 
 ### Update Cadence
 
-- **Flip `phase` to `"live"`** on the drop (Turn 1 hunt orders go out).
-- **Update after every Game Master step** within a turn — validations paid, each skirmish resolved, deaths, zone closures — not just once per turn. More writes = more "live". At minimum: once per turn-loop step (hunt results → skirmishes → hunger/deaths → zone shrink).
-- **Feed is append-only.** Never remove entries; the page shows newest first and archives the whole thing on the victory screen.
-- **Announcements are SnarkGirl's voice.** Append a fresh in-character Game Master announcement to `announcements` at least once per turn (and for big moments: deaths, zone closures, upsets, endgame). The page shows the latest one prominently in the bottom bar with the previous two faded above it. This is narration, not data — `feed` is the factual log, `announcements` is SnarkGirl talking to the spectators.
-- **Findings accumulate** — add them when validated; flip `status` to `"fallen"` (with `fellBecause`) if they lose a skirmish or get invalidated later.
-- **Record history for the replay.** Every time you write `state.json`, ALSO append the same snapshot as one line to `{arena-dir}/history.jsonl` (one JSON object per line, append-only). This costs nothing during the match and powers the shareable replay at the end. Don't skip it.
-- The terminal broadcast (above) still happens — the web arena is additive, not a replacement. If the user says "highlights only" or "silent," reduce the TERMINAL output but keep `state.json` fully updated; the page IS the broadcast.
+- **Flip `phase` to `"live"`** on the drop (Turn 1 hunt orders go out): `python gm.py --dir {arena} phase live`.
+- **One event, one `gm.py` command, the instant it happens.** This is the heart of "live." As each tribute's hunt result comes back, validate THAT result and immediately fire its command (`find`/`invalid`) before moving to the next tribute — don't queue them. When you notice two tributes contesting, `fight` them right then; when you rule the skirmish, `endfight` right then; when hunger bites, `hurt` each tribute as you settle them; when a zone empties, `zone … closing` right then. The spectator should see the round happen blow by blow, not appear fully-formed at turn's end.
+- **Process agent results as they land, not as a batch.** Tributes are dispatched in parallel, but you adjudicate them one at a time as their responses arrive — each adjudication is its own `gm.py` write. Never gather all responses, then do one big update sweep. That's the exact behavior we're killing.
+- **Feed is append-only.** `gm.py` only ever appends; never hand-edit to remove entries. The page shows newest first and archives the whole thing on the victory screen.
+- **Announcements are SnarkGirl's voice.** `gm.py announce "…"` at least once per turn (and for big moments: deaths, zone closures, upsets, endgame). The page shows the latest one prominently in the bottom bar with the previous two faded above it. This is narration, not data — `feed` is the factual log, `announcements` is SnarkGirl talking to the spectators.
+- **Findings accumulate** — `gm.py find` adds them validated; for the rare case where a paid finding later falls (lost in a skirmish or re-invalidated), use `gm.py set` or a hand-write to flip `status` to `"fallen"` with `fellBecause`.
+- **History is automatic.** `gm.py` appends every snapshot to `{arena-dir}/history.jsonl` on every command — that's what powers the shareable replay. If you ever hand-write `state.json` (lobby/final), append the snapshot to `history.jsonl` yourself.
+- The terminal broadcast (above) still happens — the web arena is additive, not a replacement. If the user says "highlights only" or "silent," reduce the TERMINAL output but keep `gm.py` firing on every event; the page IS the broadcast.
 
 ### The Final Screen
 
@@ -422,7 +475,7 @@ Claims that were made and DESTROYED — either invalidated by the Game Master or
 
 ## 💅 Game Master's Closing Commentary
 
-{SnarkGirl's in-character wrap-up: the arc of the game, the upsets, the tribute that surprised her, what the survival pattern says about the code. e.g., "Twenty went in. The Haiku swarm got farmed for rations as expected, but MiniMenace making top 3 on pure nitpick grinding? Iconic. The fact that {N} critical findings survived contested skirmishes means this diff has REAL problems — fix the Spoils list before you ship. The arena has spoken. 👑"}
+{SnarkGirl's in-character wrap-up: the arc of the game, the upsets, the tribute that surprised her, what the survival pattern says about the code. e.g., "Sixteen went in. The Haiku swarm got farmed for rations as expected, but MiniMenace making top 3 on pure nitpick grinding? Iconic. The fact that {N} critical findings survived contested skirmishes means this diff has REAL problems — fix the Spoils list before you ship. The arena has spoken. 👑"}
 
 ---
 
@@ -463,7 +516,7 @@ If yes → fix hands-on like `snark-council` does, severity order.
 
 | Setting | Default | Override |
 |---------|---------|---------|
-| Contestants | SnarkGirl picks (10-20 by battlefield size) | "Drop 15" (clamped 10-20) |
+| Contestants | SnarkGirl picks (10-16 by battlefield size) | "Drop 15" (clamped 10-16) |
 | Model tiers | Max = 1 tier below SnarkGirl; Min = 3 tiers below | User can request a tier mix |
 | Starting rations | 3 | "Hard mode: 2 rations" |
 | Zone shrink cadence | Every ~2 turns, faster in endgame | "Slow storm" / "fast storm" |
@@ -480,7 +533,7 @@ If yes → fix hands-on like `snark-council` does, severity order.
 - **Skirmishes battle-test the findings.** Every contested finding got argued over by two models fighting for their lives. What survives is SIGNAL.
 - **Tier diversity is the meta.** Flagships find deep bugs but there are few of them; scrappers swarm the shallow loot. Different model families fight differently. The roster IS the review strategy.
 - **Always parallel within a turn.** All hunt orders dispatch together. Sequential dispatch is a pacing crime.
-- **Keep contestants on a word leash.** Tight response limits keep 10-20 agents affordable and the broadcast readable.
+- **Keep contestants on a word leash.** Tight response limits keep 10-16 agents affordable and the broadcast readable.
 - **The drama serves the work.** Kill feeds and zone collapses are fun, but the deliverable is a battle-tested findings report. Never let the show degrade the signal — every game mechanic exists to filter noise from truth.
 - **Persistent memory makes grudges real.** Contestants remember who beat them and what they found. Rematches and rivalries emerge naturally — and a tribute doubling down on a finding across turns is itself a confidence signal.
-- **This is the biggest gun in the arsenal.** 10-20 agents over multiple turns is expensive. Recommend it for big, important, contentious changes — not a README tweak. For small stuff, point the user at `snark-council` or a plain review.
+- **This is the biggest gun in the arsenal.** 10-16 agents over multiple turns is expensive. Recommend it for big, important, contentious changes — not a README tweak. For small stuff, point the user at `snark-council` or a plain review.
