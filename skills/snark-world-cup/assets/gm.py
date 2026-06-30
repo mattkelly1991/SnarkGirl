@@ -22,15 +22,15 @@ Run it from inside the season directory (where state.json lives), or point at
 one with --dir.
 
 Examples:
-    python gm.py goal home --player "error-handling" --minute 23 --finding f1 --text "Clean try/catch wrapping — lovely finish"
+    python gm.py goal home --player "Copilot" --minute 23 --finding f1 --text "Clean try/catch wrapping — lovely finish"
     python gm.py goal away --minute 41 --finding f2 --text "Unhandled promise rejection in checkout()"
-    python gm.py red home --player "config.ts" --minute 58 --reason "hardcoded API key committed"
-    python gm.py save away --keeper "The Codebase GK" --minute 66 --text "Tipped the disputed null-deref over the bar"
+    python gm.py red away --player "config.ts" --minute 58 --reason "hardcoded API key committed"
+    python gm.py save away --keeper "feat/checkout GK" --minute 66 --text "Tipped the disputed null-deref over the bar"
     python gm.py minute 90
-    python gm.py fulltime --result loss --potm "the test suite" --verdict "Back to the locker room."
-    python gm.py record "feat/checkout-refactor" "The Codebase" 2 3
+    python gm.py fulltime --result loss --potm "Copilot" --verdict "Back to the locker room."
+    python gm.py record "Kelly's Coders FC" "feat/checkout-refactor" 2 3 --away-ephemeral
     python gm.py phase tournament
-    python gm.py announce "Two lovely props, then THREE criticals. The Codebase runs riot."
+    python gm.py announce "Two lovely props, then THREE criticals. feat/checkout runs riot."
     python gm.py phase finished
 """
 
@@ -40,7 +40,7 @@ import json
 import os
 import sys
 
-SIDE_NAMES = {"home": "the PR", "away": "the Codebase"}
+SIDE_NAMES = {"home": "the club", "away": "the PR"}
 
 
 def now_iso():
@@ -205,7 +205,7 @@ def cmd_red(args, state):
     reason = f" — {args.reason}" if args.reason else ""
     add_event(state, "red", args.side, f"STRAIGHT RED — {who}off you go{reason}",
               args.player, args.finding, minute)
-    print(f"RED — {who}({SIDE_NAMES[args.side]}, {minute}') — auto-loss armed")
+    print(f"RED — {who}({SIDE_NAMES[args.side]}, {minute}') — down to 10")
 
 
 def cmd_sub(args, state):
@@ -251,9 +251,7 @@ def cmd_fulltime(args, state):
     m["minute"] = max(m.get("minute", 90), 90)
     score = m.get("score", {"home": 0, "away": 0})
     hs, as_ = score.get("home", 0), score.get("away", 0)
-    if m.get("redCard", {}).get("side") == "home":
-        result = "loss"
-    elif args.result:
+    if args.result:
         result = args.result
     elif hs > as_:
         result = "win"
@@ -309,38 +307,38 @@ def recompute_sort(state):
 
 def cmd_record(args, state):
     hs, as_ = args.home_score, args.away_score
-    home, away = table_row(state, args.home), table_row(state, args.away)
+    ephemeral = getattr(args, "away_ephemeral", False)
+    home = table_row(state, args.home)
+    away = None if ephemeral else table_row(state, args.away)
     home["P"] += 1
-    away["P"] += 1
     home["GF"] += hs
     home["GA"] += as_
-    away["GF"] += as_
-    away["GA"] += hs
-    if hs == 0:
-        away["CS"] += 1
     if as_ == 0:
         home["CS"] += 1
-    if args.red_loser:
-        loser, winner = (home, away) if args.red_loser == args.home else (away, home)
-        winner["W"] += 1
-        winner["form"].append("W")
-        loser["L"] += 1
-        loser["form"].append("L")
-    elif hs > as_:
+    if away is not None:
+        away["P"] += 1
+        away["GF"] += as_
+        away["GA"] += hs
+        if hs == 0:
+            away["CS"] += 1
+    if hs > as_:
         home["W"] += 1
         home["form"].append("W")
-        away["L"] += 1
-        away["form"].append("L")
+        if away is not None:
+            away["L"] += 1
+            away["form"].append("L")
     elif hs < as_:
-        away["W"] += 1
-        away["form"].append("W")
         home["L"] += 1
         home["form"].append("L")
+        if away is not None:
+            away["W"] += 1
+            away["form"].append("W")
     else:
         home["D"] += 1
-        away["D"] += 1
         home["form"].append("D")
-        away["form"].append("D")
+        if away is not None:
+            away["D"] += 1
+            away["form"].append("D")
     state.setdefault("fixtures", []).append(
         {"home": args.home, "away": args.away, "score": {"home": hs, "away": as_},
          "played": True})
@@ -430,7 +428,7 @@ def build_parser():
     sub = p.add_subparsers(dest="cmd", required=True)
 
     def side_arg(sp):
-        sp.add_argument("side", choices=["home", "away"], help="home = the PR, away = the Codebase")
+        sp.add_argument("side", choices=["home", "away"], help="home = the author's club, away = the PR")
 
     sp = sub.add_parser("kickoff", help="start the active match (phase -> match, clock 0)")
     sp.add_argument("--text", default=None)
@@ -491,7 +489,7 @@ def build_parser():
     sp.add_argument("--finding", default=None)
     sp.set_defaults(func=cmd_yellow)
 
-    sp = sub.add_parser("red", help="straight red (secret/security/force-push) — forces a loss")
+    sp = sub.add_parser("red", help="straight red — code unit (secret/security) or agent (bad finding); offender down to 10, no auto-loss")
     side_arg(sp)
     sp.add_argument("--player", default=None)
     sp.add_argument("--minute", type=int, default=None)
@@ -536,7 +534,8 @@ def build_parser():
     sp.add_argument("away")
     sp.add_argument("home_score", type=int)
     sp.add_argument("away_score", type=int)
-    sp.add_argument("--red-loser", default=None, help="team name forced to a loss by a red card")
+    sp.add_argument("--away-ephemeral", action="store_true",
+                    help="away is a one-off opponent (the PR/branch) — don't add it to the league table")
     sp.set_defaults(func=cmd_record)
 
     sp = sub.add_parser("boot", help="add to a reviewer's Golden Boot tally (criticals)")

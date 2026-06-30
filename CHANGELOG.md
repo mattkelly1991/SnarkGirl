@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.15.2] - 2026-06-30
+
+### Changed
+- **World Cup** model redesign: a **team is now the person** (a persistent club, named
+  consistently per handle), the **PR is the one-off opponent** (ranked off the table via
+  `--away-ephemeral`), the home XI is named after the **agents** and the away XI after the
+  **code units** (files / methods / assemblies).
+- **Red cards no longer auto-lose.** A *code* red (committed secret / security hole) sends
+  off the unit and adds a Critical to the scoreline; an *agent* red (a hallucinated or
+  false-positive finding) benches the bot with no goal against the author. Results are now
+  purely score-driven.
+- Carding cuts both ways — SnarkGirl can book her own agents for bogus findings (and asks
+  the user when she's unsure).
+
+### Fixed
+- Corrected inverted `SIDE_NAMES` in `gm.py` (home is the club, away is the PR) and removed
+  the obsolete `--red-loser` auto-loss flag.
+
 ## [1.15.1] - 2026-06-30 — *First official release* 🎉
 
 ### Changed

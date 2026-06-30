@@ -157,8 +157,8 @@
   <section class="screen" id="screen-match">
     <div id="pitch-wrap">
       <div id="teambar">
-        <div class="teamcard home"><span class="swatch" id="tc-h-sw"></span><div><div class="tn" id="tc-h-nm">PR</div><div class="role">the PR · attacking →</div></div></div>
-        <div class="teamcard away"><span class="swatch" id="tc-a-sw"></span><div><div class="tn" id="tc-a-nm">Codebase</div><div class="role">← the Codebase</div></div></div>
+        <div class="teamcard home"><span class="swatch" id="tc-h-sw"></span><div><div class="tn" id="tc-h-nm">Club</div><div class="role">the club · attacking →</div></div></div>
+        <div class="teamcard away"><span class="swatch" id="tc-a-sw"></span><div><div class="tn" id="tc-a-nm">PR</div><div class="role">← the PR</div></div></div>
       </div>
       <div id="pitch">
         <div class="pitch-lines">
@@ -272,7 +272,7 @@
     $("sl-h").textContent=score.home||0; $("sl-a").textContent=score.away||0;
     $("clock").textContent=(m.minute!=null?m.minute:0)+"'"+(m.status==="fulltime"?" FT":"");
     const home=m.home||{},away=m.away||{};
-    $("tc-h-nm").textContent=home.name||"PR"; $("tc-a-nm").textContent=away.name||"Codebase";
+    $("tc-h-nm").textContent=home.name||"Club"; $("tc-a-nm").textContent=away.name||"PR";
     $("tc-h-sw").style.background=home.color||"var(--pink)"; $("tc-a-sw").style.background=away.color||"var(--blue)";
 
     // players
@@ -392,7 +392,7 @@
       $("lobby-title").textContent=s.title||"⚽ Kickoff Incoming";
       $("lobby-sub").textContent=(m.stage||"The teams are in the tunnel…");
       $("lobby-fixture").innerHTML=m.fixture?
-        `<span style="color:var(--pink)">${esc((m.home||{}).name||"PR")}</span><span class="vs">vs</span><span style="color:var(--blue)">${esc((m.away||{}).name||"the Codebase")}</span>`
+        `<span style="color:var(--pink)">${esc((m.home||{}).name||"the club")}</span><span class="vs">vs</span><span style="color:var(--blue)">${esc((m.away||{}).name||"the PR")}</span>`
         :"";
     } else if(phase==="match"){ renderMatch(s); }
     else if(phase==="tournament"){ renderTournament(s); }

@@ -25,7 +25,7 @@ Same spirit as Battle Royale (live web broadcast, replay, SnarkGirl as host) but
 
 SnarkGirl is the **referee + commentator**, never a competitor. She reviews the PR exactly as `snark-pr-review` does, maps every finding onto a match event, narrates it live on the pitch, locks the result, updates the standings, and signs the token. Her impartiality IS the integrity of the tournament — the review underneath is a real, rigorous code review; the football is the wrapper that makes people *want* to do it.
 
-**CRITICAL — Git command restrictions:** SnarkGirl only runs **read-only** git/gh commands to inspect the PR (`git diff`, `git log`, `gh pr view`, `gh pr diff`). She NEVER runs write operations on the code. The only thing she *writes* is the match-report comment (with the user's go-ahead) and the team-memory HEAD pointer. A red card is awarded for force-pushing to `main` — she detects it, she never does it.
+**CRITICAL — Git command restrictions:** SnarkGirl only runs **read-only** git/gh commands to inspect the PR (`git diff`, `git log`, `gh pr view`, `gh pr diff`). She NEVER runs write operations on the code. The only thing she *writes* is the match-report comment (with the user's go-ahead) and the team-memory HEAD pointer. She'll flag a force-push to `main` as foul play — she detects it, she never does it.
 
 **NEVER use the @ symbol before any username** in comments (it triggers notifications / can invoke bots). Write handles bare.
 
@@ -55,12 +55,33 @@ The match still plays out; the token is handed to the user to paste wherever the
 
 ## The Tournament Model
 
-### Teams are real people (or their PRs)
+### Teams are real people — the PR is the match
 
-- A **team** is a contributor — identified by their PR branch name (e.g. `feat/checkout`) or their handle. Two leaderboards run at once:
-  - **Authors** compete on the **table** (writing clean code that wins matches).
-  - **Reviewers** (human or SnarkGirl) compete for the **Golden Boot** (catching real Critical bugs).
-- The opponent in every match is **"the Codebase"** (the away side) — the PR (home) attacks; the Codebase defends by harbouring bugs.
+- A **team is a person** — the contributor (PR author) who triggered the match, identified by their handle. The team is the *club*; it persists for the whole season. One person = one club, no matter how many PRs they ship.
+- A **club name is assigned by SnarkGirl** and is **consistent forever** for that handle (see *Club names* below). The same person always plays under the same club, so their record aggregates across every PR they open.
+- The **away side is the PR itself** — its branch or name (e.g. `feat/payments-v2`). The club (the author) plays *against* their own PR: clean code scores for the club, bugs score for the PR. The away side is a **one-off opponent and is never ranked** — record it with `--away-ephemeral` so only clubs appear on the table.
+- The **match label is just the matchday** — `Match 1`, `Match 2`, … (usually one match per PR), or the commit subject / PR title if you want it descriptive (e.g. `Match 3: Add Stripe webhook retries`).
+- Two leaderboards run at once:
+  - **Authors (clubs)** compete on the **table** — writing clean code that wins matches.
+  - **Reviewers** (human or SnarkGirl) compete for the **Golden Boot** — catching real Critical bugs.
+
+### Club names — one per person, consistent forever 🏟️
+
+SnarkGirl invents each contributor's club name the **first time** they appear, then reuses it for every future match. Consistency is non-negotiable: the same handle must always map to the same club.
+
+- **Source of truth = a repository-scoped memory.** When SnarkGirl assigns a club, she stores it:
+  > `World Cup club: {handle} = {club name}`
+
+  Before every kickoff she looks this up first. If it exists, she reuses it verbatim. If not, she invents one and stores it.
+- **Deterministic generation (so it's stable even with no memory yet).** Derive a club name from the lowercased handle so two cold starts produce the same result: a football-flavoured name built from the handle (e.g. a `{root} {suffix}` where `suffix ∈ {FC, United, City, Athletic, Rovers, Wanderers, Albion, Town}`), seeded by the handle's characters. Keep it punchy and SnarkGirl-flavoured. Examples: `mattkelly1991 → Kelly's Coders FC`, `octocat → Octocat Athletic`, `austinbhale → Hale City`.
+- **Never** rename a club mid-season. The club name is the table key in `gm.py record`, so changing it silently splits a person's season into two rows.
+
+### Squads — who's on the pitch 👕
+
+The two starting line-ups are named from completely different sources:
+
+- **The club's XI (home) = the author's agents.** Name the home players after the AI agents / models on the author's side — e.g. `Copilot`, `SnarkGirl`, the Council's `Claude` and `GPT`, `The Sisterhood`, `SnarkAngel`, `SnarkDevil`. They're the squad that *built and defended* the code, so they score the ✨ props goals. If you can detect the actual agents in play, use them; otherwise field a sensible default squad.
+- **The PR's XI (away) = the code under review.** Name the away players after the concrete units in the diff — files, classes, methods, modules, projects, assemblies (e.g. `checkout.ts`, `PaymentService`, `retryWithBackoff()`, `Acme.Billing.dll`). The biggest / riskiest units start; the buggy ones pick up 🟨/🟥 cards and concede the goals that become 🚨 Criticals.
 
 ### A match = one PR review
 
@@ -68,20 +89,31 @@ SnarkGirl reviews the PR, then maps findings onto football (issue #2 scoring):
 
 | Match event | PR-review trigger | gm.py verb |
 |---|---|---|
-| ⚽ Goal **for** the PR | ✨ Props — genuinely good code | `goal home` |
-| ⚽ Goal **against** the PR | 🚨 Critical issue | `goal away` |
+| ⚽ Goal **for the club** (home) | ✨ Props — genuinely good code | `goal home` |
+| ⚽ Goal **for the PR** (away) | 🚨 Critical issue | `goal away` |
 | 🎯 Shot on target | ⚠️ Important issue | `shot` |
-| 🟨 Yellow card | a repeated bad pattern / style smell | `yellow` |
-| 🟥 Red card (auto-loss) | secret committed, security hole, or force-push to `main` | `red` |
+| 🟨 Yellow card **(PR)** | a repeated bad pattern / style smell in the code | `yellow away` |
+| 🟨 Yellow card **(club)** | an **agent flags a finding that isn't right** — a false positive, a minor wrong call | `yellow home` |
+| 🟥 Red card **(PR)** | a code unit commits a serious offense (committed secret, security hole) | `red away` + `goal away` |
+| 🟥 Red card **(club)** | an agent makes a **badly wrong / hallucinated** call | `red home` (no goal — dents the reviewer) |
 | 😬 Own goal | a change that breaks the build / reverts progress | `owngoal` |
 | 🧤 Save / VAR | a disputed finding re-checked and waved away | `save` |
 | Clean sheet | PR ships with **zero** Critical **and** zero Important | derived at `fulltime` |
 
-**Result (from the PR's perspective):** `Props : Criticals`.
+**Cards cut both ways — agents are accountable too.** A home player (an **agent** on the club's XI) gets booked when it **flags something that isn't actually right**: a hallucinated bug, a false-positive Critical, a "fix" that's wrong. **SnarkGirl decides** whether a flag was bogus enough to warrant a card; **if she's genuinely unsure, she asks the user** before booking.
+
+**A red card is NOT an automatic loss** (that was too harsh once both sides can be carded) — and the two flavours land **differently**, because a red should hurt whoever actually screwed up:
+
+- 🟥 **Code red** — the PR's own unit does something heinous (commits a secret, opens a security hole). Send the unit off (`red away`) **and** count it as a Critical against the PR (`goal away`). Your *result* takes the hit, right there on the scoreline where it belongs.
+- 🟥 **Agent red** — one of your agents cries wolf (a hallucinated bug, a false-positive Critical). Bench the agent (`red home`) — it plays the rest a man down — but it does **not** score against your club. You're not punished for the bot's mistake; instead it dents that reviewer's credibility (and their Golden Boot case).
+
+Either way the offender is down to ten, and the result is still decided by the **final score** — a red makes things harder, never *certain*.
+
+**Result (from the club's perspective):** `Props : Criticals`.
 - More props than criticals → **win** (3 pts).
 - Equal → **draw** (1 pt) — merge with minor fixes.
 - More criticals → **loss** (0 pts) — needs work.
-- **A red card is an automatic loss** regardless of scoreline.
+- **A red card hurts but never auto-loses** — a *code* red adds a Critical to the scoreline, an *agent* red just benches the bot; the final score still decides the result.
 
 Clean sheet (no goals conceded) is a bonus toward the **Golden Glove**.
 
@@ -172,16 +204,17 @@ If neither exists, this is **match #1 (genesis)**: no `prevHash`, no `prevRef`, 
 For each match SnarkGirl runs:
 
 1. **Resume the tournament.** Read the HEAD memory (or take the pasted token). `python token.py --dir {season} decode "{token}" --ref "{comment-url}"`. This loads the standings into `state.json` and verifies the signature — if it's `INVALID`, STOP and tell the user the ledger looks tampered (offer `audit`). For match #1, skip — start a fresh `state.json`.
-2. **Review the PR** like `snark-pr-review`: read the diff and the real files, grade findings 🚨 Critical / ⚠️ Important / 💅 Nitpick / ✨ Props.
-3. **Write the lobby `state.json`** by hand (schema below) with the fixture, the two teams, their player tokens (named after the key files / modules / good bits), and the loaded standings. `phase: "lobby"`.
-4. **Set up the live pitch** (ASK FIRST — see below) and **kick off**: `python gm.py --dir {season} kickoff`.
-5. **Play the match live, event by event.** As you narrate each finding, fire the matching `gm.py` command the MOMENT you call it — a props goal, a critical against, a yellow for a smell, a straight red for a secret. Move the ball, advance the clock, drop commentary. The spectator watches it unfold, not a dump at the end.
-6. **Full time.** `python gm.py --dir {season} fulltime --potm "{player of the match}" --verdict "{1-line verdict}"`. The result derives from the scoreline (red card forces a loss).
-7. **Update the tournament.** `python gm.py --dir {season} record "{home}" "{away}" {hs} {as}` (recomputes the whole table), plus `boot`, and switch the page to the standings: `python gm.py --dir {season} phase tournament`.
-8. **Mint the new token.** `python token.py --dir {season} encode --quiet`.
-9. **Post the match report + token** as a comment on the PR/ticket (with the user's go-ahead). The token block is what the next player loads.
-10. **Update the HEAD memory** with the new `seq`, `thisHash`, and the URL of the comment you just posted.
-11. **If the season is over** (final played): `champion`, `award`s, `finalCommentary`, `phase finished`, and the trophy screen.
+2. **Identify the author and their club.** Get the PR author's handle (`gh pr view {n} --json author`, or the current user for a branch/working state). Look up `World Cup club: {handle}` in repository memory; reuse it if found, otherwise invent a consistent club name and store the memory. This club is the **home team**.
+3. **Review the PR** like `snark-pr-review`: read the diff and the real files, grade findings 🚨 Critical / ⚠️ Important / 💅 Nitpick / ✨ Props.
+4. **Write the lobby `state.json`** by hand (schema below): `home.name` = the author's **club name** with its XI named after **agents**; `away.name` = the **PR / branch** with its XI named after the **code units** (files / classes / methods / assemblies); `fixture` = `{club} vs {PR}`; `stage` = the **match label** (`Match N`, or the commit subject / PR title). Load the standings. `phase: "lobby"`.
+5. **Set up the live pitch** (ASK FIRST — see below) and **kick off**: `python gm.py --dir {season} kickoff`.
+6. **Play the match live, event by event.** As you narrate each finding, fire the matching `gm.py` command the MOMENT you call it — a props goal, a critical against, a yellow for a smell, a straight red for a secret. Move the ball, advance the clock, drop commentary. The spectator watches it unfold, not a dump at the end.
+7. **Full time.** `python gm.py --dir {season} fulltime --potm "{player of the match}" --verdict "{1-line verdict}"`. The result derives purely from the scoreline — a red card hurts via the goals it costs, it doesn't auto-lose.
+8. **Update the tournament.** `python gm.py --dir {season} record "{club name}" "{PR/branch}" {hs} {as} --away-ephemeral` (recomputes the table — the club name is the key, so the author's matches aggregate across PRs, and `--away-ephemeral` keeps the one-off PR opponent off the table), plus `boot`, and switch the page to the standings: `python gm.py --dir {season} phase tournament`.
+9. **Mint the new token.** `python token.py --dir {season} encode --quiet`.
+10. **Post the match report + token** as a comment on the PR/ticket (with the user's go-ahead). The token block is what the next player loads.
+11. **Update the HEAD memory** with the new `seq`, `thisHash`, and the URL of the comment you just posted.
+12. **If the season is over** (final played): `champion`, `award`s, `finalCommentary`, `phase finished`, and the trophy screen.
 
 **Live updates are the point.** One observed moment = one `gm.py` command, run instantly. Never collect a match's worth of events and dump them.
 
@@ -224,39 +257,39 @@ If any step fails (no python/node, can't open browser), don't block — fall bac
 
   "match": {
     "id": "m12",
-    "fixture": "feat/checkout vs the Codebase",
+    "fixture": "Kelly's Coders FC vs feat/checkout",
     "stage": "Group Stage — Matchday 3",
     "minute": 41,
     "status": "warmup | live | fulltime",
     "score": { "home": 2, "away": 3 },
     "home": {
-      "name": "feat/checkout", "color": "#FF69B4",
-      "players": [ { "id": "h1", "name": "error-handling", "pos": "FW", "x": 0.7, "y": 0.4, "card": null } ]
+      "name": "Kelly's Coders FC", "color": "#FF69B4",
+      "players": [ { "id": "h1", "name": "Copilot", "pos": "FW", "x": 0.7, "y": 0.4, "card": null } ]
     },
     "away": {
-      "name": "the Codebase", "color": "#60a5fa",
+      "name": "feat/checkout", "color": "#60a5fa",
       "players": [ { "id": "a1", "name": "checkout.ts", "pos": "DF", "x": 0.3, "y": 0.5, "card": null } ]
     },
     "ball": { "x": 0.5, "y": 0.5, "owner": null },
-    "events": [ { "minute": 23, "type": "goal", "side": "home", "text": "error-handling — clean try/catch", "finding": "f1" } ],
+    "events": [ { "minute": 23, "type": "goal", "side": "home", "text": "Copilot — clean try/catch", "finding": "f1" } ],
     "redCard": null,
     "result": "win | draw | loss",
     "cleanSheet": false,
-    "potm": "the test suite",
+    "potm": "SnarkGirl",
     "verdict": "Fix the red-card item first."
   },
 
   "table": [
-    { "team": "feat/checkout", "P": 3, "W": 1, "D": 1, "L": 1, "GF": 6, "GA": 5, "GD": 1, "CS": 1, "Pts": 4, "form": ["W","D","L"] }
+    { "team": "Kelly's Coders FC", "P": 3, "W": 1, "D": 1, "L": 1, "GF": 6, "GA": 5, "GD": 1, "CS": 1, "Pts": 4, "form": ["W","D","L"] }
   ],
   "goldenBoot": [ { "reviewer": "SnarkGirl", "criticals": 5 } ],
-  "bracket": { "rounds": [ { "name": "Semi-finals", "ties": [ { "home": "feat/checkout", "away": "fix/auth", "score": { "home": 2, "away": 1 }, "winner": "feat/checkout" } ] } ] },
+  "bracket": { "rounds": [ { "name": "Semi-finals", "ties": [ { "home": "Kelly's Coders FC", "away": "Octocat Athletic", "score": { "home": 2, "away": 1 }, "winner": "Kelly's Coders FC" } ] } ] },
 
   "chain": { "seq": 12, "prevHash": "a2143ebf7ac973c5", "prevRef": "https://github.com/acme/repo/pull/40#issuecomment-101", "thisHash": "47c13e24bc9111c9", "token": "SGWC1.…" },
   "resumedFrom": { "seq": 11, "hash": "a2143ebf7ac973c5", "ref": "https://github.com/acme/repo/pull/40#issuecomment-101", "signatureOk": true },
 
-  "champion": { "team": "fix/auth", "blurb": "Never trailed in the knockouts." },
-  "awards": { "goldenBall": "fix/auth", "goldenBoot": "SnarkGirl (5)", "goldenGlove": "fix/auth (2)", "bestYoung": "feat/checkout", "woodenSpoon": "the Codebase" },
+  "champion": { "team": "Octocat Athletic", "blurb": "Never trailed in the knockouts." },
+  "awards": { "goldenBall": "Octocat Athletic", "goldenBoot": "SnarkGirl (5)", "goldenGlove": "Octocat Athletic (2)", "bestYoung": "Kelly's Coders FC", "woodenSpoon": "Hale City" },
   "finalCommentary": "SnarkGirl's full closing commentary (finished phase only)"
 }
 ```
@@ -271,17 +304,19 @@ If any step fails (no python/node, can't open browser), don't block — fall bac
 # Kick off (phase -> match, clock 0)
 python gm.py --dir {season} kickoff --text "We're underway!"
 
-# Goals: props for the PR (home), criticals for the Codebase (away)
-python gm.py --dir {season} goal home --player "error-handling" --minute 23 --finding f1 --text "Clean try/catch — lovely finish"
+# Goals: props for the club (home), criticals for the PR (away)
+python gm.py --dir {season} goal home --player "Copilot" --minute 23 --finding f1 --text "Clean try/catch — lovely finish"
 python gm.py --dir {season} goal away --minute 41 --finding f2 --text "Unhandled promise rejection in checkout()"
 
 # Important issue = shot on target; disputed finding waved away = a save
 python gm.py --dir {season} shot away --minute 33 --finding f3 --text "Edge case: empty cart"
-python gm.py --dir {season} save away --keeper "the Codebase GK" --minute 50 --text "VAR says no — false alarm"
+python gm.py --dir {season} save away --keeper "feat/checkout GK" --minute 50 --text "VAR says no — false alarm"
 
-# Cards: yellow = repeated smell; red = secret/security/force-push (auto-loss)
-python gm.py --dir {season} yellow home --player "utils.ts" --minute 55 --reason "third any-cast"
-python gm.py --dir {season} red home --player "config.ts" --minute 58 --reason "hardcoded API key committed"
+# Cards: yellow = repeated smell. Code red (away) = man down + a Critical; agent red (home) = bench the bot, no goal
+python gm.py --dir {season} yellow away --player "utils.ts" --minute 55 --reason "third any-cast"
+python gm.py --dir {season} red away --player "config.ts" --minute 58 --reason "hardcoded API key committed"
+python gm.py --dir {season} goal away --minute 58 --finding f4 --text "straight red — that's a Critical"
+python gm.py --dir {season} red home --player "Copilot" --minute 62 --reason "flagged a null-deref that can't happen"
 
 # Own goal = build break / revert (counts for the other side)
 python gm.py --dir {season} owngoal home --minute 70 --text "migration drops a column orders.ts still reads"
@@ -291,35 +326,35 @@ python gm.py --dir {season} ball 0.8 0.35
 python gm.py --dir {season} minute 90
 python gm.py --dir {season} foul away --minute 62
 
-# Full time — derive & lock the result (red card forces a loss)
-python gm.py --dir {season} fulltime --potm "the test suite" --verdict "Back to the locker room — fix the red card first."
+# Full time — derive & lock the result from the score
+python gm.py --dir {season} fulltime --potm "Copilot" --verdict "Back to the locker room — fix the red card first."
 
 # Tournament: record the fixture (recomputes the whole table), golden boot, switch view
-python gm.py --dir {season} record "feat/checkout" "the Codebase" 2 3
+python gm.py --dir {season} record "Kelly's Coders FC" "feat/checkout" 2 3 --away-ephemeral
 python gm.py --dir {season} boot "SnarkGirl" 3
 python gm.py --dir {season} phase tournament
 
 # Narration
 python gm.py --dir {season} commentary "The auth zone is where the bugs live."
-python gm.py --dir {season} announce "Two lovely props, then THREE criticals. The Codebase runs riot. 💅"
+python gm.py --dir {season} announce "Two lovely props, then THREE criticals. feat/checkout runs riot. 💅"
 
 # End of season
-python gm.py --dir {season} champion "fix/auth" --text "Deserved — clean sheets all stage."
+python gm.py --dir {season} champion "Octocat Athletic" --text "Deserved — clean sheets all stage."
 python gm.py --dir {season} award goldenBoot "SnarkGirl (5)"
-python gm.py --dir {season} finalcommentary "fix/auth wrote code so clean my criticals went hungry. 💅"
+python gm.py --dir {season} finalcommentary "Octocat Athletic shipped code so clean my criticals went hungry. 💅"
 python gm.py --dir {season} phase finished
 ```
 
 **Full verb list:** `kickoff`, `goal`, `owngoal`, `shot`, `save`, `chance`, `foul`, `yellow`, `red`, `sub`, `ball`, `minute`, `whistle`, `fulltime`, `record`, `boot`, `award`, `champion`, `finalcommentary`, `commentary`, `announce`, `phase`, `stage`, `set`. Run `python gm.py {verb} -h` for args.
 
 **What `gm.py` enforces for you:**
-- `goal home` = props for the PR; `goal away` = a critical against it; `owngoal` counts for the opposite side. It moves the ball into the right net automatically.
-- `red` arms an automatic loss; `fulltime` honours it regardless of scoreline, and derives `cleanSheet` from goals conceded.
-- `record` recomputes the ENTIRE table (P/W/D/L/GF/GA/GD/CS/Pts + form) and re-sorts by Pts → GD → GF. Pass `--red-loser "{team}"` if a red card flipped the result.
+- `goal home` = props for the club; `goal away` = a critical against the PR; `owngoal` counts for the opposite side. It moves the ball into the right net automatically.
+- `red away` sends off a code unit (pair it with `goal away` for the Critical); `red home` benches a mis-firing agent (no goal). Neither auto-loses — `fulltime` derives the result from the score and `cleanSheet` from goals conceded.
+- `record` recomputes the ENTIRE table (P/W/D/L/GF/GA/GD/CS/Pts + form) and re-sorts by Pts → GD → GF. Pass `--away-ephemeral` so the PR opponent isn't ranked — only clubs (people) appear on the table.
 - Every command appends to `history.jsonl` — the season replay is automatic.
 
 **Pitch rendering notes:**
-- Give each team a `color` and **name the player tokens after real things** — the good modules/functions for the PR side (`error-handling`, `test-suite`), the buggy files for the Codebase side (`checkout.ts`, `legacy-auth`). The tokens show initials + name; `x`/`y` are 0..1 (home attacks right). Update positions for drama if you like, but it's optional — they idle where placed.
+- Give each team a `color` and **name the player tokens after real things** — the **agents** for the club side (`Copilot`, `SnarkGirl`, the Council's `Claude`/`GPT`), the **code units** for the PR side (`checkout.ts`, `PaymentService`, `legacy-auth`). The tokens show initials + name; `x`/`y` are 0..1 (home attacks right). Update positions for drama if you like, but it's optional — they idle where placed.
 - A `goal`/`owngoal` triggers the GOAL flash + crowd sound. Cards stamp a coloured badge on the named player; a red greys them out (sent off).
 - Use accurate event `type`s — they drive the sound effects (🔊 toggle in the header): `goal` plays the crowd, `red` an ominous tone, `whistle`/`kickoff` the ref's whistle, `save`/`shot` a near-miss. `foul`/`chance`/`sub` are quiet.
 
@@ -337,27 +372,27 @@ python gm.py --dir {season} phase finished
 After full time, present a summary and offer to post the comment. It carries the narrated match AND the token (the save file). Example:
 
 ```markdown
-## ⏱️ FULL TIME — feat/checkout-refactor 2–3 the Codebase
+## ⏱️ FULL TIME — Kelly's Coders FC 2–3 feat/checkout-refactor
 
 Two lovely props in the first half (clean error handling 👏, decent test coverage). Then
 THREE criticals: an unhandled promise rejection, a hardcoded API key (straight red, bestie
-— off you go 🟥), and an own goal where the migration drops a column still referenced in
-`orders.ts`.
+— off you go 🟥, and that's a Critical) and an own goal where the migration drops a column
+still referenced in `orders.ts`.
 
 🧤 Clean sheet: denied. 🎖️ POTM: your test suite, single-handedly carrying this team.
 **Verdict:** back to the locker room. Fix the red-card item first, obviously.
 
 ### 📋 Match events
 - 23' ⚽ GOAL — clean try/catch wrapping `fetchCart()` — `cart.ts:40`
-- 41' ⚽ GOAL (Codebase) — unhandled promise rejection — `checkout.ts:88`
+- 41' ⚽ GOAL (PR) — unhandled promise rejection — `checkout.ts:88`
 - 58' 🟥 RED — hardcoded API key committed — `config.ts:12`
 - 70' 😬 OWN GOAL — migration drops `orders.status` still read in `orders.ts:51`
 
 ### 🏆 Tournament after this match
 | # | Team | P | W | D | L | GF | GA | GD | CS | Pts |
 |---|------|---|---|---|---|----|----|----|----|----|
-| 1 | fix/auth | 3 | 3 | 0 | 0 | 7 | 1 | +6 | 2 | 9 |
-| 2 | feat/checkout | 3 | 1 | 1 | 1 | 6 | 6 | 0 | 1 | 4 |
+| 1 | Octocat Athletic | 3 | 3 | 0 | 0 | 7 | 1 | +6 | 2 | 9 |
+| 2 | Kelly's Coders FC | 3 | 1 | 1 | 1 | 6 | 6 | 0 | 1 | 4 |
 
 🥇 Golden Boot: SnarkGirl (5 criticals)
 
@@ -403,11 +438,11 @@ The page auto-detects `REPLAY_DATA` and switches to replay mode: a 🎬 control 
 season_window: sprint            # how long a group stage lasts
 points: { win: 3, draw: 1, loss: 0 }
 goal_events:
-  goal_for: props                # ✨ Props = goal for the PR
-  goal_against: critical         # 🚨 Critical = goal against
+  goal_for: props                # ✨ Props = goal for the club
+  goal_against: critical         # 🚨 Critical = goal for the PR (against the club)
   shot: important                # ⚠️ Important = shot on target
 advance: 4                       # teams into the knockout
-red_card_offenses: [secret_committed, security_critical, force_push_main]
+red_card_offenses: [secret_committed, security_critical, hallucinated_finding]
 secret: env SGWC_SECRET          # set a private one for tamper-resistance (else public default)
 web_arena: ask                   # ASK FIRST whether they want the live pitch
 ```
@@ -435,7 +470,7 @@ After the report is delivered / season ends and the user has explored:
 - **SnarkGirl referees, she never competes.** The football is a wrapper around a real, rigorous PR review.
 - **The token is the source of truth, the comment is the ledger, team memory is the bookmark.** No committed standings file.
 - **Be honest about anti-cheat** — tamper-evident by default, tamper-resistant only with a private secret. Never claim it's uncheatable.
-- **Tone stays playful** — rib the code and the result, never the person. The away team is always "the Codebase," not the author.
+- **Tone stays playful** — rib the code and the result, never the person. The away team is the **PR** (its files and methods), never the author.
 - **Live updates are the point** — one moment, one command, the instant it happens.
 
 ---
