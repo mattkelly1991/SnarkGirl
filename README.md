@@ -28,6 +28,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-sisterhood** | The Sisterhood — your PR's defense squad. When someone runs the council on YOUR PR, The Sisterhood assembles: fixes valid findings, claps back on invalid ones with receipts. |
 | **snark-supreme** | The Gauntlet Supreme — the ultimate adversarial review. Council attacks, Sisterhood defends for X rounds, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
 | **snark-battle-royale** | The Battle Royale — 10-20 AI contestants drop onto your diff, hunt real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. |
+| **snark-world-cup** | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament travels as a tamper-evident token chained across ticket/PR comments — anyone can pick it up and continue. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
@@ -262,6 +263,12 @@ skills/
 │   ├── SKILL.md
 │   └── assets/
 │       └── arena.html        # Live web arena spectator page (map, stats, kill feed, victory screen)
+├── snark-world-cup/          # World Cup — multiplayer PR-review football tournament, live pitch + tamper-evident token chain
+│   ├── SKILL.md
+│   └── assets/
+│       ├── pitch.html        # Live pitch + tournament view + trophy screen + season replay
+│       ├── gm.py             # Match-day helper — one event, one command
+│       └── token.py          # Tamper-evident tournament token (encode/decode/verify/audit)
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md
 ├── snark-ticket/             # GitHub issue triage & approach planning
