@@ -1,6 +1,6 @@
 {
   "name": "SnarkGirl",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "type": "module",
   "description": "Snarky valley girl coder: PR review, branch review, PR reality check (real size & risk breakdown), pre-PR AI gauntlet (council), deep PR council (multi-agent review), The Sisterhood (PR defense squad), The Gauntlet Supreme (adversarial Council vs Sisterhood + final verdict), Battle Royale (10-16 AI contestants fight to the death over real bugs with SnarkGirl as Game Master and a live web arena spectator view), World Cup (multiplayer PR-review football tournament that plays out live on an animated pitch with players, the ball, standings, and a tamper-evident token chained across ticket/PR comments so anyone can continue the season), clap backs, ticket triage, fix review, merge conflict court, vs the world debates, conscience (angel vs devil), devil's advocate, rubber duck debugging, explanations, and chat — all with attitude",
   "author": {
