@@ -1,9 +1,9 @@
-name: 'SnarkGirl Mentions'
-description: 'Responds to @SnarkGirl mentions in PR and issue comments with snarky, technically precise code reviews'
+name: 'SnarkGirl'
+description: "She reviews your PRs so you don't have to cry alone. Mention @SnarkGirl on any PR or issue for snarky, technically precise code review. 💅"
 author: 'Mathew Kelly'
 
 branding:
-  icon: 'message-circle'
+  icon: 'star'
   color: 'purple'
 
 inputs:
