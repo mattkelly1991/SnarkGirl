@@ -134,9 +134,19 @@ The biggest gun in the arsenal. SnarkGirl carves your diff into named zones and 
 
 A whole multiplayer season where real people compete by getting PRs reviewed — and every review is a football match SnarkGirl commentates and plays out LIVE on an animated pitch. Your PR's changes become the home team, the codebase is the away side, and findings turn into goals, saves, yellows, and straight reds (hello, mutating shared state). Watch it unfold in real time with players, the ball, a scoreline and clock, a scrolling match-events ticker, and an instant replay — then the league table, golden boot race, and knockout bracket update automatically. The best part: the entire tournament travels as a serialized, **tamper-evident token** chained across your ticket and PR comments, so anyone on the team can pick up the season and continue it. Last team standing lifts the trophy. 🏆
 
-<img width="1600" height="900" alt="SnarkGirl World Cup live arena — feat/payments-v2 vs the Codebase, 2-1 at 67'" src="PASTE_GITHUB_IMAGE_URL_HERE" />
-<!-- ^ Drag worldcup-screenshot.png into the GitHub editor here; it'll paste a user-attachments URL. Replace PASTE_GITHUB_IMAGE_URL_HERE (or just delete this img line and drop the image in its place). -->
-
+<table>
+  <tr>
+    <td>
+      <img width="3200" height="1800" alt="wc-new-match" src="https://github.com/user-attachments/assets/c3ef4b23-0ed0-4a86-a95b-6fdf7cf3d2c6" />
+    </td>
+    <td>
+      <img width="3200" height="1800" alt="wc-new-standings" src="https://github.com/user-attachments/assets/15fe0e69-91f6-45ec-aeda-6f67cf0dad1d" />
+    </td>
+    <td>
+      <img width="3200" height="1800" alt="wc-new-trophy" src="https://github.com/user-attachments/assets/9e76685c-44ee-4651-9756-ad1479a7029d" />
+    </td>
+  </tr>
+</table>
 
 **Clap Back:**
 > "SnarkGirl, clap back on the reviews"
