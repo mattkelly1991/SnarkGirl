@@ -1,5 +1,12 @@
 # Snark Girl 💅
 
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
+[![Version](https://img.shields.io/badge/version-1.15.1-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
+
+> ⭐ **Now on the [GitHub Marketplace](https://github.com/marketplace/actions/snarkgirl)!** Add the Action to any repo and `@SnarkGirl` your PRs.
+
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
 She reviews your PRs and branches with attitude, cuts through scary raw diff stats to show a PR's real size and risk (so clean, DRY, well-documented code doesn't get punished for looking "big"), runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
@@ -179,7 +186,9 @@ She stays in character for ALL subsequent messages — no need to say her name a
 
 ## GitHub Action — @SnarkGirl in PRs & Issues
 
-Want to `@SnarkGirl` directly in your GitHub PR and issue comments? Add this workflow to any repo:
+[![GitHub Marketplace](https://img.shields.io/badge/Get_it_on-Marketplace-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
+
+Want to `@SnarkGirl` directly in your GitHub PR and issue comments? Grab her from the [GitHub Marketplace](https://github.com/marketplace/actions/snarkgirl), or add this workflow to any repo:
 
 ### Setup
 
@@ -329,6 +338,10 @@ skills/
 
 
 
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.15.1](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.15.1)** — her first official release. 🎉
 
 ## License
 
