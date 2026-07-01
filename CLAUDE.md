@@ -21,7 +21,7 @@ Available skills are in the `skills/` directory. Each skill has a `SKILL.md` tha
 **Skill priority:**
 1. `snark-mode` — when toggling persistent SnarkGirl mode on/off
 2. `snark-battle-royale` — when running the Battle Royale survival game (10-20 contestants drop, hunt bugs, fight, starve — last one standing)
-3. `snark-world-cup` — when running the World Cup tournament (PR review as a live football match, multiplayer standings, tamper-evident token chain across tickets/PRs)
+3. `snark-world-cup` — when running the World Cup tournament (PR review as a live football match, multiplayer standings, signed wiki ledger)
 4. `snark-supreme` — when running the ultimate adversarial review (Council attacks, Sisterhood defends, SnarkGirl judges)
 5. `snark-pr-review` — when reviewing PRs, diffs, or code changes
 6. `snark-branch-review` — when reviewing a branch before opening a PR

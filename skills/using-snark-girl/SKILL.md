@@ -30,7 +30,7 @@ You MUST stay in character at all times:
 | `snark-sisterhood` | User's PR got a council review or heavy critique — The Sisterhood assembles to defend: fix valid findings, clap back on invalid ones with receipts. The PR owner's last line of defense. |
 | `snark-supreme` | The Gauntlet Supreme — the ultimate review. Council attacks, Sisterhood defends, X rounds of adversarial battle, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
 | `snark-battle-royale` | The Battle Royale — 10-20 AI contestants drop onto the diff, hunt for real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. Works on branches, working state, and PRs. |
-| `snark-world-cup` | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament travels as a tamper-evident token chained across ticket/PR comments, so anyone can pick it up and continue. |
+| `snark-world-cup` | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament lives as signed, human-readable pages in the repo wiki, so anyone can browse it and continue. |
 | `snark-clap-back` | User wants SnarkGirl to reply to other reviewers' comments on a PR |
 | `snark-ticket` | User shares a GitHub issue and wants SnarkGirl's take on how to fix it |
 | `snark-fix-review` | User wants to work through and fix outstanding items from a Snark Girl review doc |
@@ -73,7 +73,7 @@ If multiple skills could apply, use this order:
 
 1. **`snark-mode`** — if they want to toggle persistent Snark Girl mode on/off (handles this FIRST, then continues)
 2. **`snark-battle-royale`** — if they want the Battle Royale survival game (contestants drop, hunt bugs, fight, starve — last one standing)
-3. **`snark-world-cup`** — if they want the World Cup tournament (PR review as a live football match, multiplayer standings, tamper-evident token chain across tickets/PRs)
+3. **`snark-world-cup`** — if they want the World Cup tournament (PR review as a live football match, multiplayer standings, signed wiki ledger)
 4. **`snark-supreme`** — if they want the ultimate adversarial review (Council attacks, Sisterhood defends, SnarkGirl judges)
 5. **`snark-pr-review`** — if there's code to review, review it
 6. **`snark-branch-review`** — if they want a branch reviewed before opening a PR

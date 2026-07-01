@@ -8,6 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.15.3] - 2026-07-01
+
+### Changed
+- **World Cup now stores the tournament in the repo Wiki** instead of a portable token.
+  The Wiki (its own git repo) holds a signed, human-readable page hierarchy —
+  **World Cup → Season → Match**: a `Home` index of seasons, a `Season-{slug}` standings
+  page each, and one `Season-{slug}-Match-{N}` report per PR. The user names the season
+  (and its duration) at kickoff.
+- Each wiki page carries a keyed **HMAC signature footer** covering the whole page, so a
+  hand-edit in the GitHub wiki editor (e.g. changing a win from 3 to 4) is flagged
+  **INVALID** by `wiki.py verify`. Export a private `SGWC_SECRET` for a real barrier.
+- Resuming a season is now just "clone the wiki" — no HEAD memory or token paste needed.
+- **The live pitch actually plays now.** Players roam their formation and pass the ball,
+  holding their shape at each kickoff until someone takes it. A goal is scripted end-to-end:
+  the ball is worked to the scorer (matched by name or id), who drives at the net and buries
+  it. A red card sets up a **penalty kick** — a code red is converted, an agent red is saved
+  by the keeper. Sent-off players walk to a **bench** at the edge (home top-left, away
+  top-right). Card badges show only on booked players still on the pitch (a red badge is
+  dropped once the player is benched). Runs on `requestAnimationFrame`, independent of the
+  ~2s polls.
+- **The trophy moved to the wiki.** Champion and awards present on the wiki season page; the
+  live arena ends on the standings view (the trophy screen is now replay-only).
+
+### Added
+- `skills/snark-world-cup/assets/wiki.py` — renders/signs the Home index, season, and match
+  pages; `verify`/`verify-all` for tamper checks; and `load-season` to resume standings.
+
+### Removed
+- `skills/snark-world-cup/assets/token.py` — the portable token chain, replaced by the
+  wiki ledger.
+
 ## [1.15.2] - 2026-06-30
 
 ### Changed

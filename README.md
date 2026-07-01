@@ -35,7 +35,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-sisterhood** | The Sisterhood — your PR's defense squad. When someone runs the council on YOUR PR, The Sisterhood assembles: fixes valid findings, claps back on invalid ones with receipts. |
 | **snark-supreme** | The Gauntlet Supreme — the ultimate adversarial review. Council attacks, Sisterhood defends for X rounds, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
 | **snark-battle-royale** | The Battle Royale — 10-20 AI contestants drop onto your diff, hunt real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. |
-| **snark-world-cup** | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament travels as a tamper-evident token chained across ticket/PR comments — anyone can pick it up and continue. |
+| **snark-world-cup** | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament lives as signed, human-readable pages in the repo wiki — anyone can browse it and continue. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
@@ -132,7 +132,7 @@ The biggest gun in the arsenal. SnarkGirl carves your diff into named zones and 
 **World Cup (Live PR-Review Football Tournament):**
 > "SnarkGirl, kickoff"
 
-A whole multiplayer season where real people compete by getting PRs reviewed — and every review is a football match SnarkGirl commentates and plays out LIVE on an animated pitch. **You** are the home club — named consistently season to season, with your AI agents (Copilot, Claude, GPT, the Council…) as the starting XI. The **PR under review** is the away side, its files and methods taking the field. Clean code scores ✨ props for your club; bugs concede 🚨 criticals; and findings turn into goals, saves, and cards — a yellow when one of your own agents cries wolf, a straight red when the code commits a secret (no more auto-loss, the severity just lands on the scoreline). Watch it unfold in real time with players, the ball, a scoreline and clock, a scrolling match-events ticker, and an instant replay — then the league table (people, not PRs), golden boot race, and knockout bracket update automatically. The best part: the entire tournament travels as a serialized, **tamper-evident token** chained across your ticket and PR comments, so anyone on the team can pick up the season and continue it. Top of the table lifts the trophy. 🏆
+A whole multiplayer season where real people compete by getting PRs reviewed — and every review is a football match SnarkGirl commentates and plays out LIVE on an animated pitch. **You** are the home club — named consistently season to season, with your AI agents (Copilot, Claude, GPT, the Council…) as the starting XI. The **PR under review** is the away side, its files and methods taking the field. Clean code scores ✨ props for your club; bugs concede 🚨 criticals; and findings turn into goals, saves, and cards — a yellow when one of your own agents cries wolf, a straight red when the code commits a secret (no more auto-loss, the severity just lands on the scoreline). Watch it unfold in real time with players, the ball, a scoreline and clock, a scrolling match-events ticker, and an instant replay — then the league table (people, not PRs), golden boot race, and knockout bracket update automatically. The best part: the entire tournament lives in the repo **wiki** as signed, human-readable pages — a Home standings page and one report per match — so anyone on the team can browse the whole season and continue it. Top of the table lifts the trophy. 🏆
 
 <table>
   <tr>
@@ -291,12 +291,12 @@ skills/
 │   ├── SKILL.md
 │   └── assets/
 │       └── arena.html        # Live web arena spectator page (map, stats, kill feed, victory screen)
-├── snark-world-cup/          # World Cup — multiplayer PR-review football tournament, live pitch + tamper-evident token chain
+├── snark-world-cup/          # World Cup — multiplayer PR-review football tournament, live pitch + signed wiki ledger
 │   ├── SKILL.md
 │   └── assets/
 │       ├── pitch.html        # Live pitch + tournament view + trophy screen + season replay
 │       ├── gm.py             # Match-day helper — one event, one command
-│       └── token.py          # Tamper-evident tournament token (encode/decode/verify/audit)
+│       └── wiki.py           # Signed wiki ledger (render-home/render-match/verify/load-home)
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md
 ├── snark-ticket/             # GitHub issue triage & approach planning
