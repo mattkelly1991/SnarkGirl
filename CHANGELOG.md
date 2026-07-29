@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.16.0] - 2026-07-29
+
+### Added
+- **PR Flow** skill — an end-to-end workflow for existing pull requests that gathers
+  unresolved Claude, Copilot, CodeQL, and human findings; triages them against current
+  code; replies to and resolves invalid threads; and fixes valid findings in the current
+  checkout without creating worktrees.
+- A two-stage resolution gate for valid feedback: SnarkGirl validates the affected
+  projects and hands off a focused manual test list, then waits for the user to commit and
+  push before verifying the PR head and resolving the fixed threads without noisy replies.
+- A temporary per-PR flow ledger so review-thread IDs, verdicts, fixes, validation, and
+  post-push resolution state survive the manual-testing pause without polluting the repo.
+
+### Changed
+- Skill routing and documentation now distinguish the action-oriented `snark-pr-flow`
+  lifecycle from review-only, clap-back, and review-document workflows.
+
 ## [1.15.3] - 2026-07-01
 
 ### Changed

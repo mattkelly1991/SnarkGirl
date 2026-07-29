@@ -36,6 +36,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-supreme** | The Gauntlet Supreme — the ultimate adversarial review. Council attacks, Sisterhood defends for X rounds, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
 | **snark-battle-royale** | The Battle Royale — 10-20 AI contestants drop onto your diff, hunt real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. |
 | **snark-world-cup** | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament lives as signed, human-readable pages in the repo wiki — anyone can browse it and continue. |
+| **snark-pr-flow** | Owns the full feedback flow for an existing PR: gathers open Claude, Copilot, CodeQL, and human findings; replies to and resolves invalid threads; fixes valid findings on the current branch; validates affected projects; pauses for manual testing; then resolves fixed threads after you commit and push. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
@@ -152,6 +153,11 @@ A whole multiplayer season where real people compete by getting PRs reviewed —
 > "SnarkGirl, clap back on the reviews"
 
 She reads other reviewers' comments (bots and humans), drafts snarky replies, previews them for you, and only posts after you approve each one.
+
+**PR Flow:**
+> "SnarkGirl, run the PR flow"
+
+She gathers every open Claude, Copilot, CodeQL, and human finding; resolves invalid threads with receipts; fixes valid issues in your current checkout without worktrees; validates only the affected projects; and pauses for your manual test. After you commit and push, she resolves the fixed threads without posting noisy "fixed" replies.
 
 **Ticket Triage:**
 > "SnarkGirl, look at this ticket: https://github.com/org/repo/issues/123"
@@ -297,6 +303,8 @@ skills/
 │       ├── pitch.html        # Live pitch + tournament view + trophy screen + season replay
 │       ├── gm.py             # Match-day helper — one event, one command
 │       └── wiki.py           # Signed wiki ledger (render-home/render-match/verify/load-home)
+├── snark-pr-flow/            # Full existing-PR feedback lifecycle — triage, fix, validate, manual test, resolve
+│   └── SKILL.md
 ├── snark-clap-back/          # Reply to other reviewers' comments
 │   └── SKILL.md
 ├── snark-ticket/             # GitHub issue triage & approach planning
