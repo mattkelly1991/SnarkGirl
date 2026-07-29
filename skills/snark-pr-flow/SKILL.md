@@ -28,6 +28,7 @@ Use this skill instead of combining `snark-pr-review`, `snark-clap-back`, and `s
 8. **Valid findings:** fix the code, but do not reply and do not resolve the thread yet.
 9. **Wait for the user's manual test result.** Do not resolve valid findings merely because local automation passes.
 10. **After the user says they committed and pushed:** verify the PR contains the fix, then resolve the fixed threads without posting replies.
+11. **Minimize handled standalone comments.** After every actionable item represented by a top-level or summary comment is disposed of, minimize that comment with the classifier that matches why it no longer needs attention.
 
 ## Phase 1: Identify and Verify the PR
 
@@ -53,7 +54,7 @@ Create or update a temporary flow ledger outside the repository:
 
 `{TEMP}/snark-girl-pr-flow/{owner}-{repo}-PR-{number}.md`
 
-Record each open finding with its thread/comment ID, URL, reviewer, source, file and line, verdict, planned action, affected project, and current status. This ledger preserves state across the manual-test and commit/push pause without polluting the repository.
+Record each open finding with its thread/comment ID, URL, reviewer, source, file and line, verdict, planned action, affected project, and current status. Also record the GraphQL node ID of each standalone or summary comment, which findings it contains, its current minimization state, and its eventual classifier. This ledger preserves state across the manual-test and commit/push pause without polluting the repository.
 
 ## Phase 2: Gather Every Open Finding
 
@@ -71,6 +72,16 @@ Fetch all currently open feedback, not merely the first page:
 Use pagination and retain stable thread/comment IDs for later replies and resolution.
 
 Prefer GitHub review-thread data that exposes `isResolved`, `isOutdated`, the original commit, path, line, author, replies, and thread node ID. Use check-run annotations and code scanning APIs for CodeQL findings that do not exist as review threads.
+
+For top-level PR conversation comments and bot review summaries, retain the GraphQL node ID and these fields when available:
+
+- `isMinimized`
+- `minimizedReason`
+- Author login
+- Body and URL
+- The set of actionable findings represented by the comment
+
+Claude and other bots may post one large PR comment containing findings that also appear in review threads. Treat the comment as a container: triage each unique finding, link it to its canonical thread or ledger item, and minimize the container only when every represented finding is handled.
 
 Do not treat these as open work:
 
@@ -135,6 +146,45 @@ For each valid finding:
 7. Update the ledger with changed files and validation coverage.
 
 Fix related findings together when one coherent change addresses them. Do not make unrelated cleanup changes.
+
+### Standalone Comment Minimization
+
+Review threads and standalone comments are different GitHub objects:
+
+- **Inline review thread:** reply or fix as required, then resolve the thread.
+- **Top-level PR comment or review summary:** minimize it after all actionable content it represents is handled.
+
+Do not minimize a summary comment while any unique valid finding inside it is still awaiting a fix, manual test, push, or thread resolution.
+
+Choose the classifier by meaning:
+
+| Classifier | Use when |
+|------------|----------|
+| `RESOLVED` | Its actionable findings were fixed, rebutted, or otherwise fully handled |
+| `OUTDATED` | A newer review or later code state superseded the entire comment and it has no remaining unique action |
+| `DUPLICATE` | The entire comment duplicates another canonical comment or review thread |
+| `OFF_TOPIC` | The comment is unrelated to the PR's scope |
+| `SPAM` | It is actual unsolicited or automated spam, not merely a noisy reviewer |
+| `ABUSE` | It contains actual abusive content; never use this for technical disagreement |
+
+When a comment contains a mixture of valid, invalid, and duplicate findings, use `RESOLVED` after all of them are disposed of. That describes the comment's final state more accurately than classifying the whole container as a duplicate or outdated.
+
+Minimize by GraphQL node ID:
+
+```bash
+gh api graphql \
+  -f query='mutation($id:ID!,$classifier:ReportedContentClassifiers!){
+    minimizeComment(input:{subjectId:$id,classifier:$classifier}){
+      minimizedComment{ isMinimized minimizedReason }
+    }
+  }' \
+  -f id='{comment_node_id}' \
+  -f classifier='{CLASSIFIER}'
+```
+
+After the mutation, verify that `isMinimized` is `true` and `minimizedReason` matches the intended classifier. Record both values in the ledger. If minimization fails, do not pretend the comment is cleaned up; report the failure and leave its ledger item open.
+
+Do not minimize inline review comments as a substitute for resolving their review threads.
 
 ## Phase 4: Validate the Affected Scope
 
@@ -203,7 +253,9 @@ When the user says the manual test passed and they committed and pushed:
 4. Resolve each still-open valid review thread addressed by the pushed changes.
 5. Do not post replies on those threads.
 6. Do not resolve a thread whose fix is missing, incomplete, or not pushed.
-7. Update the ledger with the final resolution state.
+7. Re-evaluate every unminimized standalone or summary comment in the ledger.
+8. Minimize each comment whose represented findings are now fully handled, using the classifier table above.
+9. Verify the minimization result and update the ledger with the final resolution and minimization state.
 
 CodeQL findings that exist only as check annotations or scanning alerts may not be manually resolvable. Confirm the pushed fix is present and report that GitHub must clear them when CodeQL reruns.
 
@@ -216,7 +268,7 @@ Keep the completion summary quick:
 ```markdown
 Handled {total} open findings: {fixed} fixed, {invalid} invalid and resolved, {duplicates} duplicates.
 
-Resolved {resolved_after_push} fixed threads after the push. {remaining} items remain open: {reason or "none"}.
+Resolved {resolved_after_push} fixed threads and minimized {minimized} handled summary comments after the push. {remaining} items remain open: {reason or "none"}.
 ```
 
 No essay. The code and the cleaned-up PR are the deliverables.
@@ -229,6 +281,9 @@ No essay. The code and the cleaned-up PR are the deliverables.
 - Reply "fixed" to valid findings when a silent resolution is requested
 - Resolve a thread without verifying the current PR head
 - Blanket-resolve every thread because the build passed
+- Minimize a summary comment while one of its unique findings remains open
+- Use `RESOLVED` blindly when `OUTDATED`, `DUPLICATE`, or `OFF_TOPIC` is the truthful classifier
+- Minimize inline review comments instead of resolving their threads
 - Run formatting across unrelated projects
 - Dismiss a reviewer's submitted review
 - Use the `@` symbol before a username in anything posted to GitHub

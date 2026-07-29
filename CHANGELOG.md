@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.16.1] - 2026-07-29
+
+### Added
+- **Handled review-summary minimization** to the PR Flow skill. SnarkGirl now tracks
+  top-level Claude, bot, and human summary comments and minimizes them only after every
+  represented finding is fully handled.
+- Classifier-aware cleanup using `RESOLVED`, `OUTDATED`, `DUPLICATE`, or `OFF_TOPIC`
+  according to the comment's actual final state, with GraphQL result verification.
+
+### Changed
+- Inline review comments continue to use normal thread resolution; minimization is
+  reserved for standalone PR comments and aggregate review summaries.
+
 ## [1.16.0] - 2026-07-29
 
 ### Added
