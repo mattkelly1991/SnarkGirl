@@ -56,6 +56,8 @@ A version bump is a full release. When bumping the version, do ALL of the follow
 2. **Add a `CHANGELOG.md` entry** for the new version (Keep a Changelog format) summarizing what changed.
 3. **Generate release notes** for the version.
 4. **Publish the release** — tag the commit and create the GitHub Release (`gh release create vX.Y.Z`), and refresh the GitHub Marketplace listing if the Action metadata changed.
+5. **Always provide the Marketplace publish link** after the release succeeds:
+   `https://github.com/mattkelly1991/SnarkGirl/releases/edit/vX.Y.Z`
 
 ## Descriptions
 
