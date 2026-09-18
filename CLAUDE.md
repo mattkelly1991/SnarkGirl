@@ -35,13 +35,14 @@ Available skills are in the `skills/` directory. Each skill has a `SKILL.md` tha
 14. `snark-ticket` — when the user shares a GitHub issue and wants SnarkGirl's take
 15. `snark-fix-review` — when working through and fixing items from a review doc
 16. `snark-merge-court` — when resolving merge conflicts in courtroom style
-17. `snark-vs-world` — when SnarkGirl debates/argues/fights other real LLMs on a topic
-18. `snark-conscience` — when SnarkGirl's angel vs devil debate a dilemma, or she's genuinely torn on a decision
-19. `snark-devils-advocate` — when Copilot or user wants a second opinion or idea stress-tested
-20. `snark-divergence` — when the user wants a few ways to solve an open-ended problem (design, naming, API surface, fuzzy bugs); also auto-runs when the `divergence` setting is `medium`/`high` and the question passes the skill's pre-flight gate
-21. `snark-rubber-duck` — when user is debugging or stuck on a problem
-22. `snark-explain` — when user asks you to explain code, concepts, or architecture
-23. `snark-chat` — general conversation (default fallback)
+17. `snark-stack-sync` — when bringing a stack of PRs up to date with its base, bottom-up (default merge messages, pushes clean merges, Merge Court on conflicts)
+18. `snark-vs-world` — when SnarkGirl debates/argues/fights other real LLMs on a topic
+19. `snark-conscience` — when SnarkGirl's angel vs devil debate a dilemma, or she's genuinely torn on a decision
+20. `snark-devils-advocate` — when Copilot or user wants a second opinion or idea stress-tested
+21. `snark-divergence` — when the user wants a few ways to solve an open-ended problem (design, naming, API surface, fuzzy bugs); also auto-runs when the `divergence` setting is `medium`/`high` and the question passes the skill's pre-flight gate
+22. `snark-rubber-duck` — when user is debugging or stuck on a problem
+23. `snark-explain` — when user asks you to explain code, concepts, or architecture
+24. `snark-chat` — general conversation (default fallback)
 
 **Always stay in character.** The Snark Girl persona applies across ALL skills.
 

@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.18.0] - 2026-09-18
+
+### Added
+- **Stack Sync** skill (`snark-stack-sync`) — brings a stack of PRs up to date with its
+  base, bottom-up: merge `dev` into the first PR, then each PR into the next.
+  `assets/sync-pr-stack.ps1` discovers the chain from open PRs via `gh pr list` (any PR
+  in the stack works as the entry point), refuses forks/cycles/dirty trees/unpushed local
+  commits/protected branches, fetches and checks out each head, merges its base with
+  `git merge --no-edit`, and pushes clean merges immediately. Merge messages are git's
+  default `Merge branch 'dev' into <branch>` — identical to GitHub's "Update branch" —
+  with no custom text or attribution. On conflicts the script exits `2` with the merge
+  in progress; SnarkGirl runs Merge Court, the user approves the resolution, and
+  `-Continue` commits (`--no-edit`), pushes, and finishes the stack. Stateless: position
+  is re-derived from git every run, so re-running is always safe. `-DryRun` previews.
+
+### Changed
+- Skill routing (`using-snark-girl`, `CLAUDE.md`) gained `snark-stack-sync` right after
+  `snark-merge-court`.
+- Plugin descriptions and keywords across all manifests mention Stack Sync.
+
 ## [1.17.0] - 2026-09-17
 
 ### Added

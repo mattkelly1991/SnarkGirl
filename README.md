@@ -1,7 +1,7 @@
 # Snark Girl 💅
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
-[![Version](https://img.shields.io/badge/version-1.17.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.18.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
 [![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
 
@@ -41,6 +41,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
 | **snark-merge-court** | Resolves merge conflicts in a courtroom — LLM attorneys argue for "ours" vs "theirs" while Judge SnarkGirl rules. |
+| **snark-stack-sync** | Brings a stack of PRs up to date, bottom-up — merges the base (usually `dev`) into the first PR, then each PR into the next. Clean merges get git's default merge message and are pushed; conflicts stop for Merge Court, then she continues on your approval. "SnarkGirl, sync the stack for #3499." |
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
 | **snark-conscience** | Summons SnarkAngel and SnarkDevil to debate a moral, ethical, or tough decision dilemma inside SnarkGirl's head. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
@@ -315,6 +316,10 @@ skills/
 │   └── SKILL.md
 ├── snark-merge-court/        # Merge conflict courtroom — LLM attorneys argue ours vs theirs
 │   └── SKILL.md
+├── snark-stack-sync/         # Sync a PR stack bottom-up — default merge messages, Merge Court on conflicts
+│   ├── SKILL.md
+│   └── assets/
+│       └── sync-pr-stack.ps1 # Discover stack via gh, fetch/checkout/merge/push; exit 2 on conflicts, -Continue to resume
 ├── snark-vs-world/            # Multi-LLM debate arena — fight real Claude & GPT models
 │   └── SKILL.md
 ├── snark-conscience/          # Angel vs Devil — inner voices debate dilemmas
@@ -380,7 +385,7 @@ skills/
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.17.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.17.0)** — Divergence + persistent settings. 🌪️🧠
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.18.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.18.0)** — Stack Sync. 🥞
 
 ## License
 
