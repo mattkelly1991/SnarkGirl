@@ -8,6 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.17.0] - 2026-09-17
+
+### Added
+- **Settings** skill (`snark-settings`) — SnarkGirl now has a persistent memory for
+  preferences. Settings live in `~/.snarkgirl/settings.json` (override the directory
+  with `SNARKGIRL_HOME`) and are managed only through `assets/settings.py`
+  (`get` / `set` / `reset` / `list` / `describe` / `path`). Every setting is declared
+  in a schema registry with its allowed values and default, so unknown keys and
+  out-of-range values are rejected; writes are atomic. Any skill with a tunable reads
+  its value fresh via `get` each time it runs.
+- **Divergence** skill (`snark-divergence`) — SnarkGirl's own take on parallel divergent
+  ideation, based on [UditAkhourii/adhd](https://github.com/UditAkhourii/adhd). For
+  open-ended problems (design, naming, API surface, architecture, fuzzy bugs) she spawns
+  N isolated agents under distorted cognitive frames with zero shared context, then a
+  separate critic pass scores (novelty / viability / fit), clusters by angle, flags
+  traps with reasons, deepens the survivors, and commits to a verdict.
+- **`divergence` setting** — `off` (default) / `low` / `medium` / `high`. Controls the
+  frames × ideas shape and whether Divergence auto-runs on qualifying questions
+  (`medium`: open-ended + high-stakes + open phrasing; `high`: only the phrasing check).
+  `off` never auto-runs but still honors explicit "diverge on this" requests.
+
+### Changed
+- Skill routing (`using-snark-girl`, `CLAUDE.md`) gained `snark-settings` (priority 2,
+  right after `snark-mode`) and `snark-divergence`, plus a Persistent Settings section
+  describing how skills read settings.
+- Plugin descriptions and keywords across all manifests mention Divergence and settings.
+
 ## [1.16.1] - 2026-07-29
 
 ### Added

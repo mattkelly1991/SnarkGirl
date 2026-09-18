@@ -1,7 +1,7 @@
 # Snark Girl 💅
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
-[![Version](https://img.shields.io/badge/version-1.15.1-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.17.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
 [![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
 
@@ -9,7 +9,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, cuts through scary raw diff stats to show a PR's real size and risk (so clean, DRY, well-documented code doesn't get punished for looking "big"), runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, cuts through scary raw diff stats to show a PR's real size and risk (so clean, DRY, well-documented code doesn't get punished for looking "big"), runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, runs Divergence on open-ended problems (isolated agents diverge under distorted cognitive frames, a critic converges — scaled by a setting she remembers across sessions), debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -44,6 +44,8 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
 | **snark-conscience** | Summons SnarkAngel and SnarkDevil to debate a moral, ethical, or tough decision dilemma inside SnarkGirl's head. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
+| **snark-divergence** | Divergence — for open-ended problems (design, naming, API surface, architecture, fuzzy bugs). Spawns N isolated agents under distorted cognitive frames, then a separate critic scores, clusters, flags traps, and deepens the survivors before SnarkGirl commits to a verdict. Effort scales with the `divergence` setting: `off` / `low` / `medium` / `high`. At `medium`+ she auto-runs it on qualifying questions. |
+| **snark-settings** | View and change SnarkGirl's persistent settings — remembered across sessions and repos in `~/.snarkgirl/settings.json`. "SnarkGirl, set divergence to high." |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
 | **snark-explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
 | **snark-chat** | General conversation about tech, career, coding life, or just vibing. The default when nothing else matches. |
@@ -319,6 +321,12 @@ skills/
 │   └── SKILL.md
 ├── snark-devils-advocate/    # Argue against proposals & stress-test ideas
 │   └── SKILL.md
+├── snark-divergence/         # Divergence — N isolated frames diverge, critic converges; scaled by the divergence setting
+│   └── SKILL.md
+├── snark-settings/           # Persistent settings SnarkGirl remembers across sessions (~/.snarkgirl/settings.json)
+│   ├── SKILL.md
+│   └── assets/
+│       └── settings.py       # get/set/reset/list/describe — schema-validated, atomic writes
 ├── snark-rubber-duck/        # Adversarial debugging partner
 │   └── SKILL.md
 ├── snark-explain/            # Code & concept explanations
@@ -326,6 +334,10 @@ skills/
 └── snark-chat/               # General conversation
     └── SKILL.md
 ```
+
+## Based On
+
+- **Divergence** (`snark-divergence`) is SnarkGirl's implementation of the parallel divergent-ideation method from **[UditAkhourii/adhd](https://github.com/UditAkhourii/adhd)** (MIT) by Udit Akhouri — isolated generator branches under distorted cognitive frames, a mechanically separate critic pass, trap detection, and deepening of the survivors. The frames, voice, level gating, and settings integration are hers.
 
 ## Contributing
 
@@ -368,7 +380,7 @@ skills/
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.15.1](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.15.1)** — her first official release. 🎉
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.17.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.17.0)** — Divergence + persistent settings. 🌪️🧠
 
 ## License
 
