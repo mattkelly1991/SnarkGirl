@@ -71,12 +71,16 @@ function Assert-Git {
     return $output
 }
 
+function Get-HeadSubject {
+    return @(Assert-Git log -1 "--format=%s")[0]
+}
+
 function Get-ConflictedFiles {
     return @(Invoke-Git diff --name-only --diff-filter=U | Where-Object { $_ })
 }
 
 function Test-MergeInProgress {
-    $gitDir = (Assert-Git rev-parse --git-dir)[0]
+    $gitDir = @(Assert-Git rev-parse --git-dir)[0]
     return Test-Path (Join-Path $gitDir "MERGE_HEAD")
 }
 
@@ -171,7 +175,7 @@ function Complete-Merge([string]$Head) {
     }
     Assert-Git add -A | Out-Null
     Assert-Git commit --no-edit | Out-Null
-    Write-Ok "Committed: $((Assert-Git log -1 --pretty=%s)[0])"
+    Write-Ok "Committed: $(Get-HeadSubject)"
     Assert-Git push $Remote $Head | Out-Null
     Write-Ok "Pushed $Head"
 }
@@ -191,7 +195,7 @@ if ($DryRun) {
     exit 0
 }
 
-$currentBranch = (Assert-Git branch --show-current)[0]
+$currentBranch = @(Assert-Git branch --show-current)[0]
 
 if (Test-MergeInProgress) {
     if (-not $Continue) {
@@ -239,7 +243,7 @@ foreach ($p in $stack) {
         exit 2
     }
 
-    Write-Ok "Merged: $((Assert-Git log -1 --pretty=%s)[0])"
+    Write-Ok "Merged: $(Get-HeadSubject)"
     Assert-Git push $Remote $head | Out-Null
     Write-Ok "Pushed $head"
 }

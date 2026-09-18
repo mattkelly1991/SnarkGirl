@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.18.1] - 2026-09-18
+
+### Fixed
+- `sync-pr-stack.ps1` — single-line git output (`branch --show-current`, `rev-parse --git-dir`,
+  `log --format=%s`) was being unrolled by PowerShell on `return`, so `[0]` read the first
+  *character* instead of the first line. The merge subject printed as `M` and, worse,
+  `-Continue` saw the current branch as `3` and would have refused a legitimate resume.
+  All three reads are now wrapped in `@()`.
+
 ## [1.18.0] - 2026-09-18
 
 ### Added

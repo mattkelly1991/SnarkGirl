@@ -1,7 +1,7 @@
 # Snark Girl 💅
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
-[![Version](https://img.shields.io/badge/version-1.18.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.18.1-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
 [![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
 
@@ -385,7 +385,7 @@ skills/
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.18.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.18.0)** — Stack Sync. 🥞
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.18.1](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.18.1)** — Stack Sync. 🥞
 
 ## License
 
