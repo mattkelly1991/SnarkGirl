@@ -45,7 +45,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
 | **snark-conscience** | Summons SnarkAngel and SnarkDevil to debate a moral, ethical, or tough decision dilemma inside SnarkGirl's head. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
-| **snark-divergence** | Divergence — for open-ended problems (design, naming, API surface, architecture, fuzzy bugs). Spawns N isolated agents under distorted cognitive frames, then a separate critic scores, clusters, flags traps, and deepens the survivors before SnarkGirl commits to a verdict. Effort scales with the `divergence` setting: `off` / `low` / `medium` / `high`. At `medium`+ she auto-runs it on qualifying questions. |
+| **snark-divergence** | Divergence — for open-ended problems (design, naming, API surface, architecture, fuzzy bugs). Spawns N isolated agents under distorted cognitive frames, then a separate critic scores, clusters, flags traps, and deepens the survivors before SnarkGirl commits to a verdict. Effort scales with the `divergence` setting: `off` / `low` / `medium` / `high`. At `medium`+ she auto-runs it on qualifying questions. <sub>Ideation loop adapted from [UditAkhourii/adhd](https://github.com/UditAkhourii/adhd) (MIT); frames, voice, and gating are hers.</sub> |
 | **snark-settings** | View and change SnarkGirl's persistent settings — remembered across sessions and repos in `~/.snarkgirl/settings.json`. "SnarkGirl, set divergence to high." |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
 | **snark-explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
@@ -339,10 +339,6 @@ skills/
 └── snark-chat/               # General conversation
     └── SKILL.md
 ```
-
-## Based On
-
-- **Divergence** (`snark-divergence`) is SnarkGirl's implementation of the parallel divergent-ideation method from **[UditAkhourii/adhd](https://github.com/UditAkhourii/adhd)** (MIT) by Udit Akhouri — isolated generator branches under distorted cognitive frames, a mechanically separate critic pass, trap detection, and deepening of the survivors. The frames, voice, level gating, and settings integration are hers.
 
 ## Contributing
 
