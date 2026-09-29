@@ -18,6 +18,11 @@
     A merge is in progress and its conflicts have been resolved and approved: stage, commit with the default
     message, push, then continue up the stack.
 
+.PARAMETER AboveOnly
+    Only sync the PRs stacked above -Pr: merge -Pr's head into its child, then up the rest of the stack. -Pr itself
+    and everything below it (including the root's base) are left untouched. Used by snark-stack-flow so that
+    PRs already taken to done keep their head commit.
+
 .PARAMETER Remote
     Remote name (default: origin).
 
@@ -32,6 +37,9 @@
 
 .EXAMPLE
     .\sync-pr-stack.ps1 -Pr 3499 -DryRun
+
+.EXAMPLE
+    .\sync-pr-stack.ps1 -Pr 3500 -AboveOnly
 #>
 
 param(
@@ -39,6 +47,8 @@ param(
     [int]$Pr,
 
     [switch]$Continue,
+
+    [switch]$AboveOnly,
 
     [string]$Remote = "origin",
 
@@ -166,8 +176,18 @@ function Update-BaseRef([string]$Base, [string]$Head) {
     Assert-Git fetch $Remote "${Base}:${Base}" | Out-Null
 }
 
+function Get-UnresolvedFiles {
+    # Resolved-but-unstaged files still show as unmerged in the index, so judge them by their remaining markers.
+    $root = @(Assert-Git rev-parse --show-toplevel)[0]
+    return @(Get-ConflictedFiles | Where-Object {
+        $path = Join-Path $root $_
+        (Test-Path -LiteralPath $path -PathType Leaf) -and
+            (Select-String -LiteralPath $path -Pattern '^(<<<<<<<|>>>>>>>)( |$)' -Quiet)
+    })
+}
+
 function Complete-Merge([string]$Head) {
-    $conflicts = Get-ConflictedFiles
+    $conflicts = Get-UnresolvedFiles
     if ($conflicts.Count -gt 0) {
         Write-Warn "Conflicts remain in '$Head':"
         $conflicts | ForEach-Object { Write-Host "      $_" }
@@ -188,8 +208,22 @@ $stack = Get-Stack
 Write-Step "Stack for #$Pr"
 Show-Stack $stack
 
+$targets = $stack
+if ($AboveOnly) {
+    $index = -1
+    for ($i = 0; $i -lt $stack.Count; $i++) {
+        if ([int]$stack[$i].number -eq $Pr) { $index = $i; break }
+    }
+    $targets = @($stack | Select-Object -Skip ($index + 1))
+    if ($targets.Count -eq 0) {
+        Write-Step "Nothing is stacked above #$Pr"
+        exit 0
+    }
+    Write-Step "Syncing only the PRs above #$Pr"
+}
+
 if ($DryRun) {
-    foreach ($p in $stack) {
+    foreach ($p in $targets) {
         Write-Host "  would merge '$($p.baseRefName)' into '$($p.headRefName)' and push"
     }
     exit 0
@@ -209,8 +243,8 @@ if (Test-MergeInProgress) {
         }
         exit 2
     }
-    $onStack = $stack | Where-Object { $_.headRefName -eq $currentBranch }
-    if (-not $onStack) { Fail "Merge in progress on '$currentBranch', which is not part of this stack." }
+    $onStack = $targets | Where-Object { $_.headRefName -eq $currentBranch }
+    if (-not $onStack) { Fail "Merge in progress on '$currentBranch', which is not part of the stack being synced." }
     Write-Step "Completing merge on '$currentBranch'"
     Complete-Merge $currentBranch
 } else {
@@ -219,7 +253,7 @@ if (Test-MergeInProgress) {
     if ($dirty.Count -gt 0) { Fail "Working tree is not clean. Commit or stash your changes first." }
 }
 
-foreach ($p in $stack) {
+foreach ($p in $targets) {
     $head = $p.headRefName
     $base = $p.baseRefName
     Write-Step "#$($p.number)  $base -> $head"

@@ -1,7 +1,7 @@
 # Snark Girl 💅
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
-[![Version](https://img.shields.io/badge/version-1.18.1-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.19.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
 [![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
 
@@ -41,6 +41,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
 | **snark-fix-review** | Works through a Snark Girl review doc, fixing outstanding items one by one and tracking progress. |
 | **snark-merge-court** | Resolves merge conflicts in a courtroom — LLM attorneys argue for "ours" vs "theirs" while Judge SnarkGirl rules. |
+| **snark-stack-flow** | Takes a whole PR stack to done, bottom-up. On each PR she runs the PR Flow loop — triage, fix, you push, re-request Copilot — until CI is green and the latest Copilot review on the current head passes, then syncs that PR up through every PR above it (Merge Court on conflicts) before moving up. A resumable progress table tracks every PR. "SnarkGirl, take the stack to done." |
 | **snark-stack-sync** | Brings a stack of PRs up to date, bottom-up — merges the base (usually `dev`) into the first PR, then each PR into the next. Clean merges get git's default merge message and are pushed; conflicts stop for Merge Court, then she continues on your approval. "SnarkGirl, sync the stack for #3499." |
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
 | **snark-conscience** | Summons SnarkAngel and SnarkDevil to debate a moral, ethical, or tough decision dilemma inside SnarkGirl's head. |
@@ -161,6 +162,11 @@ She reads other reviewers' comments (bots and humans), drafts snarky replies, pr
 > "SnarkGirl, run the PR flow"
 
 She gathers every open Claude, Copilot, CodeQL, and human finding; resolves invalid threads with receipts; fixes valid issues in your current checkout without worktrees; validates only the affected projects; and pauses for your manual test. After you commit and push, she resolves the fixed threads without posting noisy "fixed" replies.
+
+**Stack Flow:**
+> "SnarkGirl, take the stack to done"
+
+She runs the PR Flow loop on the bottom PR of your stack until CI is green and Copilot signs off on its current head, syncs it up through every PR above it (Merge Court on conflicts, your approval before continuing), then moves up one PR and does it again. Progress lives in a table she shows at every step, so she can pick up exactly where she left off after a break.
 
 **Ticket Triage:**
 > "SnarkGirl, look at this ticket: https://github.com/org/repo/issues/123"
@@ -319,7 +325,9 @@ skills/
 ├── snark-stack-sync/         # Sync a PR stack bottom-up — default merge messages, Merge Court on conflicts
 │   ├── SKILL.md
 │   └── assets/
-│       └── sync-pr-stack.ps1 # Discover stack via gh, fetch/checkout/merge/push; exit 2 on conflicts, -Continue to resume
+│       └── sync-pr-stack.ps1 # Discover stack via gh, fetch/checkout/merge/push; exit 2 on conflicts, -Continue to resume, -AboveOnly to sync only above a PR
+├── snark-stack-flow/         # Take a PR stack to done bottom-up — PR Flow loop per PR, then sync up
+│   └── SKILL.md
 ├── snark-vs-world/            # Multi-LLM debate arena — fight real Claude & GPT models
 │   └── SKILL.md
 ├── snark-conscience/          # Angel vs Devil — inner voices debate dilemmas
@@ -381,7 +389,7 @@ skills/
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.18.1](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.18.1)** — Stack Sync. 🥞
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.19.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.19.0)** — Stack Flow. 🥞🔁
 
 ## License
 

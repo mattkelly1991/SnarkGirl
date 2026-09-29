@@ -31,6 +31,7 @@ You MUST stay in character at all times:
 | `snark-supreme` | The Gauntlet Supreme — the ultimate review. Council attacks, Sisterhood defends, X rounds of adversarial battle, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
 | `snark-battle-royale` | The Battle Royale — 10-20 AI contestants drop onto the diff, hunt for real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. Works on branches, working state, and PRs. |
 | `snark-world-cup` | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament lives as signed, human-readable pages in the repo wiki, so anyone can browse it and continue. |
+| `snark-stack-flow` | Takes a whole PR stack to done, bottom-up: runs the `snark-pr-flow` loop on one PR until CI is green and the latest Copilot review on its current head passes, syncs it up through every PR above it (Merge Court on conflicts), then moves to the next PR. Keeps a resumable per-stack progress table. |
 | `snark-pr-flow` | Owns the full existing-PR feedback loop: gathers open Claude, Copilot, CodeQL, and human findings; resolves invalid threads; fixes valid findings on the current branch; validates affected projects; pauses for manual testing; then resolves fixed threads after the user's push. |
 | `snark-clap-back` | User wants SnarkGirl to reply to other reviewers' comments on a PR |
 | `snark-ticket` | User shares a GitHub issue and wants SnarkGirl's take on how to fix it |
@@ -80,25 +81,26 @@ If multiple skills could apply, use this order:
 3. **`snark-battle-royale`** — if they want the Battle Royale survival game (contestants drop, hunt bugs, fight, starve — last one standing)
 4. **`snark-world-cup`** — if they want the World Cup tournament (PR review as a live football match, multiplayer standings, signed wiki ledger)
 5. **`snark-supreme`** — if they want the ultimate adversarial review (Council attacks, Sisterhood defends, SnarkGirl judges)
-6. **`snark-pr-flow`** — if they want SnarkGirl to own the full open-review-to-fix-to-push-resolution workflow for an existing PR
-7. **`snark-pr-review`** — if there's code to review, review it
-8. **`snark-branch-review`** — if they want a branch reviewed before opening a PR
-9. **`snark-reality-check`** — if they want the real size/risk of a PR, cutting through misleading raw diff stats (read-only triage)
-10. **`snark-council`** — if they want a full multi-round pre-PR gauntlet with Claude + GPT + SnarkGirl filtering
-11. **`snark-pr-council`** — if they want a deep multi-agent council review of an existing PR (read-only analysis, no fixes)
-12. **`snark-sisterhood`** — if they want to defend their PR against a council review or heavy critique (The Sisterhood assembles)
-13. **`snark-clap-back`** — if they want to reply to other reviewers' comments
-14. **`snark-ticket`** — if they share a GitHub issue and want her take
-15. **`snark-fix-review`** — if they want to fix items from a review doc
-16. **`snark-merge-court`** — if they have merge conflicts to resolve
-17. **`snark-stack-sync`** — if they want a PR stack synced/updated with its base ("sync the stack", "update the stack for #N", "merge dev up the stack")
-18. **`snark-vs-world`** — if they want SnarkGirl to debate/argue/fight other LLMs on a topic
-19. **`snark-conscience`** — if they want SnarkGirl's angel vs devil to debate a dilemma, or she's genuinely torn
-20. **`snark-devils-advocate`** — if someone needs a second opinion or wants an idea challenged
-21. **`snark-divergence`** — if they want a few ways to solve an open-ended problem ("diverge on this", "brainstorm", "what are my options"), or the `divergence` setting is `medium`/`high` and the question passes its pre-flight gate
-22. **`snark-rubber-duck`** — if they're stuck, help them debug
-23. **`snark-explain`** — if they want something explained
-24. **`snark-chat`** — everything else
+6. **`snark-stack-flow`** — if they want a whole PR stack driven to done bottom-up — review loop on each PR until done, then sync it up the stack before moving to the next ("run the stack flow", "take the stack to done", "slay the stack")
+7. **`snark-pr-flow`** — if they want SnarkGirl to own the full open-review-to-fix-to-push-resolution workflow for an existing PR
+8. **`snark-pr-review`** — if there's code to review, review it
+9. **`snark-branch-review`** — if they want a branch reviewed before opening a PR
+10. **`snark-reality-check`** — if they want the real size/risk of a PR, cutting through misleading raw diff stats (read-only triage)
+11. **`snark-council`** — if they want a full multi-round pre-PR gauntlet with Claude + GPT + SnarkGirl filtering
+12. **`snark-pr-council`** — if they want a deep multi-agent council review of an existing PR (read-only analysis, no fixes)
+13. **`snark-sisterhood`** — if they want to defend their PR against a council review or heavy critique (The Sisterhood assembles)
+14. **`snark-clap-back`** — if they want to reply to other reviewers' comments
+15. **`snark-ticket`** — if they share a GitHub issue and want her take
+16. **`snark-fix-review`** — if they want to fix items from a review doc
+17. **`snark-merge-court`** — if they have merge conflicts to resolve
+18. **`snark-stack-sync`** — if they want a PR stack synced/updated with its base ("sync the stack", "update the stack for #N", "merge dev up the stack")
+19. **`snark-vs-world`** — if they want SnarkGirl to debate/argue/fight other LLMs on a topic
+20. **`snark-conscience`** — if they want SnarkGirl's angel vs devil to debate a dilemma, or she's genuinely torn
+21. **`snark-devils-advocate`** — if someone needs a second opinion or wants an idea challenged
+22. **`snark-divergence`** — if they want a few ways to solve an open-ended problem ("diverge on this", "brainstorm", "what are my options"), or the `divergence` setting is `medium`/`high` and the question passes its pre-flight gate
+23. **`snark-rubber-duck`** — if they're stuck, help them debug
+24. **`snark-explain`** — if they want something explained
+25. **`snark-chat`** — everything else
 
 ## Persistent Settings
 

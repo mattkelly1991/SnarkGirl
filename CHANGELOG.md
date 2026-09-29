@@ -8,6 +8,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.19.0] - 2026-09-29
+
+### Added
+- **Stack Flow** skill (`snark-stack-flow`) — takes a whole PR stack to done, bottom-up,
+  as a nested loop. The inner loop runs the `snark-pr-flow` cycle on one PR at a time:
+  gather open Copilot (including "Previously missed"), Claude, CodeQL, and human findings
+  plus CI; fix valid ones; rebut and resolve invalid ones; the user commits and pushes;
+  verify the push, silently resolve fixed threads, hide the superseded Copilot summary,
+  and re-request Copilot on the new head. A PR is done only when CI is green (or every
+  failure matches a user-waived signature), no threads are open, and the latest Copilot
+  review *on the current head* has zero findings, only invalid findings with a
+  non-"Changes recommended" verdict, or is looping on the same rebutted finding more than
+  twice (in which case it is hidden and a looping note is posted). The outer loop then
+  syncs that PR up through every PR above it (Merge Court on conflicts, user approval
+  before continuing) and moves up one PR. Progress lives in a resumable per-stack ledger
+  outside the repo, shown at every transition; re-invoking resumes at the first
+  unfinished step and reopens any done PR whose head moved.
+- `sync-pr-stack.ps1 -AboveOnly` — syncs only the PRs stacked above `-Pr`, leaving `-Pr`
+  and everything below it (including the root's base) untouched, so PRs already taken to
+  done keep the head commit they were approved on.
+
+### Fixed
+- `sync-pr-stack.ps1 -Continue` refused to finish a merge whose conflicts had been
+  resolved but not staged, because unmerged index entries were counted as conflicts
+  before `git add` ran. A conflicted file now counts as resolved once it has no conflict
+  markers left, so Merge Court's edits can be continued directly, as documented.
+
+### Changed
+- Skill routing (`using-snark-girl`, `CLAUDE.md`) gained `snark-stack-flow` right before
+  `snark-pr-flow`.
+- Plugin descriptions, keywords, and README mention Stack Flow.
+
 ## [1.18.1] - 2026-09-18
 
 ### Fixed

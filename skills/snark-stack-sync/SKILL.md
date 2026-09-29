@@ -30,10 +30,12 @@ The deterministic part (discover the stack, fetch, checkout, merge, commit, push
 `{skill_dir}` below is this skill's base directory. Invoke the script as:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/sync-pr-stack.ps1 -Pr <N> [-DryRun] [-Continue] [-Remote origin]
+powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/sync-pr-stack.ps1 -Pr <N> [-DryRun] [-Continue] [-AboveOnly] [-Remote origin]
 ```
 
 (Use `pwsh -NoProfile -File ...` where `powershell` isn't available.)
+
+`-AboveOnly` restricts the sync to the PRs stacked above `-Pr`: `-Pr`'s head is merged into its child and on up, while `-Pr` itself and everything below it (including the root's base) are left untouched. `snark-stack-flow` uses it so PRs it already took to done keep their head commit. Pass it on the `-Continue` run too.
 
 ## The Flow
 
@@ -72,7 +74,7 @@ When every conflict is resolved, present the resolution summary (which files, wh
 
 ### Step 4 — Continue
 
-On approval, run the script with `-Continue` (same `-Pr`). It stages the resolved files, commits with `git commit --no-edit` (preserving git's default merge message), pushes, and carries on up the rest of the stack. Loop back to Step 2's exit-code table.
+On approval, run the script with `-Continue` (same `-Pr`). It treats a conflicted file as resolved once no conflict markers remain (Merge Court doesn't need to `git add`), stages the resolved files, commits with `git commit --no-edit` (preserving git's default merge message), pushes, and carries on up the rest of the stack. Loop back to Step 2's exit-code table.
 
 ### Step 5 — Wrap up
 
