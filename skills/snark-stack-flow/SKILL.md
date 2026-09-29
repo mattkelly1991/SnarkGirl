@@ -14,6 +14,7 @@ This skill orchestrates. It does not reimplement anything:
 
 - The inner loop follows `snark-pr-flow` (triage rules, reply format, minimization classifiers, validation scope, manual-test handoff, per-PR ledger). Everything below adds to or tightens that skill for stack use.
 - Syncing uses `snark-stack-sync`'s script, `{skills_dir}/snark-stack-sync/assets/sync-pr-stack.ps1`, with the same exit-code contract (`0` done, `1` guard tripped, `2` conflict).
+- Waiting for Copilot uses this skill's script, `{skill_dir}/assets/wait-copilot-review.ps1` (see Copilot Requests and Waits).
 - Conflicts go to `snark-merge-court`.
 
 ## When This Skill Activates
@@ -39,13 +40,13 @@ For a single PR, use `snark-pr-flow`. For a merge-up with no review work, use `s
 
 ## The Stack Ledger (Persistent TODO Table)
 
-One ledger per stack, stored outside the repository so it survives breaks, new sessions, and context resets:
+One ledger per stack, stored in the user's home directory rather than the repository or a temp directory, so it survives breaks, restarts, temp cleanup, new sessions, and context resets:
 
-`{TEMP}/snark-girl-stack-flow/{owner}-{repo}-stack-{root PR number}.md`
+`~/.copilot/snark-girl/stacks/{owner}-{repo}-stack-{root PR number}.md`
 
 The root PR is the bottom of the stack when the run starts. The file keeps that name even if the root later merges. When the host also provides a session TODO store, mirror the table rows there, but the file is the source of truth.
 
-Per-PR finding detail (thread IDs, verdicts, reply and resolution state, summary-comment node IDs) stays in each PR's `snark-pr-flow` ledger. The stack ledger links to those files instead of duplicating them.
+Per-PR finding detail (thread IDs, verdicts, reply and resolution state, summary-comment node IDs) lives in each PR's `snark-pr-flow` ledger. During a stack flow, keep those ledgers next to the stack ledger instead of in a temp directory, at `~/.copilot/snark-girl/stacks/{owner}-{repo}-stack-{root PR number}/PR-{number}.md`. The stack ledger links to them instead of duplicating them.
 
 ### Ledger contents
 
@@ -55,12 +56,12 @@ Per-PR finding detail (thread IDs, verdicts, reply and resolution state, summary
    | # | PR | Branch | Loop | Sync | Head SHA | Notes |
    |---|----|--------|------|------|----------|-------|
 
-   - **Loop:** `pending`, `in progress (iter N)`, `awaiting push`, `awaiting Copilot`, `done (A)`, `done (B)`, `done (C)`, `reopened`, or `merged`.
+   - **Loop:** `pending`, `in progress (iter N)`, `awaiting push`, `awaiting Copilot`, `copilot unavailable`, `skipped (copilot unavailable)`, `done (A)`, `done (B)`, `done (C)`, `reopened`, or `merged`.
    - **Sync:** `pending`, `awaiting approval`, `in progress`, `in court`, `awaiting resolution approval`, `done`, `n/a` (top of stack), or `merged`.
    - **Head SHA:** the head commit on which the PR was declared done. Blank until done.
-   - **Notes:** open thread IDs being worked, the per-PR ledger path, known issues, blockers, and user decisions.
+   - **Notes:** open thread IDs being worked, the per-PR ledger path, the time of the latest confirmed Copilot request, Copilot error counts, known issues, blockers, and user decisions.
 3. **Current step pointer:** the PR and the exact step of the inner or outer loop that is next.
-4. **Waived CI failures:** each entry records the check or job name, the failure signature (the failing step, test, or rule identifier plus the normalized error text), the user's reason, and when it was granted.
+4. **Waived CI failures:** each entry records the check or job name, the exact failure signature taken from the completed run's failed-step log (the failing step, test, or rule identifier plus the normalized error text), the user's reason, and when it was granted. Waivers last for this run only.
 5. **Loop guard:** for each invalid Copilot finding that recurs, a fingerprint (file, symbol, and the substance of the claim, not line numbers or wording), the Copilot review IDs and head SHAs where it appeared, and the count.
 6. **Standing approvals:** whether the user pre-approved clean syncs for this run.
 
@@ -77,7 +78,8 @@ Render the stack table in chat at every transition: when a PR's loop reaches don
    - **Found:** resume. Reconcile the ledger against live GitHub and git state before doing anything:
      - PRs that have merged become `merged` in both columns and drop out of the working order.
      - A PR that is now in the stack but missing from the ledger, or a changed parent/child order, means the stack structure changed. Show the difference and ask how to proceed.
-     - For every PR marked done, compare the recorded Head SHA with its current remote head. If it moved, mark that PR `reopened` and move the current step pointer to the lowest reopened PR.
+     - For every PR marked done, apply When Done Goes Stale, and move the current step pointer to the lowest reopened PR.
+     - A PR marked `copilot unavailable` resumes at its Copilot request. A `skipped` PR stays skipped until the user asks to revisit it.
      - A merge in progress on a stack branch means the flow stopped mid-sync. Resume at the conflict or approval step for that sync.
      - Otherwise resume at the first unfinished step: the lowest PR whose Loop isn't done, or the lowest done PR whose Sync isn't done.
 4. On a fresh run, if any PR in the stack doesn't contain its base tip, report which ones. Ask once whether to run a full stack sync (no `-AboveOnly`) first. This is the only point in the run where the root's base may be merged in, because no PR has been declared done yet.
@@ -97,7 +99,7 @@ Collect everything `snark-pr-flow` Phase 2 gathers, for this PR only:
 - The latest Copilot review. Parse its inline findings **and** the "Previously missed" items listed in its summary body. Each "Previously missed" item is a finding.
 - CI status for the current head SHA: every check run and status, with conclusions and failure details
 
-If the PR has no Copilot review on its current head, request one before gathering further (see Step 4's request rules), then wait (Step 5).
+If the PR has no Copilot review on its current head, request one before gathering further (see Copilot Requests and Waits), then wait (Step 5).
 
 ### Step 2 — Triage and act
 
@@ -112,10 +114,11 @@ Update the loop guard for every invalid Copilot finding. A finding matches an ex
 
 **CI failures:**
 
-- A failure that matches a waived signature exactly is ignored for the done check. The same check failing for a different reason is a new failure.
+- Judge a run only after it has completed. While a run is in progress its logs are partial, so a signature search can report a false "no match". A run that is queued or in progress is pending, not failed and not waived.
+- Take the signature from the completed run's failed-step log (for GitHub Actions, `gh run view <run id> --log-failed`), never from the full log of a run in progress.
+- A failed run counts as waived only when **every** failing job in it matches a waiver, and each match is exact: the same check or job and the same failure signature. Anything else is a new failure. That includes the same check failing for a different reason, an extra failing job, or a check whose failure log can't be retrieved.
 - A failure caused by the PR's code is a valid finding. Fix it in this iteration.
 - A failure that appears unrelated (infrastructure, flakiness, a pre-existing break) gets investigated from its logs. Report it with evidence and ask the user whether to rerun it, waive it (record the signature), or fix it. Never rerun or waive on your own.
-- Pending checks aren't green. Wait for them.
 
 ### Step 3 — Validate and hand off
 
@@ -137,22 +140,56 @@ When the user confirms the push:
 2. Resolve each fixed valid thread with no reply, as in `snark-pr-flow` Phase 7.
 3. Minimize fully handled standalone and summary comments with the truthful classifier from `snark-pr-flow`.
 4. Hide the superseded Copilot review summary as `RESOLVED` once all of its findings are handled. The summary becomes superseded the moment a new Copilot review is requested.
-5. Request a new Copilot review for the current head, and confirm the request registered.
+5. Request a new Copilot review for the current head and confirm it through GraphQL, as described in Copilot Requests and Waits.
 6. Set Loop to `awaiting Copilot`.
 
 With no code change, a new review targets the same head SHA. That is expected and is how case C accumulates evidence.
 
 ### Step 5 — Wait, then loop
 
-Wait for a Copilot review whose commit is the current head SHA. Reviews on older commits don't count. Poll at a modest interval without spinning. If the review is unusually slow, update the ledger, report, and stop the turn. The next invocation resumes here.
+Wait with the wait script (see Copilot Requests and Waits). Only a review on the current head that was submitted after the latest Copilot request counts. Reviews on older commits, or from earlier rounds on the same commit, don't count.
 
-When CI on the head has settled and the review has arrived, evaluate the done condition. If it isn't met, increment the iteration and return to Step 1.
+When CI on the head has completed and the review has arrived, evaluate the done condition. If it isn't met, increment the iteration and return to Step 1.
+
+## Copilot Requests and Waits
+
+Never hand-write a polling loop, and never embed `jq` expressions in PowerShell. Quoting breaks silently, and the loop polls nothing. Use the script, which passes GraphQL variables with `-f`/`-F` and parses results with `ConvertFrom-Json`:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/wait-copilot-review.ps1 -Pr <N> -CheckRequest
+powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/wait-copilot-review.ps1 -Pr <N> -Head <sha> [-TimeoutMin 20] [-IntervalSec 30] [-Since <ISO time>] [-Repo owner/name]
+```
+
+(Use `pwsh -NoProfile -File ...` where `powershell` isn't available.) The script prints one JSON object on stdout, including the review's ID, URL, state, commit, and body when there is one. Progress goes to stderr.
+
+**Confirming a request.** The REST response to a reviewer request never lists the Copilot bot, so it proves nothing. After requesting, run `-CheckRequest`, which reads GraphQL `reviewRequests`:
+
+- Exit `0`: Copilot is listed as a pending reviewer. Record GitHub's request time (`lastRequestedAt` in the output) in Notes.
+- Exit `5`: Copilot isn't listed. Re-request once and check again. If it still isn't listed, report it and ask the user. Never wait on a request that didn't register.
+
+**Waiting.** `-Since` defaults to GitHub's timestamp for the latest Copilot request, so leave it unset unless the ledger has a more precise reason to override it.
+
+| Exit | Meaning | What SnarkGirl does |
+|------|---------|---------------------|
+| `0` | A Copilot review on the head arrived | Go to Step 1 with it |
+| `3` | Timed out; the request is still pending | Update the ledger, report, and stop the turn. The next invocation resumes the wait |
+| `4` | Copilot posted an error review instead of reviewing | Handle as Copilot unavailable, below |
+| `5` | No pending request and no qualifying review | The request was dropped. Request and confirm again, then wait |
+| `6` | The PR's head moved during the wait | Re-evaluate from Step 1 on the new head |
+| `1` | Bad arguments or a persistent gh/GitHub failure | Relay the error and stop |
+
+**Copilot unavailable.** An error review is not a review. It never counts toward any done case, and it never counts as a loop-guard repeat.
+
+1. On the first error for this head, record it in Notes, re-request, confirm, and wait once more.
+2. If Copilot errors again on the same head, set Loop to `copilot unavailable`, show the table, and ask the user to choose:
+   - **Wait:** stop the turn. When the flow is invoked again, it re-requests, confirms, and waits.
+   - **Skip:** set Loop to `skipped (copilot unavailable)`. The PR is never done while skipped. Continue to the sync step only if every other part of the done condition holds on the current head. Otherwise stay on the PR. Wrap-up lists every skipped PR as not done.
 
 ## Done Condition
 
 A PR is done only when **all** of the following hold at the same moment, for the PR's current head SHA:
 
-1. **CI:** every check completed successfully, or every failure matches a waived signature. Nothing is pending.
+1. **CI:** every check has completed, and each one either succeeded or belongs to a failed run whose failing jobs all match waivers exactly (see CI failures in Step 2). Nothing is queued or in progress.
 2. **Threads:** no unresolved review threads remain from any reviewer, and every actionable standalone comment is handled.
 3. **Copilot:** the latest Copilot review was submitted on the current head SHA, and it satisfies one of these cases:
    - **A:** zero findings, where "Previously missed" items count as findings.
@@ -171,13 +208,21 @@ If the head moves at any point after evaluation (a new push, an external commit)
 
 A `CHANGES_REQUESTED` review from a human that remains after all threads are resolved blocks done. Report it. Never dismiss another reviewer's review.
 
+## When Done Goes Stale
+
+A done PR is pinned to the Head SHA recorded when it was declared done. **Any** change to its remote head reopens it, whatever the cause: the PR's own new commits, a sync merge into it (including its base merged in by the flow, the user, or GitHub's update-branch button), a rebase, or a force push. Only moving the head matters. Reviews, CI, and approvals on the old head no longer count.
+
+- The flow never moves a done PR's head itself. `-AboveOnly` only merges into PRs above the current one, and those are never done. Merging the base into the root is forbidden once any PR is done. So a moved head means a change from outside the flow, or a lower PR reopened and its sync cascaded up.
+- Compare every done PR's recorded Head SHA with its remote head at every transition (before and after each sync, before moving to the next PR, at wrap-up) and on resume.
+- A PR whose head moved gets Loop `reopened` and loses its done case and Head SHA. The lowest reopened PR becomes current. When its sync later pushes merges into done PRs above it, their heads move and they reopen by the same rule.
+
 ## Outer Loop — Sync Up, Then Move Up
 
-After the current PR is done:
+After the current PR is done, or skipped by the user's choice (see Copilot unavailable):
 
 1. **Top of stack:** there's nothing to sync. The stack is finished (see Wrap-Up).
 2. **Otherwise, sync upward only.** Run the sync script with `-Pr <current> -AboveOnly`. That merges the current head into its child and on up the stack, and never touches the current PR or anything below it, so every done PR keeps the head SHA it was approved on.
-   - Before the first push, show the `-DryRun -AboveOnly` plan and get the user's go-ahead. If the user granted standing approval for clean syncs this run, record it and proceed without asking. Conflict resolutions always need explicit approval.
+   - Before the first push, show the `-DryRun -AboveOnly` plan and get the user's go-ahead. The plan marks each branch as up to date or needing a merge, and a merge anywhere means every branch above it needs one too. If every branch is already up to date, record the sync as `done` without asking. If the user granted standing approval for clean syncs this run, record it and proceed without asking. Conflict resolutions always need explicit approval.
    - **Exit `0`:** record the sync as `done`.
    - **Exit `2`:** set Sync to `in court` and resolve with `snark-merge-court`. Present the resolution, set `awaiting resolution approval`, show the table, and **stop the turn**. Only after the user explicitly approves, run the script again with `-Pr <current> -AboveOnly -Continue`. Repeat for each conflict further up.
    - **Exit `1`:** relay the guard error, record it as a blocker, and stop. Never work around a guard.
@@ -190,12 +235,17 @@ Once any PR is done, the flow never merges the stack's base (e.g., `dev`) into t
 
 ## Wrap-Up
 
-When the top PR is done, show the final table and one short summary: each PR's done case, the syncs that needed court, active waivers, base drift, and anything left open. Keep the ledger file, since it records how the stack reached done.
+When the top PR is done or skipped, show the final table and one short summary: each PR's done case, every skipped PR (not done), the syncs that needed court, active waivers, base drift, and anything left open. Keep the ledger file, since it records how the stack reached done.
 
 ## Things SnarkGirl Would Never Do
 
 - Touch, review, or declare done any PR above the current one
 - Count an approval or green CI from an older head commit
+- Count a Copilot error review, or a skipped PR, as done
+- Hand-write a Copilot polling loop or embed `jq` in PowerShell instead of using the wait script
+- Trust the REST response as proof that Copilot was requested
+- Match a waiver against a run that hasn't completed
+- Keep a PR done after its head moved
 - Commit or push fix work for the user
 - Continue a conflicted sync without the user approving the resolution
 - Merge the base into the root after any PR has been declared done

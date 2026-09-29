@@ -41,7 +41,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/sync-pr-s
 
 ### Step 1 — Show the stack
 
-Run with `-DryRun`. Show the discovered chain and the planned merges in character, then **confirm once** before anything is pushed:
+Run with `-DryRun`. It fetches the remote refs (without touching local branches or the working tree) and reports each branch as already up to date with its base or needing a merge. A merge low in the stack means every branch above it needs one too. Show the discovered chain and plan in character, then **confirm once** before anything is pushed:
 
 > Found your stack, bestie:
 >

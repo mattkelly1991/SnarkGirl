@@ -8,6 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.19.1] - 2026-09-29
+
+### Added
+- `snark-stack-flow/assets/wait-copilot-review.ps1` — tested poller that waits for a
+  Copilot review on a given head (`-Pr N -Head <sha> -TimeoutMin 20`). Queries GraphQL
+  with `-f`/`-F` variables and parses with `ConvertFrom-Json` (no `jq` inside PowerShell).
+  Counts only reviews submitted after the latest Copilot request. Exit `0` review on head,
+  `3` timeout, `4` Copilot errored, `5` not requested, `6` head moved. `-CheckRequest`
+  confirms a request through GraphQL `reviewRequests`.
+
+### Fixed
+- `sync-pr-stack.ps1 -DryRun` now fetches remote refs and reports "up to date" when a
+  branch already contains its base, instead of always printing "would merge".
+
+### Changed
+- Stack Flow: confirm Copilot requests via GraphQL (the REST response never lists the
+  bot) and re-request once if missing; use the wait script instead of hand-rolled polls.
+- Stack Flow: CI waivers are matched only against completed runs using `--log-failed`;
+  a run is waived only when every failing job matches a waiver exactly.
+- Stack Flow: new `copilot unavailable` / `skipped (copilot unavailable)` states — retry
+  once on a Copilot error review, then ask the user to wait or skip. Never counted as done.
+- Stack Flow: new "When Done Goes Stale" rules — any move of a done PR's head (its own
+  commits, a sync or base merge, rebase, force push) reopens it; checked at every transition.
+- Stack Flow: ledgers now live in `~/.copilot/snark-girl/stacks/` instead of the temp
+  directory, so they survive restarts and cleanup.
+
 ## [1.19.0] - 2026-09-29
 
 ### Added

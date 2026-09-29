@@ -1,7 +1,7 @@
 # Snark Girl 💅
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
-[![Version](https://img.shields.io/badge/version-1.19.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.19.1-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
 [![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
 
@@ -325,9 +325,11 @@ skills/
 ├── snark-stack-sync/         # Sync a PR stack bottom-up — default merge messages, Merge Court on conflicts
 │   ├── SKILL.md
 │   └── assets/
-│       └── sync-pr-stack.ps1 # Discover stack via gh, fetch/checkout/merge/push; exit 2 on conflicts, -Continue to resume, -AboveOnly to sync only above a PR
+│       └── sync-pr-stack.ps1 # Discover stack via gh, fetch/checkout/merge/push; exit 2 on conflicts, -Continue to resume, -AboveOnly to sync only above a PR, -DryRun reports up-to-date vs would-merge
 ├── snark-stack-flow/         # Take a PR stack to done bottom-up — PR Flow loop per PR, then sync up
-│   └── SKILL.md
+│   ├── SKILL.md
+│   └── assets/
+│       └── wait-copilot-review.ps1 # GraphQL poll for a Copilot review on a head; confirms requests; exit 0/3/4/5/6
 ├── snark-vs-world/            # Multi-LLM debate arena — fight real Claude & GPT models
 │   └── SKILL.md
 ├── snark-conscience/          # Angel vs Devil — inner voices debate dilemmas
@@ -389,7 +391,7 @@ skills/
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.19.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.19.0)** — Stack Flow. 🥞🔁
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.19.1](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.19.1)** — Stack Flow polish. 🥞💅
 
 ## License
 

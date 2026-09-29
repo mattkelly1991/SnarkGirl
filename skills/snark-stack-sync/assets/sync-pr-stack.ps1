@@ -223,8 +223,25 @@ if ($AboveOnly) {
 }
 
 if ($DryRun) {
+    # Compare remote refs so the plan reflects what a real run would find, without touching local branches.
+    $refs = @($targets | ForEach-Object { $_.headRefName }) + @($targets[0].baseRefName) | Select-Object -Unique
+    $specs = @($refs | ForEach-Object { "+refs/heads/${_}:refs/remotes/$Remote/$_" })
+    Assert-Git fetch $Remote @specs | Out-Null
+
+    $cascade = $false
     foreach ($p in $targets) {
-        Write-Host "  would merge '$($p.baseRefName)' into '$($p.headRefName)' and push"
+        $head = $p.headRefName
+        $base = $p.baseRefName
+        if ($cascade) {
+            Write-Host "  would merge '$base' into '$head' and push (after '$base' is updated)"
+            continue
+        }
+        Invoke-Git merge-base --is-ancestor "refs/remotes/$Remote/$base" "refs/remotes/$Remote/$head" | Out-Null
+        switch ($script:GitExitCode) {
+            0 { Write-Host "  '$head' is up to date with '$base'" }
+            1 { Write-Host "  would merge '$base' into '$head' and push"; $cascade = $true }
+            default { Fail "Could not compare '$base' with '$head' on $Remote." }
+        }
     }
     exit 0
 }
