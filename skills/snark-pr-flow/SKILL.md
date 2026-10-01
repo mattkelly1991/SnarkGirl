@@ -68,6 +68,7 @@ Fetch all currently open feedback, not merely the first page:
 - Human review findings
 - CodeQL review comments
 - CodeQL check annotations or code scanning alerts associated with the PR
+- Findings from any other bot, app, or human. Gather from every author; never narrow the gather to a fixed list of reviewers.
 
 Use pagination and retain stable thread/comment IDs for later replies and resolution.
 

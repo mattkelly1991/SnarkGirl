@@ -15,6 +15,7 @@ This skill orchestrates. It does not reimplement anything:
 - The inner loop follows `snark-pr-flow` (triage rules, reply format, minimization classifiers, validation scope, manual-test handoff, per-PR ledger). Everything below adds to or tightens that skill for stack use.
 - Syncing uses `snark-stack-sync`'s script, `{skills_dir}/snark-stack-sync/assets/sync-pr-stack.ps1`, with the same exit-code contract (`0` done, `1` guard tripped, `2` conflict).
 - Waiting for Copilot uses this skill's script, `{skill_dir}/assets/wait-copilot-review.ps1` (see Copilot Requests and Waits).
+- Gathering feedback uses this skill's script, `{skill_dir}/assets/pr-feedback-snapshot.ps1` (see Step 1).
 - Conflicts go to `snark-merge-court`.
 
 ## When This Skill Activates
@@ -91,15 +92,28 @@ Before the first iteration on a PR, check out its head branch (rule 5), confirm 
 
 ### Step 1 — Gather
 
-Collect everything `snark-pr-flow` Phase 2 gathers, for this PR only:
+Every iteration starts from a fresh snapshot of the PR, never from what an earlier iteration saw. Copilot is the only reviewer the flow waits for, but feedback from every other reviewer counts once it appears. Other bots and humans post on their own schedules, often between Copilot rounds.
 
-- Unresolved review threads from Copilot, Claude, humans, and CodeQL/code-quality
-- Check annotations and code-scanning alerts
-- Actionable PR conversation comments
-- The latest Copilot review. Parse its inline findings **and** the "Previously missed" items listed in its summary body. Each "Previously missed" item is a finding.
-- CI status for the current head SHA: every check run and status, with conclusions and failure details
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/pr-feedback-snapshot.ps1 -Pr <N> -Head <sha> [-Since <previous snapshotAt>] [-Repo owner/name]
+```
 
-If the PR has no Copilot review on its current head, request one before gathering further (see Copilot Requests and Waits), then wait (Step 5).
+(Use `pwsh -NoProfile -File ...` where `powershell` isn't available.) The script pages through everything with GraphQL variables and `ConvertFrom-Json`, and prints one JSON object. Exit `0` is a snapshot. Exit `6` means the head moved; restart this step on the new head. Exit `1` is a persistent gh/GitHub failure; relay it and stop.
+
+The snapshot is filtered by nothing except resolution state and time:
+
+- `unresolvedThreads`: every unresolved review thread from every author (outdated threads included), regardless of age
+- `reviews` and `comments`: review bodies and PR conversation comments from every author, at or after `-Since`. Pass the previous iteration's `snapshotAt` so nothing posted in between is skipped. Overlap is harmless because items are tracked by node ID in the per-PR ledger.
+- `checks`: pending, failed, and succeeded checks and statuses on the head
+- `codeScanning`: open code-scanning alerts for the PR, when the repository exposes them
+- `pendingReviewers`: outstanding review requests
+- `byAuthor`: who the returned items came from
+
+Triage everything it returns, whoever posted it: Copilot, any other bot or app, and every human. Never narrow the gather to a fixed list of reviewers. Separately, parse the latest Copilot review's inline findings **and** the "Previously missed" items in its summary body. Each "Previously missed" item is a finding. Also include check annotations from failed checks.
+
+Record the `snapshotAt` in the per-PR ledger.
+
+If the PR has no Copilot review on its current head, request one (see Copilot Requests and Waits), triage whatever the snapshot already holds, and wait (Step 5).
 
 ### Step 2 — Triage and act
 
@@ -149,7 +163,7 @@ With no code change, a new review targets the same head SHA. That is expected an
 
 Wait with the wait script (see Copilot Requests and Waits). Only a review on the current head that was submitted after the latest Copilot request counts. Reviews on older commits, or from earlier rounds on the same commit, don't count.
 
-When CI on the head has completed and the review has arrived, evaluate the done condition. If it isn't met, increment the iteration and return to Step 1.
+When CI on the head has completed and the review has arrived, return to Step 1 for a fresh snapshot. That snapshot picks up whatever any other reviewer posted while Copilot was working. Evaluate the done condition only after everything in it is triaged. If it isn't met, increment the iteration and continue the loop.
 
 ## Copilot Requests and Waits
 
@@ -190,7 +204,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File {skill_dir}/assets/wait-copi
 A PR is done only when **all** of the following hold at the same moment, for the PR's current head SHA:
 
 1. **CI:** every check has completed, and each one either succeeded or belongs to a failed run whose failing jobs all match waivers exactly (see CI failures in Step 2). Nothing is queued or in progress.
-2. **Threads:** no unresolved review threads remain from any reviewer, and every actionable standalone comment is handled.
+2. **Threads and feedback:** a snapshot taken on the current head, after the latest Copilot review arrived, shows no unresolved review threads from any author. Every review body, conversation comment, and code-scanning alert in it, whoever posted it, has been triaged and handled.
 3. **Copilot:** the latest Copilot review was submitted on the current head SHA, and it satisfies one of these cases:
    - **A:** zero findings, where "Previously missed" items count as findings.
    - **B:** every finding is invalid (rebutted and resolved, or recorded when it's "Previously missed"), and the verdict is anything other than "Changes recommended". If no verdict can be identified, B doesn't apply.
@@ -243,6 +257,8 @@ When the top PR is done or skipped, show the final table and one short summary: 
 - Count an approval or green CI from an older head commit
 - Count a Copilot error review, or a skipped PR, as done
 - Hand-write a Copilot polling loop or embed `jq` in PowerShell instead of using the wait script
+- Gather only Copilot's feedback, or any fixed list of reviewers, instead of everything from every author
+- Declare done from a snapshot taken before the latest Copilot review arrived
 - Trust the REST response as proof that Copilot was requested
 - Match a waiver against a run that hasn't completed
 - Keep a PR done after its head moved

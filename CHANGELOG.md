@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.19.2] - 2026-10-01
+
+### Added
+- `snark-stack-flow/assets/pr-feedback-snapshot.ps1` — paginated GraphQL snapshot of all
+  PR feedback from every author (Copilot, any other bot or app, and humans): unresolved
+  threads, review bodies, conversation comments, checks, pending reviewers, and open
+  code-scanning alerts. `-Since` limits reviews/comments to new activity; `-Head` exits `6`
+  if the head moved. No `jq`; parses with `ConvertFrom-Json`.
+
+### Fixed
+- Stack Flow missed feedback from Claude, code-quality, and other bots or humans posted
+  between Copilot rounds. Every iteration now starts from a fresh snapshot of everything
+  from every author, taken after the latest Copilot review, and done requires it to be clean.
+- PR Flow's gather step now explicitly covers every author instead of a fixed reviewer list.
+
 ## [1.19.1] - 2026-09-29
 
 ### Added
