@@ -152,7 +152,7 @@ Fix related findings together when one coherent change addresses them. Do not ma
 
 Review threads and standalone comments are different GitHub objects:
 
-- **Inline review thread:** reply or fix as required, then resolve the thread.
+- **Inline review thread:** a fixed finding is resolved silently, with no reply. Only invalid or deliberately skipped findings get a reply (the rebuttal) before resolving.
 - **Top-level PR comment or review summary:** minimize it after all actionable content it represents is handled.
 
 Do not minimize a summary comment while any unique valid finding inside it is still awaiting a fix, manual test, push, or thread resolution.
@@ -279,7 +279,7 @@ No essay. The code and the cleaned-up PR are the deliverables.
 - Create a worktree for this flow
 - Commit or push for the user
 - Resolve valid feedback before manual testing and the user's push
-- Reply "fixed" to valid findings when a silent resolution is requested
+- Reply "fixed" (or any reply) to a valid finding that was fixed; resolve it silently
 - Resolve a thread without verifying the current PR head
 - Blanket-resolve every thread because the build passed
 - Minimize a summary comment while one of its unique findings remains open
