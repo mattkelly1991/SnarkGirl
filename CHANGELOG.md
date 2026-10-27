@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.19.3] - 2026-10-27
+
+### Fixed
+- Stack Sync couldn't sync a stack while a release PR (`dev` → `main`) was open: stack
+  discovery climbed past `dev` into the release PR, made `main` the root, then refused to
+  touch `dev`. `sync-pr-stack.ps1` now treats protected branches (`dev`, `main`, `master`)
+  as the stack's root base, never a member, and passing a protected-head PR as `-Pr` fails
+  with a clear message instead of a fork error. Stack Flow inherits the fix.
+- PR Flow no longer says to reply "fixed" before resolving a valid finding; fixed threads
+  are resolved silently, and only invalid or skipped findings get a rebuttal.
+
 ## [1.19.2] - 2026-10-01
 
 ### Added

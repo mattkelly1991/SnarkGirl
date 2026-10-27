@@ -90,7 +90,7 @@ On exit `0`, summarize in character: which branches got merged, which were alrea
 
 ## What the Script Guarantees
 
-- Discovers the stack from open PRs via `gh pr list` — any PR in the chain works as the entry point; walks down to the root (base not owned by another open PR) and up through children.
+- Discovers the stack from open PRs via `gh pr list` — any PR in the chain works as the entry point; walks down to the root (the first base that's a protected branch — `dev`, `main`, `master` — or not owned by another open PR) and up through children. A protected branch is never a stack member, so an open release PR like `dev` → `main` doesn't join the stack, and passing one as `-Pr` fails with a clear message.
 - Refuses forks (two open PRs based on the same head), cycles, duplicate heads, and closed/unknown PRs.
 - Fetches each head and resets the local branch to the remote (`checkout -B`), refusing if the local branch has commits the remote doesn't.
 - Updates the local base ref (`fetch origin dev:dev`) so the merge message reads `Merge branch 'dev' into <head>` — identical to GitHub's "Update branch" button.

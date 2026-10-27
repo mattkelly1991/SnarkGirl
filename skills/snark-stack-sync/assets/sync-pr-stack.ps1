@@ -110,6 +110,10 @@ function Get-Stack {
     }
 
     if (-not $byNumber.ContainsKey($Pr)) { Fail "PR #$Pr is not an open PR" }
+    $entry = $byNumber[$Pr]
+    if ($ProtectedBranches -contains $entry.headRefName) {
+        Fail "PR #$Pr merges protected branch '$($entry.headRefName)' into '$($entry.baseRefName)'; protected branches are a stack's root, never a member. Pass a PR from the stack itself."
+    }
 
     # Walk down to the root
     $stack = New-Object System.Collections.Generic.List[object]
@@ -119,7 +123,8 @@ function Get-Stack {
         if ($seen.ContainsKey([int]$current.number)) { Fail "Cycle detected in PR stack at #$($current.number)" }
         $seen[[int]$current.number] = $true
         $stack.Insert(0, $current)
-        if ($byHead.ContainsKey($current.baseRefName)) {
+        # A protected base is always the root, even if an open PR (e.g. a dev -> main release) has it as head.
+        if (($ProtectedBranches -notcontains $current.baseRefName) -and $byHead.ContainsKey($current.baseRefName)) {
             $current = $byHead[$current.baseRefName]
         } else {
             break
@@ -129,7 +134,7 @@ function Get-Stack {
     # Walk up through children
     $current = $stack[$stack.Count - 1]
     while ($true) {
-        $children = @($prs | Where-Object { $_.baseRefName -eq $current.headRefName })
+        $children = @($prs | Where-Object { $_.baseRefName -eq $current.headRefName -and $ProtectedBranches -notcontains $_.headRefName })
         if ($children.Count -eq 0) { break }
         if ($children.Count -gt 1) {
             $list = ($children | ForEach-Object { "#$($_.number) ($($_.headRefName))" }) -join ", "

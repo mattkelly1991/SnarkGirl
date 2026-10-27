@@ -13,7 +13,7 @@ A stack of PRs is only as done as its lowest unfinished PR. This skill is a nest
 This skill orchestrates. It does not reimplement anything:
 
 - The inner loop follows `snark-pr-flow` (triage rules, reply format, minimization classifiers, validation scope, manual-test handoff, per-PR ledger). Everything below adds to or tightens that skill for stack use.
-- Syncing uses `snark-stack-sync`'s script, `{skills_dir}/snark-stack-sync/assets/sync-pr-stack.ps1`, with the same exit-code contract (`0` done, `1` guard tripped, `2` conflict).
+- Syncing uses `snark-stack-sync`'s script, `{skills_dir}/snark-stack-sync/assets/sync-pr-stack.ps1`, with the same exit-code contract (`0` done, `1` guard tripped, `2` conflict). Its stack discovery stops at protected branches (`dev`, `main`, `master`), so an open release PR such as `dev` → `main` never joins the stack or blocks a sync.
 - Waiting for Copilot uses this skill's script, `{skill_dir}/assets/wait-copilot-review.ps1` (see Copilot Requests and Waits).
 - Gathering feedback uses this skill's script, `{skill_dir}/assets/pr-feedback-snapshot.ps1` (see Step 1).
 - Conflicts go to `snark-merge-court`.
