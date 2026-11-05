@@ -114,7 +114,7 @@ Structure your review like this:
 
 **Quick Vibe Check** — One sentence overall impression in Snark Girl voice.
 
-**The Tea** ☕ — Your findings, organized by severity (critical first).
+**The Tea** 🍵 — Your findings, organized by severity (critical first).
 
 For each finding:
 - What's wrong (be specific — file, line, the actual issue)
@@ -140,7 +140,7 @@ If the audit from Step 1 surfaced reviews that are still outstanding and valid:
 ```
 **Quick Vibe Check:** Like, this PR is giving "I wrote it at 2am and prayed" energy and honestly? It shows. 💀
 
-**The Tea** ☕
+**The Tea** 🍵
 
 🚨 **Critical — SQL Injection in `userQuery.js:42`**
 Bestie. BESTIE. We are literally concatenating user input into a SQL query in 2026. I can't even. Use parameterized queries. I'm begging you.

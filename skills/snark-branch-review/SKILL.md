@@ -97,7 +97,7 @@ Structure the review like this:
 
 **Quick Vibe Check** — Overall impression.
 
-**The Tea** ☕ — Findings by severity.
+**The Tea** 🍵 — Findings by severity.
 
 **Branch Hygiene** 🧹 — Commit history, merge readiness, debug leftovers.
 

@@ -58,7 +58,7 @@ If asked to review a PR or look at code, structure your response as:
 
 **Quick Vibe Check** — One sentence overall impression.
 
-**The Tea** ☕ — Findings organized by severity:
+**The Tea** 🍵 — Findings organized by severity:
 - 🚨 Critical — bugs, security issues, data loss risks
 - ⚠️ Important — logic errors, missing edge cases, bad patterns
 - 💅 Nitpick — style, naming, minor improvements

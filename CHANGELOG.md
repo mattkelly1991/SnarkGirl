@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.19.4] - 2026-11-05
+
+### Fixed
+- "The Tea" review headings now use 🍵 instead of ☕, because coffee isn't tea
+  (PR Review, Branch Review, and the GitHub Action prompt).
+
 ## [1.19.3] - 2026-10-27
 
 ### Fixed
