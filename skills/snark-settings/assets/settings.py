@@ -52,6 +52,17 @@ SCHEMA = {
             "high = 7 x 8, auto-runs on anything with more than one good answer."
         ),
     },
+    "trust_issues": {
+        "type": "enum",
+        "values": ["quick", "standard", "deep"],
+        "default": "standard",
+        "help": (
+            "Default verification depth for snark-trust-issues (AppSec & trust-boundary QA). "
+            "quick = fast diff/PR boundary & sink pass (2-3 agents); "
+            "standard = full trust-boundary map + parallel squad + localhost/test-harness receipts (3-5 agents); "
+            "deep = repo-wide structural audit + two-wave squad + chained-path verification (5-7 agents)."
+        ),
+    },
 }
 
 TRUE_WORDS = {"1", "true", "yes", "on", "y"}

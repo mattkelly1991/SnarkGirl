@@ -1,7 +1,7 @@
 # Snark Girl 💅
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-SnarkGirl-8957e5?logo=github&logoColor=white)](https://github.com/marketplace/actions/snarkgirl)
-[![Version](https://img.shields.io/badge/version-1.19.2-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.20.0-8957e5)](https://github.com/mattkelly1991/SnarkGirl/releases/latest)
 [![Changelog](https://img.shields.io/badge/changelog-md-8957e5)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8957e5)](LICENSE)
 
@@ -9,7 +9,7 @@
 
 A multi-platform coding agent plugin that brings **@SnarkGirl** to life — a snarky valley girl who is also like totally a computer genius coder.
 
-She reviews your PRs and branches with attitude, cuts through scary raw diff stats to show a PR's real size and risk (so clean, DRY, well-documented code doesn't get punished for looking "big"), runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, runs Divergence on open-ended problems (isolated agents diverge under distorted cognitive frames, a critic converges — scaled by a setting she remembers across sessions), debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
+She reviews your PRs and branches with attitude, cuts through scary raw diff stats to show a PR's real size and risk (so clean, DRY, well-documented code doesn't get punished for looking "big"), runs a pre-PR gauntlet by spinning up Claude and GPT in parallel to review your diff before you ever open a PR, deploys a dynamic multi-agent PR council that scales agents and models to a PR's scope for a comprehensive read-only analysis, assembles The Sisterhood to defend YOUR PR when someone runs the council against you (fixing valid points and clapping back on invalid ones with receipts), runs The Gauntlet Supreme where Council attacks and Sisterhood defends for multiple adversarial rounds before SnarkGirl herself delivers the definitive final verdict, hosts the Battle Royale where 10-20 AI contestants drop onto your diff and fight to the death over real bugs while she rules as Game Master, runs Trust Issues for zero-trust AppSec & trust-boundary QA with receipts across `quick`, `standard`, and `deep` modes, fixes review items from her own docs, resolves merge conflicts in a courtroom where LLM attorneys argue for each side, fights the world by debating real Claude and GPT models on any topic, summons her conscience where SnarkAngel and SnarkDevil debate dilemmas on her shoulders, plays devil's advocate to stress-test your ideas, runs Divergence on open-ended problems (isolated agents diverge under distorted cognitive frames, a critic converges — scaled by a setting she remembers across sessions), debugs your code as an adversarial rubber duck, explains concepts with valley girl flair, and chats about anything tech. All with sharp technical insight wrapped in teenage angst.
 
 ## How to Talk to Snark Girl
 
@@ -36,6 +36,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-supreme** | The Gauntlet Supreme — the ultimate adversarial review. Council attacks, Sisterhood defends for X rounds, then SnarkGirl delivers the final verdict. Works on PRs and branches. |
 | **snark-battle-royale** | The Battle Royale — 10-20 AI contestants drop onto your diff, hunt real bugs to survive, fight skirmishes over findings, and starve if they find nothing. SnarkGirl is the Game Master. Last one standing wins; the spoils are battle-tested findings. |
 | **snark-world-cup** | The World Cup — a multiplayer football tournament where real people compete by getting PRs reviewed. Each PR review is a match SnarkGirl plays out LIVE on an animated pitch (players, the ball, scoreboard, replay), then standings update. The whole tournament lives as signed, human-readable pages in the repo wiki — anyone can browse it and continue. |
+| **snark-trust-issues** | Trust Issues — zero-trust AppSec & trust-boundary QA with receipts. Maps routes, middleware, tenant boundaries, and sinks, deploys a parallel specialist squad (`VelvetRope`, `TenantTea`, `SinkSnob`, `StateSkeptic`, `SupplySideEye`), proves what holds vs what folds via test assertions, benign `localhost` checks, and unbroken call chains, and offers root-cause fixes + re-verification. Scales with `quick` / `standard` / `deep` via the `trust_issues` setting. |
 | **snark-pr-flow** | Owns the full feedback flow for an existing PR: gathers open Claude, Copilot, CodeQL, and human findings; replies to and resolves invalid threads; fixes valid findings on the current branch; validates affected projects; pauses for manual testing; then resolves fixed threads after you commit and push. |
 | **snark-clap-back** | Drafts and posts snarky replies to other reviewers' PR comments. Previews everything and only posts with your approval. |
 | **snark-ticket** | Reads a GitHub issue, gives her hot take, assesses complexity, and outlines an approach to fix it. Offers to create an approach doc. |
@@ -46,7 +47,7 @@ Works with any casing/spacing: `SnarkGirl`, `snarkgirl`, `Snark Girl`, `@SnarkGi
 | **snark-vs-world** | Debates any topic against real Claude and GPT models. Multi-round arena until someone concedes. |
 | **snark-conscience** | Summons SnarkAngel and SnarkDevil to debate a moral, ethical, or tough decision dilemma inside SnarkGirl's head. |
 | **snark-devils-advocate** | Argues against proposals and stress-tests ideas. Debates until the best solution wins. |
-| **snark-divergence** | Divergence — for open-ended problems (design, naming, API surface, architecture, fuzzy bugs). Spawns N isolated agents under distorted cognitive frames, then a separate critic scores, clusters, flags traps, and deepens the survivors before SnarkGirl commits to a verdict. Effort scales with the `divergence` setting: `off` / `low` / `medium` / `high`. At `medium`+ she auto-runs it on qualifying questions. <sub>Ideation loop adapted from [UditAkhourii/adhd](https://github.com/UditAkhourii/adhd) (MIT); frames, voice, and gating are hers.</sub> |
+| **snark-divergence** | Divergence — for open-ended problems (design, naming, API surface, architecture, fuzzy bugs). Spawns N isolated agents under distorted cognitive frames, then a separate critic scores, clusters, flags traps, and deepens the survivors before SnarkGirl commits to a verdict. Effort scales with the `divergence` setting: `off` / `low` / `medium` / `high`. At `medium`+ she auto-runs it on qualifying questions. |
 | **snark-settings** | View and change SnarkGirl's persistent settings — remembered across sessions and repos in `~/.snarkgirl/settings.json`. "SnarkGirl, set divergence to high." |
 | **snark-rubber-duck** | Adversarial rubber duck debugging. Challenges your assumptions with pointed questions until you find the bug yourself. |
 | **snark-explain** | Explains code, concepts, algorithms, and architecture in Snark Girl's voice — technically precise but entertaining. |
@@ -157,6 +158,12 @@ A whole multiplayer season where real people compete by getting PRs reviewed —
 > "SnarkGirl, clap back on the reviews"
 
 She reads other reviewers' comments (bots and humans), drafts snarky replies, previews them for you, and only posts after you approve each one.
+
+**Trust Issues (Zero-Trust AppSec QA):**
+> "SnarkGirl, trust issues — check this branch"
+> "SnarkGirl, deep trust issues on this repo"
+
+SnarkGirl doesn't trust your middleware OR your `// TODO: check permissions later` comments. She maps your routes, auth layers, tenant boundaries, and sinks, deploys a parallel specialist squad (`VelvetRope`, `TenantTea`, `SinkSnob`, `StateSkeptic`, `SupplySideEye`), and demands **receipts** (repo test assertions, benign `localhost` contract checks, or unbroken call-chain proofs) before anything lands in Confirmed Issues. Saves a ranked report with an honest Coverage & Blind Spots manifest, then offers root-cause fixes + re-verification. Built Claude-safe from the ground up with `quick`, `standard`, and `deep` scan modes.
 
 **PR Flow:**
 > "SnarkGirl, run the PR flow"
@@ -312,6 +319,8 @@ skills/
 │       ├── pitch.html        # Live pitch + tournament view + trophy screen + season replay
 │       ├── gm.py             # Match-day helper — one event, one command
 │       └── wiki.py           # Signed wiki ledger (render-home/render-match/verify/load-home)
+├── snark-trust-issues/       # Trust Issues — zero-trust AppSec & trust-boundary QA with receipts (quick/standard/deep)
+│   └── SKILL.md
 ├── snark-pr-flow/            # Full existing-PR feedback lifecycle — triage, fix, validate, manual test, resolve
 │   └── SKILL.md
 ├── snark-clap-back/          # Reply to other reviewers' comments
@@ -392,7 +401,7 @@ skills/
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.19.2](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.19.2)** — Stack Flow hears everyone. 🥞👂
+See [CHANGELOG.md](CHANGELOG.md) for the full version history. Latest: **[v1.20.0](https://github.com/mattkelly1991/SnarkGirl/releases/tag/v1.20.0)** — Trust Issues has receipts. 🕵️‍♀️🔒
 
 ## License
 

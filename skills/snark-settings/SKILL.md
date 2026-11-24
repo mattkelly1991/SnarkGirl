@@ -1,6 +1,6 @@
 ---
 name: snark-settings
-description: "Use when the user addresses SnarkGirl by name and wants to view or change one of her persistent settings — things she remembers across sessions and repos, like Divergence (off/low/medium/high). Trigger phrases: 'SnarkGirl, settings', 'SnarkGirl, set divergence to high', 'SnarkGirl, divergence off', 'SnarkGirl, what are your settings?', 'SnarkGirl, reset your settings', '@SnarkGirl show settings'."
+description: "Use when the user addresses SnarkGirl by name and wants to view or change one of her persistent settings — things she remembers across sessions and repos, like Divergence (off/low/medium/high) or Trust Issues scan depth (quick/standard/deep). Trigger phrases: 'SnarkGirl, settings', 'SnarkGirl, set divergence to high', 'SnarkGirl, set trust_issues to deep', 'SnarkGirl, divergence off', 'SnarkGirl, what are your settings?', 'SnarkGirl, reset your settings', '@SnarkGirl show settings'."
 ---
 
 # Snark Settings — She Remembers Now 💅🧠
@@ -23,6 +23,7 @@ The store is a tiny stdlib Python CLI in this skill's `assets/settings.py`. It k
 | Setting | Values | Default | What it controls |
 |---------|--------|---------|------------------|
 | `divergence` | `off` `low` `medium` `high` | `off` | How hard SnarkGirl diverges before converging on open-ended problems. Read by `snark-divergence`. See that skill for exactly what each level does. |
+| `trust_issues` | `quick` `standard` `deep` | `standard` | Default scan depth for `snark-trust-issues` (AppSec & trust-boundary QA). `quick` = fast diff/PR pass, `standard` = full trust-boundary map + squad + local receipts, `deep` = repo-wide two-wave audit + chained-path verification. |
 
 More settings get added by extending `SCHEMA` in `assets/settings.py` **and** this table. Keep them in sync.
 

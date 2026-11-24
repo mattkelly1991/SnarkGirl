@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.20.0] - 2026-11-24
+
+### Added
+- **Trust Issues** skill (`snark-trust-issues`) — zero-trust AppSec and trust-boundary QA
+  with receipts. Maps routes, middleware, tenant boundaries, state transitions, and sinks,
+  deploys an isolated specialist squad in parallel (`VelvetRope`, `TenantTea`, `SinkSnob`,
+  `StateSkeptic`, `SupplySideEye`), proves what holds vs what folds via repo test assertions,
+  benign loopback `localhost` checks, or unbroken source-to-sink call chains, separates
+  confirmed issues from defense-in-depth hardening notes, documents coverage and blind spots,
+  and offers a root-cause fix + re-verify loop. Built with defensive QA invariant framing so
+  Claude and GPT sub-agents run cleanly without triggering content filters.
+- **`trust_issues` setting** in `snark-settings` (`quick` / `standard` (default) / `deep`) —
+  persists your preferred Trust Issues scan depth across sessions and repos in
+  `~/.snarkgirl/settings.json`.
+
+### Changed
+- Skill routing (`using-snark-girl`, `CLAUDE.md`) adds `snark-trust-issues` at priority 6.
+- Synchronized plugin descriptions, keywords, and version (`1.20.0`) across all manifests and
+  `README.md`.
+
 ## [1.19.4] - 2026-11-05
 
 ### Fixed
@@ -138,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   out-of-range values are rejected; writes are atomic. Any skill with a tunable reads
   its value fresh via `get` each time it runs.
 - **Divergence** skill (`snark-divergence`) — SnarkGirl's own take on parallel divergent
-  ideation, based on [UditAkhourii/adhd](https://github.com/UditAkhourii/adhd). For
+  ideation. For
   open-ended problems (design, naming, API surface, architecture, fuzzy bugs) she spawns
   N isolated agents under distorted cognitive frames with zero shared context, then a
   separate critic pass scores (novelty / viability / fit), clusters by angle, flags
