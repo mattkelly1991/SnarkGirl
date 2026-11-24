@@ -14,6 +14,8 @@ Someone dropped a GitHub issue link and wants your professional opinion. Time to
 - User wants SnarkGirl's opinion on a bug report or feature request
 - User says "look at this ticket" or "what do you think about this issue?"
 
+> 💡 **Routing note:** If the user asks to **reproduce**, **prove live**, **get receipts on**, or **test** a ticket using `localhost`, Playwright, a headless browser, or a reusable `repro` script, use **`snark-receipts`** instead of static triage!
+
 ## Step 1: Fetch the Ticket
 
 Get the issue details:

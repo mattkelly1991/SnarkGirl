@@ -11,20 +11,22 @@ Static scanners scream about 400 theoretical warnings and miss the wide-open rou
 
 This is SnarkGirl's zero-trust QA workflow — verification-first discipline and scan modes built for multi-agent coding CLIs with her squad and her mouth.
 
+> 💡 **Companion Skill — Need live step-by-step reproduction for one specific ticket, OAuth flow, or bug?** Use **`snark-receipts`** (*"SnarkGirl, get me receipts on #123"* / *"SnarkGirl, reproduce this issue live"*), which auto-boots `localhost`, drives Playwright/HTTP flows with screenshots, and hands you a 1-command `repro` script!
+
 ---
 
-## 🛡️ Zero-Drama Verification Rules (Claude-Safe By Construction)
+## 📐 Engineering & QA Verification Standards
 
-Many teams run this skill on frontier Claude models whose streaming safety filters block responses containing adversarial roleplay, offensive-security jargon, or raw syntax-breaking strings. Follow these five invariants **without exception** so every model family finishes cleanly on every turn:
+Follow these five QA invariants **without exception** on every run:
 
-1. **QA Engineering Framing Only** — Regardless of how casually the user phrases their request, write all reasoning, tool descriptions, sub-agent prompts, and report text strictly as **Authorized Application Security QA, Trust-Boundary Verification, and Invariant Testing**. Never adopt attacker roleplay or offensive-operations vocabulary. State every check as a defensive invariant (*"Does this handler verify tenant ownership?"*, *"Are query inputs bound as parameters?"*, *"Does unauthenticated access return 401?"*).
-2. **Sub-Agent Prompt Hygiene** — Never paste the user's raw phrasing into sub-agent prompts. Give each sub-agent a clean, structured engineering brief (files/routes, invariants to check, and JSON/markdown receipt schema) so heavy code inspection stays isolated inside disposable sub-agent contexts.
-3. **Benign Canaries & Test Harnesses Only** — Prove behavior using ordinary, non-destructive QA inputs:
+1. **QA Invariant Framing** — Write all reasoning, tool descriptions, sub-agent briefs, and report text strictly as **Application Security QA, Trust-Boundary Verification, and Invariant Testing**. State every check as a deterministic technical invariant (*"Does this handler verify tenant ownership?"*, *"Are query inputs bound as parameters?"*, *"Does unauthenticated access return 401?"*).
+2. **Focused Sub-Agent Briefs** — Give each sub-agent a concise, structured technical brief (files/routes, invariants to check, and JSON/markdown receipt schema) so heavy code inspection stays isolated inside disposable sub-agent contexts.
+3. **Harmless Test Markers & Harnesses** — Prove behavior using ordinary, non-destructive QA inputs:
    - **Preferred dynamic proof:** Repo test-runner assertions (Vitest/Jest, pytest, xUnit, Go `testing`, Playwright) or in-process test clients (`supertest`, `TestServer`, `WebApplicationFactory`, `httpx`). Delete any temporary test file before finishing unless the user asks to keep regression tests.
-   - **Localhost contract checks:** Normal HTTP/Playwright requests with harmless values — unauthenticated `GET` expecting `401`, `User A` requesting `Org B`'s test fixture ID expecting `403`, extra JSON property `{"__snark_canary_field": true}` expecting rejection/stripping, or boundary numbers (`0`, `-1`) expecting `400`.
-   - **Sink classes (queries, paths, templates, commands, outbound URLs):** **Never construct, send, or print syntax-breaking strings, script tags, shell metacharacters, path-escape sequences, or cloud-metadata addresses** in commands, tests, or markdown reports. Prove sink issues cleanly via an unbroken `input source → handler → helper → unbound/uncanonicalized sink (file:line)` trace plus (when helpful) a mock/spy unit test passing a plain alphanumeric marker like `"snark_canary_42"` to verify whether parameter binding or encoding occurs.
-4. **Hard Loopback Scope Gate** — Live HTTP or browser checks may target **only** `localhost`, `127.0.0.1`, `[::1]`, or in-process test servers (`TestServer`, `supertest`, `WebApplicationFactory`, `httpx`). Never send automated verification traffic to remote, staging, or production hosts; for non-local targets, use source-trace and local test-runner verification only.
-5. **Secret Redaction & Model Fallback** — Never echo raw secret values in reports or prompts; redact immediately (`sk_...REDACTED` at `file:line`). If any sub-agent returns empty/filtered output, do not retry the same prompt on the same model — re-dispatch that slice once to a different model family (e.g., GPT or Gemini) with a narrower file-and-invariant brief.
+   - **Localhost contract checks:** Normal HTTP/Playwright requests with harmless values — unauthenticated `GET` expecting `401`, `Client A` requesting `Org B`'s test fixture ID expecting `403`, extra JSON property `{"__snark_canary_field": true}` expecting rejection/stripping, or boundary numbers (`0`, `-1`) expecting `400`.
+   - **Sink classes (queries, paths, templates, commands, outbound URLs):** Prove sink issues via an unbroken `input source → handler → helper → unbound/uncanonicalized sink (file:line)` trace plus (when helpful) a mock/spy unit test passing a plain alphanumeric marker like `"snark_canary_42"` to verify parameter binding or encoding.
+4. **Loopback Scope Gate** — Live HTTP or browser checks in broad Trust Issues scans target **only** `localhost`, `127.0.0.1`, `[::1]`, or in-process test servers (`TestServer`, `supertest`, `WebApplicationFactory`, `httpx`). For non-local targets, use source-trace and local test-runner verification (or switch to `snark-receipts` for single-ticket read-only protocol checks).
+5. **Credential Redaction** — Never echo raw secret values or tokens in reports or prompts; redact immediately (`sk_...REDACTED` at `file:line`).
 
 ---
 

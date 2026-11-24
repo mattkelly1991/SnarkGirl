@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > Versions prior to `1.15.1` were shipped untagged; their history below is
 > reconstructed from git commits, so dates are accurate but per-patch detail is summarized.
 
+## [1.21.0] - 2026-11-24
+
+### Added
+- **Receipts** skill (`snark-receipts`) — hands-on live reproduction of bugs, OAuth/OIDC
+  protocol misconfigurations, cross-tenant authorization issues, and concurrency bugs.
+  Extracts factual ticket specs cleanly, grounds in checked-out repo configs (catching
+  shared `client_id` blast-radius regressions across sibling apps), auto-boots `localhost`
+  when needed, drives Playwright browser flows with screenshots and non-destructive HTTP
+  differential checks, outputs a reusable 1-command `repro` script + `RECEIPTS-*.md`
+  bundle in `{TEMP}/snark-girl-reviews/`, and shuts down every server/browser it started.
+
+### Changed
+- Skill routing (`using-snark-girl`, `CLAUDE.md`, `snark-ticket`, `snark-trust-issues`)
+  routes single-ticket/flow live reproduction requests to `snark-receipts` at priority 6
+  (ahead of broad `snark-trust-issues` scans and static `snark-ticket` triage).
+- Synchronized plugin descriptions, keywords, and version (`1.21.0`) across all manifests
+  and `README.md`.
+
 ## [1.20.0] - 2026-11-24
 
 ### Added
